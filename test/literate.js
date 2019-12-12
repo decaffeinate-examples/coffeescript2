@@ -1,137 +1,129 @@
-# Literate CoffeeScript Test
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+// # Literate CoffeeScript Test
+// 
+// comment comment
+let testsCount = 0; // Track the number of tests run in this file, to make sure they all run
 
-comment comment
+test("basic literate CoffeeScript parsing", function() {
+  ok(true);
+  return testsCount++;
+});
 
-    testsCount = 0 # Track the number of tests run in this file, to make sure they all run
+// now with a...
+test("broken up indentation", () => // ... broken up ...
+(function() {
 
-    test "basic literate CoffeeScript parsing", ->
-      ok yes
-      testsCount++
+// ... nested block.
+  ok(true);
+  return testsCount++;
+})());
 
-now with a...
+// Code must be separated from text by a blank line.
+test("code blocks must be preceded by a blank line", function() {
 
-    test "broken up indentation", ->
+// The next line is part of the text and will not be executed.
+//       fail()
+  ok(true);
+  return testsCount++;
+});
 
-... broken up ...
+// Code in `backticks is not parsed` and...
+test("comments in indented blocks work", () => ((() => (function() {
+  // Regular comment.
 
-      do ->
+  /*
+    Block comment.
+  */
 
-... nested block.
+  ok(true);
+  return testsCount++;
+})()))());
 
-        ok yes
-        testsCount++
+// Regular [Markdown](http://example.com/markdown) features, like links
+// and unordered lists, are fine:
+// 
+//   * I
+// 
+//   * Am
+// 
+//   * A
+// 
+//   * List
+// 
+// ---
+// keep track of whether code blocks are executed or not
+let executed = false;
 
-Code must be separated from text by a blank line.
+// <p>
+// 
+// if true
+//   executed = true # should not execute, this is just HTML para, not code!
+// 
+// </p>
+test("should ignore code blocks inside HTML", function() {
+  eq(executed, false);
+  return testsCount++;
+});
 
-    test "code blocks must be preceded by a blank line", ->
+// ---
+// 
+// *   A list item followed by a code block:
+test("basic literate CoffeeScript parsing", function() {
+  ok(true);
+  return testsCount++;
+});
 
-The next line is part of the text and will not be executed.
-      fail()
+// ---
+// 
+// *   Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+//     Aliquam hendrerit mi posuere lectus. Vestibulum enim wisi,
+//     viverra nec, fringilla in, laoreet vitae, risus.
+// 
+// *   Donec sit amet nisl. Aliquam semper ipsum sit amet velit.
+//     Suspendisse id sem consectetuer libero luctus adipiscing.
+// 
+// ---
+// 
+// This is [an example][id] reference-style link.
+// [id]: http://example.com/  "Optional Title Here"
+// 
+// ---
+executed = false;
 
-      ok yes
-      testsCount++
+// 1986. What a great season.
+executed = true;
 
-Code in `backticks is not parsed` and...
+// and test...
+test("should recognize indented code blocks in lists with empty line as separator", function() {
+  ok(executed);
+  return testsCount++;
+});
 
-    test "comments in indented blocks work", ->
-      do ->
-        do ->
-          # Regular comment.
+// ---
+executed = false;
 
-          ###
-            Block comment.
-          ###
+// 1986\. What a great season.
+//            executed = yes
+// 
+// and test...
+test("should ignore indented code in escaped list like number", function() {
+  eq(executed, false);
+  return testsCount++;
+});
 
-          ok yes
-          testsCount++
+// one last test!
+test("block quotes should render correctly", function() {
+  const quote = `\
+foo
+   and bar!\
+`;
+  eq(quote, 'foo\n   and bar!');
+  return testsCount++;
+});
 
-Regular [Markdown](http://example.com/markdown) features, like links
-and unordered lists, are fine:
-
-  * I
-
-  * Am
-
-  * A
-
-  * List
-
----
-
-    # keep track of whether code blocks are executed or not
-    executed = false
-
-<p>
-
-if true
-  executed = true # should not execute, this is just HTML para, not code!
-
-</p>
-
-    test "should ignore code blocks inside HTML", ->
-      eq executed, false
-      testsCount++
-
----
-
-*   A list item followed by a code block:
-
-    test "basic literate CoffeeScript parsing", ->
-      ok yes
-      testsCount++
-
----
-
-*   Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
-    Aliquam hendrerit mi posuere lectus. Vestibulum enim wisi,
-    viverra nec, fringilla in, laoreet vitae, risus.
-
-*   Donec sit amet nisl. Aliquam semper ipsum sit amet velit.
-    Suspendisse id sem consectetuer libero luctus adipiscing.
-
----
-
-This is [an example][id] reference-style link.
-[id]: http://example.com/  "Optional Title Here"
-
----
-
-    executed = no
-
-1986. What a great season.
-
-    executed = yes
-
-and test...
-
-    test "should recognize indented code blocks in lists with empty line as separator", ->
-      ok executed
-      testsCount++
-
----
-
-    executed = no
-
-1986\. What a great season.
-           executed = yes
-
-and test...
-
-    test "should ignore indented code in escaped list like number", ->
-      eq executed, no
-      testsCount++
-
-one last test!
-
-    test "block quotes should render correctly", ->
-      quote = '''
-        foo
-           and bar!
-      '''
-      eq quote, 'foo\n   and bar!'
-      testsCount++
-
-and finally, how did we do?
-
-    test "all spaced literate CoffeeScript tests executed", ->
-      eq testsCount, 9
+// and finally, how did we do?
+test("all spaced literate CoffeeScript tests executed", () => eq(testsCount, 9));

@@ -1,156 +1,164 @@
-# Interpolation
-# -------------
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+// Interpolation
+// -------------
 
-# * String Interpolation
-# * Regular Expression Interpolation
+// * String Interpolation
+// * Regular Expression Interpolation
 
-# String Interpolation
+// String Interpolation
 
-# TODO: refactor string interpolation tests
+// TODO: refactor string interpolation tests
 
-eq 'multiline nested "interpolations" work', """multiline #{
-  "nested #{
-    ok true
-    "\"interpolations\""
-  }"
-} work"""
+eq('multiline nested "interpolations" work', `multiline ${
+  `nested ${
+    (ok(true), "\"interpolations\"")
+  }`
+} work`
+);
 
-# Issue #923: Tricky interpolation.
-eq "#{ "{" }", "{"
-eq "#{ '#{}}' } }", '#{}} }'
-eq "#{"'#{ ({a: "b#{1}"}['a']) }'"}", "'b1'"
+// Issue #923: Tricky interpolation.
+eq(`${ "{" }`, "{");
+eq(`${ '#{}}' } }`, '#{}} }');
+eq(`${`'${ ({a: `b${1}`}['a']) }'`}`, "'b1'");
 
-# Issue #1150: String interpolation regression
-eq "#{'"/'}",                '"/'
-eq "#{"/'"}",                "/'"
-eq "#{/'"/}",                '/\'"/'
-eq "#{"'/" + '/"' + /"'/}",  '\'//"/"\'/'
-eq "#{"'/"}#{'/"'}#{/"'/}",  '\'//"/"\'/'
-eq "#{6 / 2}",               '3'
-eq "#{6 / 2}#{6 / 2}",       '33' # parsed as division
-eq "#{6 + /2}#{6/ + 2}",     '6/2}#{6/2' # parsed as a regex
-eq "#{6/2}
-    #{6/2}",                 '3 3' # newline cannot be part of a regex, so it's division
-eq "#{/// "'/'"/" ///}",     '/"\'\\/\'"\\/"/' # heregex, stuffed with spicy characters
-eq "#{/\\'/}",               "/\\\\'/"
+// Issue #1150: String interpolation regression
+eq(`${'"/'}`,                '"/');
+eq(`${"/'"}`,                "/'");
+eq(`${/'"/}`,                '/\'"/');
+eq(`${"'//\"" + /"'/}`,  '\'//"/"\'/');
+eq(`${"'/"}${'/"'}${/"'/}`,  '\'//"/"\'/');
+eq(`${6 / 2}`,               '3');
+eq(`${6 / 2}${6 / 2}`,       '33'); // parsed as division
+eq(`${6 + /2}#{6/ + 2}`,     '6/2}#{6/2'); // parsed as a regex
+eq(`${6/2} \
+${6/2}`,                 '3 3'); // newline cannot be part of a regex, so it's division
+eq(`${new RegExp(`"'/'"/"`)}`,     '/"\'\\/\'"\\/"/'); // heregex, stuffed with spicy characters
+eq(`${/\\'/}`,               "/\\\\'/");
 
-# Issue #2321: Regex/division conflict in interpolation
-eq "#{4/2}/", '2/'
-curWidth = 4
-eq "<i style='left:#{ curWidth/2 }%;'></i>",   "<i style='left:2%;'></i>"
-throws -> CoffeeScript.compile '''
-   "<i style='left:#{ curWidth /2 }%;'></i>"'''
-#                 valid regex--^^^^^^^^^^^ ^--unclosed string
-eq "<i style='left:#{ curWidth/2 }%;'></i>",   "<i style='left:2%;'></i>"
-eq "<i style='left:#{ curWidth/ 2 }%;'></i>",  "<i style='left:2%;'></i>"
-eq "<i style='left:#{ curWidth / 2 }%;'></i>", "<i style='left:2%;'></i>"
+// Issue #2321: Regex/division conflict in interpolation
+eq(`${4/2}/`, '2/');
+const curWidth = 4;
+eq(`<i style='left:${ curWidth/2 }%;'></i>`,   "<i style='left:2%;'></i>");
+throws(() => CoffeeScript.compile(`\
+"<i style='left:#{ curWidth /2 }%;'></i>"`
+));
+//                 valid regex--^^^^^^^^^^^ ^--unclosed string
+eq(`<i style='left:${ curWidth/2 }%;'></i>`,   "<i style='left:2%;'></i>");
+eq(`<i style='left:${ curWidth/ 2 }%;'></i>`,  "<i style='left:2%;'></i>");
+eq(`<i style='left:${ curWidth / 2 }%;'></i>`, "<i style='left:2%;'></i>");
 
-hello = 'Hello'
-world = 'World'
-ok '#{hello} #{world}!' is '#{hello} #{world}!'
-ok "#{hello} #{world}!" is 'Hello World!'
-ok "[#{hello}#{world}]" is '[HelloWorld]'
-ok "#{hello}##{world}" is 'Hello#World'
-ok "Hello #{ 1 + 2 } World" is 'Hello 3 World'
-ok "#{hello} #{ 1 + 2 } #{world}" is "Hello 3 World"
-ok 1 + "#{2}px" is '12px'
-ok isNaN "a#{2}" * 2
-ok "#{2}" is '2'
-ok "#{2}#{2}" is '22'
+const hello = 'Hello';
+const world = 'World';
+ok('#{hello} #{world}!' === '#{hello} #{world}!');
+ok(`${hello} ${world}!` === 'Hello World!');
+ok(`[${hello}${world}]` === '[HelloWorld]');
+ok(`${hello}#${world}` === 'Hello#World');
+ok(`Hello ${ 1 + 2 } World` === 'Hello 3 World');
+ok(`${hello} ${ 1 + 2 } ${world}` === "Hello 3 World");
+ok((1 + `${2}px`) === '12px');
+ok(isNaN(`a${2}` * 2));
+ok(`${2}` === '2');
+ok(`${2}${2}` === '22');
 
-[s, t, r, i, n, g] = ['s', 't', 'r', 'i', 'n', 'g']
-ok "#{s}#{t}#{r}#{i}#{n}#{g}" is 'string'
-ok "\#{s}\#{t}\#{r}\#{i}\#{n}\#{g}" is '#{s}#{t}#{r}#{i}#{n}#{g}'
-ok "\#{string}" is '#{string}'
+const [s, t, r, i, n, g] = ['s', 't', 'r', 'i', 'n', 'g'];
+ok(`${s}${t}${r}${i}${n}${g}` === 'string');
+ok("\#{s}\#{t}\#{r}\#{i}\#{n}\#{g}" === '#{s}#{t}#{r}#{i}#{n}#{g}');
+ok("\#{string}" === '#{string}');
 
-ok "\#{Escaping} first" is '#{Escaping} first'
-ok "Escaping \#{in} middle" is 'Escaping #{in} middle'
-ok "Escaping \#{last}" is 'Escaping #{last}'
+ok("\#{Escaping} first" === '#{Escaping} first');
+ok("Escaping \#{in} middle" === 'Escaping #{in} middle');
+ok("Escaping \#{last}" === 'Escaping #{last}');
 
-ok "##" is '##'
-ok "#{}" is ''
-ok "#{}A#{} #{} #{}B#{}" is 'A  B'
-ok "\\\#{}" is '\\#{}'
+ok("##" === '##');
+ok(`` === '');
+ok(`A  B` === 'A  B');
+ok("\\\#{}" === '\\#{}');
 
-ok "I won ##{20} last night." is 'I won #20 last night.'
-ok "I won ##{'#20'} last night." is 'I won ##20 last night.'
+ok(`I won #${20} last night.` === 'I won #20 last night.');
+ok(`I won #${'#20'} last night.` === 'I won ##20 last night.');
 
-ok "#{hello + world}" is 'HelloWorld'
-ok "#{hello + ' ' + world + '!'}" is 'Hello World!'
+ok(`${hello + world}` === 'HelloWorld');
+ok(`${hello + ' ' + world + '!'}` === 'Hello World!');
 
-list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-ok "values: #{list.join(', ')}, length: #{list.length}." is 'values: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, length: 10.'
-ok "values: #{list.join ' '}" is 'values: 0 1 2 3 4 5 6 7 8 9'
+const list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+ok(`values: ${list.join(', ')}, length: ${list.length}.` === 'values: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, length: 10.');
+ok(`values: ${list.join(' ')}` === 'values: 0 1 2 3 4 5 6 7 8 9');
 
-obj = {
-  name: 'Joe'
-  hi: -> "Hello #{@name}."
-  cya: -> "Hello #{@name}.".replace('Hello','Goodbye')
-}
-ok obj.hi() is "Hello Joe."
-ok obj.cya() is "Goodbye Joe."
+const obj = {
+  name: 'Joe',
+  hi() { return `Hello ${this.name}.`; },
+  cya() { return `Hello ${this.name}.`.replace('Hello','Goodbye'); }
+};
+ok(obj.hi() === "Hello Joe.");
+ok(obj.cya() === "Goodbye Joe.");
 
-ok "With #{"quotes"}" is 'With quotes'
-ok 'With #{"quotes"}' is 'With #{"quotes"}'
+ok(`With ${"quotes"}` === 'With quotes');
+ok('With #{"quotes"}' === 'With #{"quotes"}');
 
-ok "Where is #{obj["name"] + '?'}" is 'Where is Joe?'
+ok(`Where is ${obj["name"] + '?'}` === 'Where is Joe?');
 
-ok "Where is #{"the nested #{obj["name"]}"}?" is 'Where is the nested Joe?'
-ok "Hello #{world ? "#{hello}"}" is 'Hello World'
+ok(`Where is ${`the nested ${obj["name"]}`}?` === 'Where is the nested Joe?');
+ok(`Hello ${world != null ? world : `${hello}`}` === 'Hello World');
 
-ok "Hello #{"#{"#{obj["name"]}" + '!'}"}" is 'Hello Joe!'
+ok(`Hello ${`${`${obj["name"]}` + '!'}`}` === 'Hello Joe!');
 
-a = """
-    Hello #{ "Joe" }
-    """
-ok a is "Hello Joe"
+let a = `\
+Hello ${ "Joe" }\
+`;
+ok(a === "Hello Joe");
 
-a = 1
-b = 2
-c = 3
-ok "#{a}#{b}#{c}" is '123'
+a = 1;
+let b = 2;
+const c = 3;
+ok(`${a}${b}${c}` === '123');
 
-result = null
-stash = (str) -> result = str
-stash "a #{ ('aa').replace /a/g, 'b' } c"
-ok result is 'a bb c'
+let result = null;
+const stash = str => result = str;
+stash(`a ${ ('aa').replace(/a/g, 'b') } c`);
+ok(result === 'a bb c');
 
-foo = "hello"
-ok "#{foo.replace("\"", "")}" is 'hello'
+const foo = "hello";
+ok(`${foo.replace("\"", "")}` === 'hello');
 
-val = 10
-a = """
-    basic heredoc #{val}
-    on two lines
-    """
-b = '''
-    basic heredoc #{val}
-    on two lines
-    '''
-ok a is "basic heredoc 10\non two lines"
-ok b is "basic heredoc \#{val}\non two lines"
+const val = 10;
+a = `\
+basic heredoc ${val}
+on two lines\
+`;
+b = `\
+basic heredoc #{val}
+on two lines\
+`;
+ok(a === "basic heredoc 10\non two lines");
+ok(b === "basic heredoc \#{val}\non two lines");
 
-eq 'multiline nested "interpolations" work', """multiline #{
-  "nested #{(->
-    ok yes
-    "\"interpolations\""
-  )()}"
-} work"""
+eq('multiline nested "interpolations" work', `multiline ${
+  `nested ${(function() {
+    ok(true);
+    return "\"interpolations\"";
+  })()}`
+} work`
+);
 
-eq 'function(){}', "#{->}".replace /\s/g, ''
-ok /^a[\s\S]+b$/.test "a#{=>}b"
-ok /^a[\s\S]+b$/.test "a#{ (x) -> x ** 2 }b"
+eq('function(){}', `${function() {}}`.replace(/\s/g, ''));
+ok(/^a[\s\S]+b$/.test(`a${() => {}}b`));
+ok(/^a[\s\S]+b$/.test(`a${ x => Math.pow(x, 2) }b`));
 
-# Regular Expression Interpolation
+// Regular Expression Interpolation
 
-# TODO: improve heregex interpolation tests
+// TODO: improve heregex interpolation tests
 
-test "heregex interpolation", ->
-  eq /\\#{}\\"/ + '', ///
-   #{
-     "#{ '\\' }" # normal comment
-   }
-   # regex comment
-   \#{}
-   \\ "
-  /// + ''
+test("heregex interpolation", () => eq(/\\#{}\\"/ + '', new RegExp(`\
+${
+   `${ '\\' }` // normal comment
+ }\
+\
+\\#{}\
+\\\\"\
+`) + ''
+));
