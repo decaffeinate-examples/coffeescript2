@@ -1,3 +1,11 @@
+/* eslint-disable
+    no-multi-str,
+    no-template-curly-in-string,
+    no-undef,
+    no-useless-escape,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -6,136 +14,118 @@
 // We usually do not check the actual JS output from the compiler, but since
 // JSX is not natively supported by Node, we do it in this case.
 
-test('self closing', () => eqJS(`\
+test('self closing', () => eqJS('\
 <div />\
-`, `\
+', '\
 <div />;\
-`
-));
+'));
 
-test('self closing formatting', () => eqJS(`\
+test('self closing formatting', () => eqJS('\
 <div/>\
-`, `\
+', '\
 <div />;\
-`
-));
+'));
 
 test('self closing multiline', () => eqJS(`\
 <div
 />\
-`, `\
+`, '\
 <div />;\
-`
-));
+'));
 
-test('regex attribute', () => eqJS(`\
+test('regex attribute', () => eqJS('\
 <div x={/>asds/} />\
-`, `\
+', '\
 <div x={/>asds/} />;\
-`
-));
+'));
 
-test('string attribute', () => eqJS(`\
+test('string attribute', () => eqJS('\
 <div x="a" />\
-`, `\
+', '\
 <div x="a" />;\
-`
-));
+'));
 
-test('simple attribute', () => eqJS(`\
+test('simple attribute', () => eqJS('\
 <div x={42} />\
-`, `\
+', '\
 <div x={42} />;\
-`
-));
+'));
 
-test('assignment attribute', () => eqJS(`\
+test('assignment attribute', () => eqJS('\
 <div x={y = 42} />\
-`, `\
+', `\
 var y;
 
 <div x={y = 42} />;\
-`
-));
+`));
 
-test('object attribute', () => eqJS(`\
+test('object attribute', () => eqJS('\
 <div x={{y: 42}} />\
-`, `\
+', `\
 <div x={{
   y: 42
 }} />;\
-`
-));
+`));
 
-test('attribute without value', () => eqJS(`\
+test('attribute without value', () => eqJS('\
 <div checked x="hello" />\
-`, `\
+', '\
 <div checked x="hello" />;\
-`
-));
+'));
 
-test('paired', () => eqJS(`\
+test('paired', () => eqJS('\
 <div></div>\
-`, `\
+', '\
 <div></div>;\
-`
-));
+'));
 
-test('simple content', () => eqJS(`\
+test('simple content', () => eqJS('\
 <div>Hello world</div>\
-`, `\
+', '\
 <div>Hello world</div>;\
-`
-));
+'));
 
-test('content interpolation', () => eqJS(`\
+test('content interpolation', () => eqJS('\
 <div>Hello {42}</div>\
-`, `\
+', '\
 <div>Hello {42}</div>;\
-`
-));
+'));
 
-test('nested tag', () => eqJS(`\
+test('nested tag', () => eqJS('\
 <div><span /></div>\
-`, `\
+', '\
 <div><span /></div>;\
-`
-));
+'));
 
-test('tag inside interpolation formatting', () => eqJS(`\
+test('tag inside interpolation formatting', () => eqJS('\
 <div>Hello {<span />}</div>\
-`, `\
+', '\
 <div>Hello <span /></div>;\
-`
-));
+'));
 
-test('tag inside interpolation, tags are callable', () => eqJS(`\
+test('tag inside interpolation, tags are callable', () => eqJS('\
 <div>Hello {<span /> x}</div>\
-`, `\
+', '\
 <div>Hello {<span />(x)}</div>;\
-`
-));
+'));
 
-test('tags inside interpolation, tags trigger implicit calls', () => eqJS(`\
+test('tags inside interpolation, tags trigger implicit calls', () => eqJS('\
 <div>Hello {f <span />}</div>\
-`, `\
+', '\
 <div>Hello {f(<span />)}</div>;\
-`
-));
+'));
 
-test('regex in interpolation', () => eqJS(`\
+test('regex in interpolation', () => eqJS('\
 <div x={/>asds/}><div />{/>asdsad</}</div>\
-`, `\
+', '\
 <div x={/>asds/}><div />{/>asdsad</}</div>;\
-`
-));
+'));
 
-test('interpolation in string attribute value', () => eqJS(`\
+test('interpolation in string attribute value', () => eqJS('\
 <div x="Hello #{world}" />\
-`, `\
-<div x={\`Hello \${world}\`} />;\
-`
-));
+', '\
+<div x={`Hello ${world}`} />;\
+'));
 
 // Unlike in `coffee-react-transform`.
 test('bare numbers not allowed', () => throws(() => CoffeeScript.compile('<div x=3 />')));
@@ -146,31 +136,28 @@ test('bare complex expressions not allowed', () => throws(() => CoffeeScript.com
 
 test('unescaped opening tag angle bracket disallowed', () => throws(() => CoffeeScript.compile('<Person><<</Person>')));
 
-test('space around equal sign', () => eqJS(`\
+test('space around equal sign', () => eqJS('\
 <div popular = "yes" />\
-`, `\
+', '\
 <div popular="yes" />;\
-`
-));
+'));
 
 // The following tests were adopted from James Friend’s
 // [https://github.com/jsdf/coffee-react-transform](https://github.com/jsdf/coffee-react-transform).
 
 test('ambiguous tag-like expression', () => throws(() => CoffeeScript.compile('x = a <b > c')));
 
-test('ambiguous tag', () => eqJS(`\
+test('ambiguous tag', () => eqJS('\
 a <b > c </b>\
-`, `\
+', '\
 a(<b> c </b>);\
-`
-));
+'));
 
-test('escaped CoffeeScript attribute', () => eqJS(`\
-<Person name={if test() then 'yes' else 'no'} />\
-`, `\
-<Person name={test() ? 'yes' : 'no'} />;\
-`
-));
+test('escaped CoffeeScript attribute', () => eqJS('\
+<Person name={if test() then \'yes\' else \'no\'} />\
+', '\
+<Person name={test() ? \'yes\' : \'no\'} />;\
+'));
 
 test('escaped CoffeeScript attribute over multiple lines', () => eqJS(`\
 <Person name={
@@ -179,10 +166,9 @@ if test()
 else
   'no'
 } />\
-`, `\
-<Person name={test() ? 'yes' : 'no'} />;\
-`
-));
+`, '\
+<Person name={test() ? \'yes\' : \'no\'} />;\
+'));
 
 test('multiple line escaped CoffeeScript with nested CSX', () => eqJS(`\
 <Person name={
@@ -219,8 +205,7 @@ return results;
 })()}
 
 </Person>;\
-`
-));
+`));
 
 test('nested CSX within an attribute, with object attr value', () => eqJS(`\
 <Company>
@@ -233,20 +218,18 @@ test('nested CSX within an attribute, with object attr value', () => eqJS(`\
     b: '{'
   }} />} />
 </Company>;\
-`
-));
+`));
 
-test('complex nesting', () => eqJS(`\
-<div code={someFunc({a:{b:{}, C:'}{}{'}})} />\
-`, `\
+test('complex nesting', () => eqJS('\
+<div code={someFunc({a:{b:{}, C:\'}{}{\'}})} />\
+', `\
 <div code={someFunc({
   a: {
     b: {},
     C: '}{}{'
   }
 })} />;\
-`
-));
+`));
 
 test('multiline tag with nested CSX within an attribute', () => eqJS(`\
 <Person
@@ -263,8 +246,7 @@ var name;
 <Person name={name = formatName(user.name), <NameComponent name={name.toUppercase()} />}>
 blah blah blah
 </Person>;\
-`
-));
+`));
 
 test('escaped CoffeeScript with nested object literals', () => eqJS(`\
 <Person>
@@ -279,25 +261,22 @@ blah blah blah {{
 'asd': 'asd'
 }}
 </Person>;\
-`
-));
+`));
 
 test('multiline tag attributes with escaped CoffeeScript', () => eqJS(`\
 <Person name={if isActive() then 'active' else 'inactive'}
 someattr='on new line' />\
-`, `\
-<Person name={isActive() ? 'active' : 'inactive'} someattr='on new line' />;\
-`
-));
+`, '\
+<Person name={isActive() ? \'active\' : \'inactive\'} someattr=\'on new line\' />;\
+'));
 
 test('lots of attributes', () => eqJS(`\
 <Person eyes={2} friends={getFriends()} popular = "yes"
 active={ if isActive() then 'active' else 'inactive' } data-attr='works' checked check={me_out}
 />\
-`, `\
-<Person eyes={2} friends={getFriends()} popular="yes" active={isActive() ? 'active' : 'inactive'} data-attr='works' checked check={me_out} />;\
-`
-));
+`, '\
+<Person eyes={2} friends={getFriends()} popular="yes" active={isActive() ? \'active\' : \'inactive\'} data-attr=\'works\' checked check={me_out} />;\
+'));
 
 // TODO: fix partially indented CSX
 // test 'multiline elements', ->
@@ -330,8 +309,7 @@ test('complex regex', () => eqJS(`\
 <Person />;
 
 /\\/\\/<Person \\/>\\>\\//;\
-`
-));
+`));
 
 test('heregex', () => eqJS(`\
 test = /432/gm # this is a regex
@@ -375,8 +353,7 @@ REGEX = /^(\\/(?![s=])[^[\\/ ]*(?:<Tag\\/>(?:\\[sS]|[[^] ]*(?:\\[sS][^] ]*)*<Tag
 // comment comment
 
 <Person />;\
-`
-));
+`));
 
 test('comment within CSX is not treated as comment', () => eqJS(`\
 <Person>
@@ -386,8 +363,7 @@ test('comment within CSX is not treated as comment', () => eqJS(`\
 <Person>
 # i am not a comment
 </Person>;\
-`
-));
+`));
 
 test('comment at start of CSX escape', () => eqJS(`\
 <Person>
@@ -400,8 +376,7 @@ test('comment at start of CSX escape', () => eqJS(`\
 {// i am a comment
 "i am a string"}
 </Person>;\
-`
-));
+`));
 
 test('comment at end of CSX escape', () => eqJS(`\
 <Person>
@@ -415,87 +390,75 @@ test('comment at end of CSX escape', () => eqJS(`\
 // i am a comment
 }
 </Person>;\
-`
-));
+`));
 
 test('CSX comment cannot be used inside interpolation', () => throws(() => CoffeeScript.compile(`\
 <Person>
 {# i am a comment}
 </Person>\
-`
-)));
+`)));
 
-test('comment syntax cannot be used inline', () => throws(() => CoffeeScript.compile(`\
+test('comment syntax cannot be used inline', () => throws(() => CoffeeScript.compile('\
 <Person>{#comment inline}</Person>\
-`
-)));
+')));
 
-test('string within CSX is ignored', () => eqJS(`\
-<Person> "i am not a string" 'nor am i' </Person>\
-`, `\
-<Person> "i am not a string" 'nor am i' </Person>;\
-`
-));
+test('string within CSX is ignored', () => eqJS('\
+<Person> "i am not a string" \'nor am i\' </Person>\
+', '\
+<Person> "i am not a string" \'nor am i\' </Person>;\
+'));
 
-test('special chars within CSX are ignored', () => eqJS(`\
-<Person> a,/';][' a\''@$%^&˚¬∑˜˚∆å∂¬˚*()*&^%$>> '"''"'''\'\'m' i </Person>\
-`, `\
-<Person> a,/';][' a''@$%^&˚¬∑˜˚∆å∂¬˚*()*&^%$>> '"''"'''''m' i </Person>;\
-`
-));
+test('special chars within CSX are ignored', () => eqJS('\
+<Person> a,/\';][\' a\'\'@$%^&˚¬∑˜˚∆å∂¬˚*()*&^%$>> \'"\'\'"\'\'\'\'\'m\' i </Person>\
+', '\
+<Person> a,/\';][\' a\'\'@$%^&˚¬∑˜˚∆å∂¬˚*()*&^%$>> \'"\'\'"\'\'\'\'\'m\' i </Person>;\
+'));
 
-test('html entities (name, decimal, hex) within CSX', () => eqJS(`\
+test('html entities (name, decimal, hex) within CSX', () => eqJS('\
 <Person>  &&&&euro;  &#8364; &#x20AC;;; </Person>\
-`, `\
+', '\
 <Person>  &&&&euro;  &#8364; &#x20AC;;; </Person>;\
-`
-));
+'));
 
-test('tag with {{}}', () => eqJS(`\
+test('tag with {{}}', () => eqJS('\
 <Person name={{value: item, key, item}} />\
-`, `\
+', `\
 <Person name={{
   value: item,
   key,
   item
 }} />;\
-`
-));
+`));
 
-test('tag with namespace', () => eqJS(`\
+test('tag with namespace', () => eqJS('\
 <Something.Tag></Something.Tag>\
-`, `\
+', '\
 <Something.Tag></Something.Tag>;\
-`
-));
+'));
 
-test('tag with lowercase namespace', () => eqJS(`\
+test('tag with lowercase namespace', () => eqJS('\
 <something.tag></something.tag>\
-`, `\
+', '\
 <something.tag></something.tag>;\
-`
-));
+'));
 
-test('self closing tag with namespace', () => eqJS(`\
+test('self closing tag with namespace', () => eqJS('\
 <Something.Tag />\
-`, `\
+', '\
 <Something.Tag />;\
-`
-));
+'));
 
-test('self closing tag with spread attribute', () => eqJS(`\
+test('self closing tag with spread attribute', () => eqJS('\
 <Component a={b} {x...} b="c" />\
-`, `\
+', '\
 <Component a={b} {...x} b="c" />;\
-`
-));
+'));
 
-test('complex spread attribute', () => eqJS(`\
+test('complex spread attribute', () => eqJS('\
 <Component {x...} a={b} {x...} b="c" {$my_xtraCoolVar123...} />\
-`, `\
+', '\
 <Component {...x} a={b} {...x} b="c" {...$my_xtraCoolVar123} />;\
-`
-));
+'));
 
 test('multiline spread attribute', () => eqJS(`\
 <Component {
@@ -504,8 +467,7 @@ x...} a={b} {x...} b="c" {z...}>
 `, `\
 <Component {...x} a={b} {...x} b="c" {...z}>
 </Component>;\
-`
-));
+`));
 
 test('multiline tag with spread attribute', () => eqJS(`\
 <Component
@@ -518,8 +480,7 @@ b="c"
 `, `\
 <Component z="1" {...x} a={b} b="c">
 </Component>;\
-`
-));
+`));
 
 test('multiline tag with spread attribute first', () => eqJS(`\
 <Component
@@ -532,8 +493,7 @@ b="c"
 `, `\
 <Component {...x} z="1" a={b} b="c">
 </Component>;\
-`
-));
+`));
 
 test('complex multiline spread attribute', () => eqJS(`\
 <Component
@@ -550,15 +510,13 @@ test('complex multiline spread attribute', () => eqJS(`\
   }
 })} />
 </Component>;\
-`
-));
+`));
 
-test('self closing spread attribute on single line', () => eqJS(`\
+test('self closing spread attribute on single line', () => eqJS('\
 <Component a="b" c="d" {@props...} />\
-`, `\
+', '\
 <Component a="b" c="d" {...this.props} />;\
-`
-));
+'));
 
 test('self closing spread attribute on new line', () => eqJS(`\
 <Component
@@ -566,20 +524,18 @@ a="b"
 c="d"
 {@props...}
 />\
-`, `\
+`, '\
 <Component a="b" c="d" {...this.props} />;\
-`
-));
+'));
 
 test('self closing spread attribute on same line', () => eqJS(`\
 <Component
 a="b"
 c="d"
 {@props...} />\
-`, `\
+`, '\
 <Component a="b" c="d" {...this.props} />;\
-`
-));
+'));
 
 test('self closing spread attribute on next line', () => eqJS(`\
 <Component
@@ -588,88 +544,79 @@ c="d"
 {@props...}
 
 />\
-`, `\
+`, '\
 <Component a="b" c="d" {...this.props} />;\
-`
-));
+'));
 
-test('empty strings are not converted to true', () => eqJS(`\
+test('empty strings are not converted to true', () => eqJS('\
 <Component val="" />\
-`, `\
+', '\
 <Component val="" />;\
-`
-));
+'));
 
 test('CoffeeScript @ syntax in tag name', () => throws(() => CoffeeScript.compile(`\
 <@Component>
 <Component />
 </@Component>\
-`
-)));
+`)));
 
-test('hyphens in tag names', () => eqJS(`\
+test('hyphens in tag names', () => eqJS('\
 <paper-button className="button">{text}</paper-button>\
-`, `\
+', '\
 <paper-button className="button">{text}</paper-button>;\
-`
-));
+'));
 
-test('closing tags must be closed', () => throws(() => CoffeeScript.compile(`\
+test('closing tags must be closed', () => throws(() => CoffeeScript.compile('\
 <a></a\
-`
-)));
+')));
 
 // Tests for allowing less than operator without spaces when ther is no CSX
 
-test('unspaced less than without CSX: identifier', function() {
+test('unspaced less than without CSX: identifier', () => {
   const a = 3;
   const div = 5;
-  return ok(a<div);
+  return ok(a < div);
 });
 
-test('unspaced less than without CSX: number', function() {
+test('unspaced less than without CSX: number', () => {
   const div = 5;
-  return ok(3<div);
+  return ok(div > 3);
 });
 
-test('unspaced less than without CSX: paren', function() {
+test('unspaced less than without CSX: paren', () => {
   const div = 5;
-  return ok((3)<div);
+  return ok(div > (3));
 });
 
-test('unspaced less than without CSX: index', function() {
+test('unspaced less than without CSX: index', () => {
   const div = 5;
   const a = [3];
-  return ok(a[0]<div);
+  return ok(a[0] < div);
 });
 
-test('tag inside CSX works following: identifier', () => eqJS(`\
+test('tag inside CSX works following: identifier', () => eqJS('\
 <span>a<div /></span>\
-`, `\
+', '\
 <span>a<div /></span>;\
-`
-));
+'));
 
-test('tag inside CSX works following: number', () => eqJS(`\
+test('tag inside CSX works following: number', () => eqJS('\
 <span>3<div /></span>\
-`, `\
+', '\
 <span>3<div /></span>;\
-`
-));
+'));
 
-test('tag inside CSX works following: paren', () => eqJS(`\
+test('tag inside CSX works following: paren', () => eqJS('\
 <span>(3)<div /></span>\
-`, `\
+', '\
 <span>(3)<div /></span>;\
-`
-));
+'));
 
-test('tag inside CSX works following: square bracket', () => eqJS(`\
+test('tag inside CSX works following: square bracket', () => eqJS('\
 <span>]<div /></span>\
-`, `\
+', '\
 <span>]<div /></span>;\
-`
-));
+'));
 
 test('unspaced less than inside CSX works but is not encouraged', () => eqJS(`\
 a = 3
@@ -683,8 +630,7 @@ a = 3;
 div = 5;
 
 html = <span>{a < div}</span>;\
-`
-));
+`));
 
 test('unspaced less than before CSX works but is not encouraged', () => eqJS(`\
 div = 5
@@ -698,8 +644,7 @@ div = 5;
 res = 2 < div;
 
 html = <span />;\
-`
-));
+`));
 
 test('unspaced less than after CSX works but is not encouraged', () => eqJS(`\
 div = 5
@@ -713,8 +658,7 @@ div = 5;
 html = <span />;
 
 res = 2 < div;\
-`
-));
+`));
 
 test('#4686: comments inside interpolations that also contain CSX tags', () => eqJS(`\
 <div>
@@ -728,8 +672,7 @@ test('#4686: comments inside interpolations that also contain CSX tags', () => e
 {  // comment
 <div />}
 </div>;\
-`
-));
+`));
 
 test('#4686: comments inside interpolations that also contain CSX attributes', () => eqJS(`\
 <div>
@@ -743,16 +686,14 @@ test('#4686: comments inside interpolations that also contain CSX attributes', (
 {  // comment
 <div anAttr={"value"} />}
 </div>;\
-`
-));
+`));
 
 // https://reactjs.org/blog/2017/11/28/react-v16.2.0-fragment-support.html
-test('JSX fragments: empty fragment', () => eqJS(`\
+test('JSX fragments: empty fragment', () => eqJS('\
 <></>\
-`, `\
+', '\
 <></>;\
-`
-));
+'));
 
 test('JSX fragments: fragment with text nodes', () => eqJS(`\
 <>
@@ -770,8 +711,7 @@ More text.
 <h2>Another heading</h2>
 Even more text.
 </>;\
-`
-));
+`));
 
 test('JSX fragments: fragment with component nodes', () => eqJS(`\
 Component = (props) =>
@@ -788,5 +728,4 @@ return <Fragment>
   <OtherComponent />
 </Fragment>;
 };\
-`
-));
+`));
