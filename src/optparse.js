@@ -1,3 +1,24 @@
+/* eslint-disable
+    func-names,
+    max-len,
+    no-continue,
+    no-loop-func,
+    no-multi-assign,
+    no-param-reassign,
+    no-plusplus,
+    no-restricted-syntax,
+    no-shadow,
+    no-underscore-dangle,
+    no-unused-vars,
+    no-use-before-define,
+    no-useless-escape,
+    no-var,
+    prefer-const,
+    prefer-destructuring,
+    vars-on-top,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -9,7 +30,7 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 let OptionParser;
-const {repeat} = require('./helpers');
+const { repeat } = require('./helpers');
 
 // A simple **OptionParser** class to parse option flags from the command-line.
 // Use it like so:
@@ -23,7 +44,6 @@ const {repeat} = require('./helpers');
 // The `coffee` command uses an instance of **OptionParser** to parse its
 // command-line arguments in `src/command.coffee`.
 exports.OptionParser = (OptionParser = class OptionParser {
-
   // Initialize with a list of valid options, in the form:
   //
   //     [short-flag, long-flag, description]
@@ -48,12 +68,14 @@ exports.OptionParser = (OptionParser = class OptionParser {
     // Note that executable scripts with a shebang (`#!`) line should use the
     // line `#!/usr/bin/env coffee`, or `#!/absolute/path/to/coffee`, without a
     // `--` argument after, because that will fail on Linux (see #3946).
-    let {rules, positional} = normalizeArguments(args, this.rules.flagDict);
+    let { rules, positional } = normalizeArguments(args, this.rules.flagDict);
     const options = {};
 
     // The `argument` field is added to the rule instance non-destructively by
     // `normalizeArguments`.
-    for (let {hasArgument, argument, isList, name} of Array.from(rules)) {
+    for (const {
+      hasArgument, argument, isList, name,
+    } of Array.from(rules)) {
       if (hasArgument) {
         if (isList) {
           if (options[name] == null) { options[name] = []; }
@@ -80,13 +102,13 @@ exports.OptionParser = (OptionParser = class OptionParser {
   help() {
     const lines = [];
     if (this.banner) { lines.unshift(`${this.banner}\n`); }
-    for (let rule of Array.from(this.rules.ruleList)) {
-      let spaces  = 15 - rule.longFlag.length;
-      spaces  = spaces > 0 ? repeat(' ', spaces) : '';
-      const letPart = rule.shortFlag ? rule.shortFlag + ', ' : '    ';
-      lines.push('  ' + letPart + rule.longFlag + spaces + rule.description);
+    for (const rule of Array.from(this.rules.ruleList)) {
+      let spaces = 15 - rule.longFlag.length;
+      spaces = spaces > 0 ? repeat(' ', spaces) : '';
+      const letPart = rule.shortFlag ? `${rule.shortFlag}, ` : '    ';
+      lines.push(`  ${letPart}${rule.longFlag}${spaces}${rule.description}`);
     }
-    return `\n${ lines.join('\n') }\n`;
+    return `\n${lines.join('\n')}\n`;
   }
 });
 
@@ -94,59 +116,58 @@ exports.OptionParser = (OptionParser = class OptionParser {
 // -------
 
 // Regex matchers for option flags on the command line and their rules.
-const LONG_FLAG  = /^(--\w[\w\-]*)/;
+const LONG_FLAG = /^(--\w[\w\-]*)/;
 const SHORT_FLAG = /^(-\w)$/;
 const MULTI_FLAG = /^-(\w{2,})/;
 // Matches the long flag part of a rule for an option with an argument. Not
 // applied to anything in process.argv.
-const OPTIONAL   = /\[(\w+(\*?))\]/;
+const OPTIONAL = /\[(\w+(\*?))\]/;
 
 // Build and return the list of option rules. If the optional *short-flag* is
 // unspecified, leave it out by padding with `null`.
-var buildRules = function(ruleDeclarations) {
+var buildRules = function (ruleDeclarations) {
   const ruleList = (() => {
     const result = [];
-    for (let tuple of Array.from(ruleDeclarations)) {
+    for (const tuple of Array.from(ruleDeclarations)) {
       if (tuple.length < 3) { tuple.unshift(null); }
       result.push(buildRule(...tuple));
     }
     return result;
   })();
   const flagDict = {};
-  for (let rule of Array.from(ruleList)) {
+  for (const rule of Array.from(ruleList)) {
     // `shortFlag` is null if not provided in the rule.
-    for (let flag of [rule.shortFlag, rule.longFlag]) {
+    for (const flag of [rule.shortFlag, rule.longFlag]) {
       if (flag != null) {
         if (flagDict[flag] != null) {
           throw new Error(`flag ${flag} for switch ${rule.name} \
-was already declared for switch ${flagDict[flag].name}`
-          );
+was already declared for switch ${flagDict[flag].name}`);
         }
         flagDict[flag] = rule;
       }
     }
   }
 
-  return {ruleList, flagDict};
+  return { ruleList, flagDict };
 };
 
 // Build a rule from a `-o` short flag, a `--output [DIR]` long flag, and the
 // description of what the option does.
-var buildRule = function(shortFlag, longFlag, description) {
-  const match     = longFlag.match(OPTIONAL);
+var buildRule = function (shortFlag, longFlag, description) {
+  const match = longFlag.match(OPTIONAL);
   shortFlag = shortFlag != null ? shortFlag.match(SHORT_FLAG)[1] : undefined;
-  longFlag  = longFlag.match(LONG_FLAG)[1];
+  longFlag = longFlag.match(LONG_FLAG)[1];
   return {
-    name:         longFlag.replace(/^--/, ''),
+    name: longFlag.replace(/^--/, ''),
     shortFlag,
     longFlag,
     description,
-    hasArgument:  !!(match && match[1]),
-    isList:       !!(match && match[2])
+    hasArgument: !!(match && match[1]),
+    isList: !!(match && match[2]),
   };
 };
 
-var normalizeArguments = function(args, flagDict) {
+var normalizeArguments = function (args, flagDict) {
   let flag;
   const rules = [];
   let positional = [];
@@ -158,29 +179,30 @@ var normalizeArguments = function(args, flagDict) {
     var rule;
     var arg = args[argIndex];
     if (needsArgOpt != null) {
-      const withArg = Object.assign({}, needsArgOpt.rule, {argument: arg});
+      const withArg = { ...needsArgOpt.rule, argument: arg };
       rules.push(withArg);
       needsArgOpt = null;
       continue;
     }
 
-    const multiFlags = __guard__(arg.match(MULTI_FLAG), x => x[1]
+    const multiFlags = __guard__(arg.match(MULTI_FLAG), (x) => x[1]
       .split('')
-      .map(flagName => `-${flagName}`));
+      .map((flagName) => `-${flagName}`));
     if (multiFlags != null) {
-      const multiOpts = multiFlags.map(function(flag) {
+      const multiOpts = multiFlags.map((flag) => {
         const rule = flagDict[flag];
         if (rule == null) {
           throw new Error(`unrecognized option ${flag} in multi-flag ${arg}`);
         }
-        return {rule, flag};});
+        return { rule, flag };
+      });
       // Only the last flag in a multi-flag may have an argument.
-      const adjustedLength = Math.max(multiOpts.length, 1), innerOpts = multiOpts.slice(0, adjustedLength - 1), lastOpt = multiOpts[adjustedLength - 1];
-      for ({rule, flag} of Array.from(innerOpts)) {
+      const adjustedLength = Math.max(multiOpts.length, 1); const innerOpts = multiOpts.slice(0, adjustedLength - 1); const
+        lastOpt = multiOpts[adjustedLength - 1];
+      for ({ rule, flag } of Array.from(innerOpts)) {
         if (rule.hasArgument) {
           throw new Error(`cannot use option ${flag} in multi-flag ${arg} except \
-as the last option, because it needs an argument`
-          );
+as the last option, because it needs an argument`);
         }
         rules.push(rule);
       }
@@ -189,13 +211,13 @@ as the last option, because it needs an argument`
       } else {
         rules.push(lastOpt.rule);
       }
-    } else if ([LONG_FLAG, SHORT_FLAG].some(pat => arg.match(pat) != null)) {
+    } else if ([LONG_FLAG, SHORT_FLAG].some((pat) => arg.match(pat) != null)) {
       const singleRule = flagDict[arg];
       if (singleRule == null) {
         throw new Error(`unrecognized option ${arg}`);
       }
       if (singleRule.hasArgument) {
-        needsArgOpt = {rule: singleRule, flag: arg};
+        needsArgOpt = { rule: singleRule, flag: arg };
       } else {
         rules.push(singleRule);
       }
@@ -208,10 +230,9 @@ as the last option, because it needs an argument`
 
   if (needsArgOpt != null) {
     throw new Error(`value required for ${needsArgOpt.flag}, but it was the last \
-argument provided`
-    );
+argument provided`);
   }
-  return {rules, positional};
+  return { rules, positional };
 };
 
 function __guard__(value, transform) {

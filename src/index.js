@@ -1,3 +1,20 @@
+/* eslint-disable
+    consistent-return,
+    func-names,
+    global-require,
+    import/no-extraneous-dependencies,
+    max-len,
+    no-cond-assign,
+    no-multi-assign,
+    no-param-reassign,
+    no-restricted-syntax,
+    no-return-assign,
+    no-shadow,
+    no-underscore-dangle,
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -7,16 +24,16 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 // Node.js Implementation
-const CoffeeScript  = require('./coffeescript');
-const fs            = require('fs');
-const vm            = require('vm');
-const path          = require('path');
+const fs = require('fs');
+const vm = require('vm');
+const path = require('path');
+const CoffeeScript = require('./coffeescript');
 
 const {
-  helpers
+  helpers,
 } = CoffeeScript;
 
-CoffeeScript.transpile = function(js, options) {
+CoffeeScript.transpile = function (js, options) {
   let babel;
   try {
     babel = require('babel-core');
@@ -31,7 +48,7 @@ CoffeeScript.transpile = function(js, options) {
 // The `compile` method shared by the CLI, Node and browser APIs.
 const universalCompile = CoffeeScript.compile;
 // The `compile` method particular to the Node API.
-CoffeeScript.compile = function(code, options) {
+CoffeeScript.compile = function (code, options) {
   // Pass a reference to Babel into the compiler, so that the transpile option
   // is available in the Node API. We need to do this so that tools like Webpack
   // can `require('coffeescript')` and build correctly, without trying to
@@ -44,22 +61,20 @@ CoffeeScript.compile = function(code, options) {
 
 // Compile and execute a string of CoffeeScript (on the server), correctly
 // setting `__filename`, `__dirname`, and relative `require()`.
-CoffeeScript.run = function(code, options) {
+CoffeeScript.run = function (code, options) {
   if (options == null) { options = {}; }
   const mainModule = require.main;
 
   // Set the filename.
-  mainModule.filename = (process.argv[1] =
-    options.filename ? fs.realpathSync(options.filename) : '<anonymous>');
+  mainModule.filename = (process.argv[1] = options.filename ? fs.realpathSync(options.filename) : '<anonymous>');
 
   // Clear the module cache.
   if (mainModule.moduleCache) { mainModule.moduleCache = {}; }
 
   // Assign paths for node_modules loading
-  const dir = (options.filename != null) ?
-    path.dirname(fs.realpathSync(options.filename))
-  :
-    fs.realpathSync('.');
+  const dir = (options.filename != null)
+    ? path.dirname(fs.realpathSync(options.filename))
+    : fs.realpathSync('.');
   mainModule.paths = require('module')._nodeModulePaths(dir);
 
   // Save the options for compiling child imports.
@@ -76,19 +91,20 @@ CoffeeScript.run = function(code, options) {
 
 // Compile and evaluate a string of CoffeeScript (in a Node.js-like environment).
 // The CoffeeScript REPL uses this to run the input.
-CoffeeScript.eval = function(code, options) {
-  let k, sandbox, v;
+CoffeeScript.eval = function (code, options) {
+  let k; let sandbox; let
+    v;
   if (options == null) { options = {}; }
   if (!(code = code.trim())) { return; }
   const createContext = vm.Script.createContext != null ? vm.Script.createContext : vm.createContext;
 
-  const isContext = vm.isContext != null ? vm.isContext : ctx => options.sandbox instanceof createContext().constructor;
+  const isContext = vm.isContext != null ? vm.isContext : (ctx) => options.sandbox instanceof createContext().constructor;
 
   if (createContext) {
     if (options.sandbox != null) {
       if (isContext(options.sandbox)) {
         ({
-          sandbox
+          sandbox,
         } = options);
       } else {
         sandbox = createContext();
@@ -99,22 +115,23 @@ CoffeeScript.eval = function(code, options) {
       sandbox = global;
     }
     sandbox.__filename = options.filename || 'eval';
-    sandbox.__dirname  = path.dirname(sandbox.__filename);
+    sandbox.__dirname = path.dirname(sandbox.__filename);
     // define module/require only if they chose not to specify their own
     if ((sandbox === global) && !sandbox.module && !sandbox.require) {
-      let _module, _require;
+      let _module; let
+        _require;
       const Module = require('module');
-      sandbox.module  = (_module  = new Module(options.modulename || 'eval'));
-      sandbox.require = (_require = path => Module._load(path, _module, true));
+      sandbox.module = (_module = new Module(options.modulename || 'eval'));
+      sandbox.require = (_require = (path) => Module._load(path, _module, true));
       _module.filename = sandbox.__filename;
-      for (let r of Array.from(Object.getOwnPropertyNames(require))) {
+      for (const r of Array.from(Object.getOwnPropertyNames(require))) {
         if (!['paths', 'arguments', 'caller'].includes(r)) {
           _require[r] = require[r];
         }
       }
       // use the same hack node currently uses for their own REPL
       _require.paths = (_module.paths = Module._nodeModulePaths(process.cwd()));
-      _require.resolve = request => Module._resolveFilename(request, _module);
+      _require.resolve = (request) => Module._resolveFilename(request, _module);
     }
   }
   const o = {};
@@ -123,37 +140,37 @@ CoffeeScript.eval = function(code, options) {
   const js = CoffeeScript.compile(code, o);
   if (sandbox === global) {
     return vm.runInThisContext(js);
-  } else {
-    return vm.runInContext(js, sandbox);
   }
+  return vm.runInContext(js, sandbox);
 };
 
 CoffeeScript.register = () => require('./register');
 
 // Throw error with deprecation warning when depending upon implicit `require.extensions` registration
 if (require.extensions) {
-  for (let ext of Array.from(CoffeeScript.FILE_EXTENSIONS)) { ((ext => require.extensions[ext] != null ? require.extensions[ext] : (require.extensions[ext] = function() {
-    throw new Error(`\
+  for (const ext of Array.from(CoffeeScript.FILE_EXTENSIONS)) {
+    (((ext) => (require.extensions[ext] != null ? require.extensions[ext] : (require.extensions[ext] = function () {
+      throw new Error(`\
 Use CoffeeScript.register() or require the coffeescript/register module to require ${ext} files.\
-`
-    );
-  })))(ext); }
+`);
+    }))))(ext);
+  }
 }
 
-CoffeeScript._compileFile = function(filename, options) {
+CoffeeScript._compileFile = function (filename, options) {
   let answer;
   if (options == null) { options = {}; }
   const raw = fs.readFileSync(filename, 'utf8');
   // Strip the Unicode byte order mark, if this file begins with one.
   const stripped = raw.charCodeAt(0) === 0xFEFF ? raw.substring(1) : raw;
 
-  options = Object.assign({}, options, {
+  options = {
+    ...options,
     filename,
     literate: helpers.isLiterate(filename),
     sourceFiles: [filename],
-    inlineMap: true
-  }
-  ); // Always generate a source map, so that stack traces line up.
+    inlineMap: true,
+  }; // Always generate a source map, so that stack traces line up.
 
   try {
     answer = CoffeeScript.compile(stripped, options);

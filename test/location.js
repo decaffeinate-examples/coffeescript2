@@ -1,3 +1,15 @@
+/* eslint-disable
+    func-names,
+    max-len,
+    no-multi-str,
+    no-plusplus,
+    no-restricted-syntax,
+    no-shadow,
+    no-undef,
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -24,8 +36,8 @@ x = () ->
     return null\
 `;
 
-test("Verify location of generated tokens", function() {
-  const tokens = CoffeeScript.tokens("a = 79");
+test('Verify location of generated tokens', () => {
+  const tokens = CoffeeScript.tokens('a = 79');
 
   eq(tokens.length, 4);
   const [aToken, equalsToken, numberToken] = tokens;
@@ -46,8 +58,8 @@ test("Verify location of generated tokens", function() {
   return eq(numberToken[2].last_column, 5);
 });
 
-test("Verify location of generated tokens (with indented first line)", function() {
-  const tokens = CoffeeScript.tokens("  a = 83");
+test('Verify location of generated tokens (with indented first line)', () => {
+  const tokens = CoffeeScript.tokens('  a = 83');
 
   eq(tokens.length, 4);
   const [aToken, equalsToken, numberToken] = tokens;
@@ -68,11 +80,11 @@ test("Verify location of generated tokens (with indented first line)", function(
   return eq(numberToken[2].last_column, 7);
 });
 
-const getMatchingTokens = function(str, ...wantedTokens) {
+const getMatchingTokens = function (str, ...wantedTokens) {
   const tokens = CoffeeScript.tokens(str);
   const matchingTokens = [];
   let i = 0;
-  for (let token of Array.from(tokens)) {
+  for (const token of Array.from(tokens)) {
     if (token[1].replace(/^'|'$/g, '"') === wantedTokens[i]) {
       i++;
       matchingTokens.push(token);
@@ -82,7 +94,7 @@ const getMatchingTokens = function(str, ...wantedTokens) {
   return matchingTokens;
 };
 
-test('Verify locations in string interpolation (in "string")', function() {
+test('Verify locations in string interpolation (in "string")', () => {
   const [a, b, c] = getMatchingTokens('"a#{b}c"', '"a"', 'b', '"c"');
 
   eq(a[2].first_line, 0);
@@ -101,7 +113,7 @@ test('Verify locations in string interpolation (in "string")', function() {
   return eq(c[2].last_column, 7);
 });
 
-test('Verify locations in string interpolation (in "string", multiple interpolation)', function() {
+test('Verify locations in string interpolation (in "string", multiple interpolation)', () => {
   const [a, b, c] = getMatchingTokens('"#{a}b#{c}"', 'a', '"b"', 'c');
 
   eq(a[2].first_line, 0);
@@ -120,7 +132,7 @@ test('Verify locations in string interpolation (in "string", multiple interpolat
   return eq(c[2].last_column, 8);
 });
 
-test('Verify locations in string interpolation (in "string", multiple interpolation and line breaks)', function() {
+test('Verify locations in string interpolation (in "string", multiple interpolation and line breaks)', () => {
   const [a, b, c] = getMatchingTokens('"#{a}\nb\n#{c}"', 'a', '" b "', 'c');
 
   eq(a[2].first_line, 0);
@@ -139,7 +151,7 @@ test('Verify locations in string interpolation (in "string", multiple interpolat
   return eq(c[2].last_column, 2);
 });
 
-test('Verify locations in string interpolation (in "string", multiple interpolation and starting with line breaks)', function() {
+test('Verify locations in string interpolation (in "string", multiple interpolation and starting with line breaks)', () => {
   const [a, b, c] = getMatchingTokens('"\n#{a}\nb\n#{c}"', 'a', '" b "', 'c');
 
   eq(a[2].first_line, 1);
@@ -158,7 +170,7 @@ test('Verify locations in string interpolation (in "string", multiple interpolat
   return eq(c[2].last_column, 2);
 });
 
-test('Verify locations in string interpolation (in "string", multiple interpolation and starting with line breaks)', function() {
+test('Verify locations in string interpolation (in "string", multiple interpolation and starting with line breaks)', () => {
   const [a, b, c] = getMatchingTokens('"\n\n#{a}\n\nb\n\n#{c}"', 'a', '" b "', 'c');
 
   eq(a[2].first_line, 2);
@@ -177,7 +189,7 @@ test('Verify locations in string interpolation (in "string", multiple interpolat
   return eq(c[2].last_column, 2);
 });
 
-test('Verify locations in string interpolation (in "string", multiple interpolation and starting with line breaks)', function() {
+test('Verify locations in string interpolation (in "string", multiple interpolation and starting with line breaks)', () => {
   const [a, b, c] = getMatchingTokens('"\n\n\n#{a}\n\n\nb\n\n\n#{c}"', 'a', '" b "', 'c');
 
   eq(a[2].first_line, 3);
@@ -196,7 +208,7 @@ test('Verify locations in string interpolation (in "string", multiple interpolat
   return eq(c[2].last_column, 2);
 });
 
-test('Verify locations in string interpolation (in """string""", line breaks)', function() {
+test('Verify locations in string interpolation (in """string""", line breaks)', () => {
   const [a, b, c] = getMatchingTokens('"""a\n#{b}\nc"""', '"a\\n"', 'b', '"\\nc"');
 
   eq(a[2].first_line, 0);
@@ -215,7 +227,7 @@ test('Verify locations in string interpolation (in """string""", line breaks)', 
   return eq(c[2].last_column, 3);
 });
 
-test('Verify locations in string interpolation (in """string""", starting with a line break)', function() {
+test('Verify locations in string interpolation (in """string""", starting with a line break)', () => {
   const [b, c] = getMatchingTokens('"""\n#{b}\nc"""', 'b', '"\\nc"');
 
   eq(b[2].first_line, 1);
@@ -229,7 +241,7 @@ test('Verify locations in string interpolation (in """string""", starting with a
   return eq(c[2].last_column, 3);
 });
 
-test('Verify locations in string interpolation (in """string""", starting with line breaks)', function() {
+test('Verify locations in string interpolation (in """string""", starting with line breaks)', () => {
   const [a, b, c] = getMatchingTokens('"""\n\n#{b}\nc"""', '"\\n"', 'b', '"\\nc"');
 
   eq(a[2].first_line, 0);
@@ -248,7 +260,7 @@ test('Verify locations in string interpolation (in """string""", starting with l
   return eq(c[2].last_column, 3);
 });
 
-test('Verify locations in string interpolation (in """string""", multiple interpolation)', function() {
+test('Verify locations in string interpolation (in """string""", multiple interpolation)', () => {
   const [a, b, c] = getMatchingTokens('"""#{a}\nb\n#{c}"""', 'a', '"\\nb\\n"', 'c');
 
   eq(a[2].first_line, 0);
@@ -267,7 +279,7 @@ test('Verify locations in string interpolation (in """string""", multiple interp
   return eq(c[2].last_column, 2);
 });
 
-test('Verify locations in string interpolation (in """string""", multiple interpolation, and starting with line breaks)', function() {
+test('Verify locations in string interpolation (in """string""", multiple interpolation, and starting with line breaks)', () => {
   const [a, b, c] = getMatchingTokens('"""\n\n#{a}\n\nb\n\n#{c}"""', 'a', '"\\n\\nb\\n\\n"', 'c');
 
   eq(a[2].first_line, 2);
@@ -286,7 +298,7 @@ test('Verify locations in string interpolation (in """string""", multiple interp
   return eq(c[2].last_column, 2);
 });
 
-test('Verify locations in string interpolation (in """string""", multiple interpolation, and starting with line breaks)', function() {
+test('Verify locations in string interpolation (in """string""", multiple interpolation, and starting with line breaks)', () => {
   const [a, b, c] = getMatchingTokens('"""\n\n\n#{a}\n\n\nb\n\n\n#{c}"""', 'a', '"\\n\\n\\nb\\n\\n\\n"', 'c');
 
   eq(a[2].first_line, 3);
@@ -305,7 +317,7 @@ test('Verify locations in string interpolation (in """string""", multiple interp
   return eq(c[2].last_column, 2);
 });
 
-test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation)', function() {
+test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation)', () => {
   const [a, b, c] = getMatchingTokens('///#{a}b#{c}///', 'a', '"b"', 'c');
 
   eq(a[2].first_line, 0);
@@ -324,7 +336,7 @@ test('Verify locations in heregex interpolation (in ///regex///, multiple interp
   return eq(c[2].last_column, 10);
 });
 
-test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation)', function() {
+test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation)', () => {
   const [a, b, c] = getMatchingTokens('///a#{b}c///', '"a"', 'b', '"c"');
 
   eq(a[2].first_line, 0);
@@ -343,7 +355,7 @@ test('Verify locations in heregex interpolation (in ///regex///, multiple interp
   return eq(c[2].last_column, 11);
 });
 
-test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation and line breaks)', function() {
+test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation and line breaks)', () => {
   const [a, b, c] = getMatchingTokens('///#{a}\nb\n#{c}///', 'a', '"b"', 'c');
 
   eq(a[2].first_line, 0);
@@ -362,7 +374,7 @@ test('Verify locations in heregex interpolation (in ///regex///, multiple interp
   return eq(c[2].last_column, 2);
 });
 
-test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation and line breaks)', function() {
+test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation and line breaks)', () => {
   const [a, b, c] = getMatchingTokens('///#{a}\n\n\nb\n\n\n#{c}///', 'a', '"b"', 'c');
 
   eq(a[2].first_line, 0);
@@ -381,7 +393,7 @@ test('Verify locations in heregex interpolation (in ///regex///, multiple interp
   return eq(c[2].last_column, 2);
 });
 
-test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation and line breaks)', function() {
+test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation and line breaks)', () => {
   const [a, b, c] = getMatchingTokens('///a\n\n\n#{b}\n\n\nc///', '"a"', 'b', '"c"');
 
   eq(a[2].first_line, 0);
@@ -400,7 +412,7 @@ test('Verify locations in heregex interpolation (in ///regex///, multiple interp
   return eq(c[2].last_column, 3);
 });
 
-test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation and line breaks and starting with linebreak)', function() {
+test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation and line breaks and starting with linebreak)', () => {
   const [a, b, c] = getMatchingTokens('///\n#{a}\nb\n#{c}///', 'a', '"b"', 'c');
 
   eq(a[2].first_line, 1);
@@ -419,7 +431,7 @@ test('Verify locations in heregex interpolation (in ///regex///, multiple interp
   return eq(c[2].last_column, 2);
 });
 
-test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation and line breaks and starting with linebreak)', function() {
+test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation and line breaks and starting with linebreak)', () => {
   const [a, b, c] = getMatchingTokens('///\n\n\n#{a}\n\n\nb\n\n\n#{c}///', 'a', '"b"', 'c');
 
   eq(a[2].first_line, 3);
@@ -438,7 +450,7 @@ test('Verify locations in heregex interpolation (in ///regex///, multiple interp
   return eq(c[2].last_column, 2);
 });
 
-test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation and line breaks and starting with linebreak)', function() {
+test('Verify locations in heregex interpolation (in ///regex///, multiple interpolation and line breaks and starting with linebreak)', () => {
   const [a, b, c] = getMatchingTokens('///\n\n\na\n\n\n#{b}\n\n\nc///', '"a"', 'b', '"c"');
 
   eq(a[2].first_line, 0);
@@ -457,22 +469,22 @@ test('Verify locations in heregex interpolation (in ///regex///, multiple interp
   return eq(c[2].last_column, 3);
 });
 
-test("#3822: Simple string/regex start/end should include delimiters", function() {
+test('#3822: Simple string/regex start/end should include delimiters', () => {
   const [stringToken] = CoffeeScript.tokens("'string'");
   eq(stringToken[2].first_line, 0);
   eq(stringToken[2].first_column, 0);
   eq(stringToken[2].last_line, 0);
   eq(stringToken[2].last_column, 7);
 
-  const [regexToken] = CoffeeScript.tokens("/regex/");
+  const [regexToken] = CoffeeScript.tokens('/regex/');
   eq(regexToken[2].first_line, 0);
   eq(regexToken[2].first_column, 0);
   eq(regexToken[2].last_line, 0);
   return eq(regexToken[2].last_column, 6);
 });
 
-test(`#3621: Multiline regex and manual \`Regex\` call with interpolation should \
-result in the same tokens`, function() {
+test('#3621: Multiline regex and manual `Regex` call with interpolation should \
+result in the same tokens', () => {
   const tokensA = CoffeeScript.tokens('(RegExp(".*#{a}[0-9]"))');
   const tokensB = CoffeeScript.tokens('///.*#{a}[0-9]///');
   eq(tokensA.length, tokensB.length);
@@ -492,7 +504,7 @@ result in the same tokens`, function() {
   })();
 });
 
-test("Verify tokens have locations that are in order", function() {
+test('Verify tokens have locations that are in order', () => {
   const source = `\
 a {
   b: ->
@@ -506,7 +518,7 @@ g\
   let lastToken = null;
   return (() => {
     const result = [];
-    for (let token of Array.from(tokens)) {
+    for (const token of Array.from(tokens)) {
       if (lastToken) {
         ok(token[2].first_line >= lastToken[2].last_line);
         if (token[2].first_line === lastToken[2].last_line) {
@@ -519,7 +531,7 @@ g\
   })();
 });
 
-test("Verify OUTDENT tokens are located at the end of the previous token", function() {
+test('Verify OUTDENT tokens are located at the end of the previous token', () => {
   const source = `\
 SomeArr = [ ->
   if something
@@ -528,11 +540,12 @@ SomeArr = [ ->
 ]\
 `;
   const tokens = CoffeeScript.tokens(source);
-  const number = tokens[tokens.length - 7], curly = tokens[tokens.length - 6], outdent1 = tokens[tokens.length - 5], outdent2 = tokens[tokens.length - 4], outdent3 = tokens[tokens.length - 3], bracket = tokens[tokens.length - 2], terminator = tokens[tokens.length - 1];
+  const number = tokens[tokens.length - 7]; const curly = tokens[tokens.length - 6]; const outdent1 = tokens[tokens.length - 5]; const outdent2 = tokens[tokens.length - 4]; const outdent3 = tokens[tokens.length - 3]; const bracket = tokens[tokens.length - 2]; const
+    terminator = tokens[tokens.length - 1];
   eq(number[0], 'NUMBER');
   return (() => {
     const result = [];
-    for (let outdent of [outdent1, outdent2, outdent3]) {
+    for (const outdent of [outdent1, outdent2, outdent3]) {
       eq(outdent[0], 'OUTDENT');
       eq(outdent[2].first_line, number[2].last_line);
       eq(outdent[2].first_column, number[2].last_column);
@@ -543,7 +556,7 @@ SomeArr = [ ->
   })();
 });
 
-test("Verify OUTDENT and CALL_END tokens are located at the end of the previous token", function() {
+test('Verify OUTDENT and CALL_END tokens are located at the end of the previous token', () => {
   let token;
   const source = `\
 a = b {
@@ -556,9 +569,10 @@ a = b {
 }\
 `;
   const tokens = CoffeeScript.tokens(source);
-  const closeCurly1 = tokens[tokens.length - 13], callEnd1 = tokens[tokens.length - 12], outdent1 = tokens[tokens.length - 11], outdent2 = tokens[tokens.length - 10], callEnd2 = tokens[tokens.length - 9], outdent3 = tokens[tokens.length - 8], outdent4 = tokens[tokens.length - 7], callEnd3 = tokens[tokens.length - 6], outdent5 = tokens[tokens.length - 5], outdent6 = tokens[tokens.length - 4], closeCurly2 = tokens[tokens.length - 3], callEnd4 = tokens[tokens.length - 2], terminator = tokens[tokens.length - 1];
+  const closeCurly1 = tokens[tokens.length - 13]; const callEnd1 = tokens[tokens.length - 12]; const outdent1 = tokens[tokens.length - 11]; const outdent2 = tokens[tokens.length - 10]; const callEnd2 = tokens[tokens.length - 9]; const outdent3 = tokens[tokens.length - 8]; const outdent4 = tokens[tokens.length - 7]; const callEnd3 = tokens[tokens.length - 6]; const outdent5 = tokens[tokens.length - 5]; const outdent6 = tokens[tokens.length - 4]; const closeCurly2 = tokens[tokens.length - 3]; const callEnd4 = tokens[tokens.length - 2]; const
+    terminator = tokens[tokens.length - 1];
   eq(closeCurly1[0], '}');
-  const assertAtCloseCurly = function(token) {
+  const assertAtCloseCurly = function (token) {
     eq(token[2].first_line, closeCurly1[2].last_line);
     eq(token[2].first_column, closeCurly1[2].last_column);
     eq(token[2].last_line, closeCurly1[2].last_line);
@@ -579,7 +593,7 @@ a = b {
   })();
 });
 
-test("Verify generated } tokens are located at the end of the previous token", function() {
+test('Verify generated } tokens are located at the end of the previous token', () => {
   const source = `\
 a(b, ->
   c: () ->
@@ -588,9 +602,10 @@ a(b, ->
 )\
 `;
   const tokens = CoffeeScript.tokens(source);
-  const identifier = tokens[tokens.length - 7], outdent1 = tokens[tokens.length - 6], outdent2 = tokens[tokens.length - 5], closeCurly = tokens[tokens.length - 4], outdent3 = tokens[tokens.length - 3], callEnd = tokens[tokens.length - 2], terminator = tokens[tokens.length - 1];
+  const identifier = tokens[tokens.length - 7]; const outdent1 = tokens[tokens.length - 6]; const outdent2 = tokens[tokens.length - 5]; const closeCurly = tokens[tokens.length - 4]; const outdent3 = tokens[tokens.length - 3]; const callEnd = tokens[tokens.length - 2]; const
+    terminator = tokens[tokens.length - 1];
   eq(identifier[0], 'IDENTIFIER');
-  const assertAtIdentifier = function(token) {
+  const assertAtIdentifier = function (token) {
     eq(token[2].first_line, identifier[2].last_line);
     eq(token[2].first_column, identifier[2].last_column);
     eq(token[2].last_line, identifier[2].last_line);
@@ -599,17 +614,17 @@ a(b, ->
 
   return (() => {
     const result = [];
-    for (let token of [outdent1, outdent2, closeCurly, outdent3]) {
+    for (const token of [outdent1, outdent2, closeCurly, outdent3]) {
       result.push(assertAtIdentifier(token));
     }
     return result;
   })();
 });
 
-test("Verify real CALL_END tokens have the right position", function() {
-  const source = `\
+test('Verify real CALL_END tokens have the right position', () => {
+  const source = '\
 a()\
-`;
+';
   const tokens = CoffeeScript.tokens(source);
   const [identifier, callStart, callEnd, terminator] = tokens;
   const startIndex = identifier[2].first_column;
@@ -620,7 +635,7 @@ a()\
   return eq(callEnd[2].last_column, startIndex + 2);
 });
 
-test("Verify normal heredocs have the right position", function() {
+test('Verify normal heredocs have the right position', () => {
   const source = `\
 """
 a"""\
@@ -632,7 +647,7 @@ a"""\
   return eq(stringToken[2].last_column, 3);
 });
 
-test("Verify heredocs ending with a newline have the right position", function() {
+test('Verify heredocs ending with a newline have the right position', () => {
   const source = `\
 """
 a
@@ -645,7 +660,7 @@ a
   return eq(stringToken[2].last_column, 2);
 });
 
-test("Verify indented heredocs have the right position", function() {
+test('Verify indented heredocs have the right position', () => {
   const source = `\
 ->
   """
@@ -659,17 +674,18 @@ test("Verify indented heredocs have the right position", function() {
   return eq(stringToken[2].last_column, 4);
 });
 
-test("Verify heregexes with interpolations have the right ending position", function() {
+test('Verify heregexes with interpolations have the right ending position', () => {
   let token;
-  const source = `\
+  const source = '\
 [a ///#{b}///g]\
-`;
-  const array = CoffeeScript.tokens(source), stringEnd = array[array.length - 8], comma = array[array.length - 7], flagsString = array[array.length - 6], regexCallEnd = array[array.length - 5], regexEnd = array[array.length - 4], fnCallEnd = array[array.length - 3], arrayEnd = array[array.length - 2], terminator = array[array.length - 1];
+';
+  const array = CoffeeScript.tokens(source); const stringEnd = array[array.length - 8]; const comma = array[array.length - 7]; const flagsString = array[array.length - 6]; const regexCallEnd = array[array.length - 5]; const regexEnd = array[array.length - 4]; const fnCallEnd = array[array.length - 3]; const arrayEnd = array[array.length - 2]; const
+    terminator = array[array.length - 1];
 
   eq(comma[0], ',');
   eq(arrayEnd[0], ']');
 
-  const assertColumn = function(token, column) {
+  const assertColumn = function (token, column) {
     eq(token[2].first_line, 0);
     eq(token[2].first_column, column);
     eq(token[2].last_line, 0);
@@ -686,12 +702,12 @@ test("Verify heregexes with interpolations have the right ending position", func
   return assertColumn(arrayEnd, arrayEndColumn);
 });
 
-test("Verify all tokens get a location", () => doesNotThrow(function() {
+test('Verify all tokens get a location', () => doesNotThrow(() => {
   const tokens = CoffeeScript.tokens(testScript);
-  return Array.from(tokens).map((token) =>
-      ok(!!token[2]));}));
+  return Array.from(tokens).map((token) => ok(!!token[2]));
+}));
 
-test('Values with properties end up with a location that includes the properties', function() {
+test('Values with properties end up with a location that includes the properties', () => {
   const source = `\
 a.b
 a.b.c
@@ -703,7 +719,7 @@ a[b.c()].d\
     singleProperty,
     twoProperties,
     indexed,
-    complexIndex
+    complexIndex,
   ] = block.expressions;
 
   eq(singleProperty.locationData.first_line, 0);

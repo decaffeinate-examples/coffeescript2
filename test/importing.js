@@ -1,3 +1,14 @@
+/* eslint-disable
+    consistent-return,
+    global-require,
+    import/no-dynamic-require,
+    no-return-assign,
+    no-undef,
+    no-underscore-dangle,
+    no-use-before-define,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -10,8 +21,7 @@
 // ---------
 
 if ((typeof window === 'undefined' || window === null) && (typeof testingBrowser === 'undefined' || testingBrowser === null)) {
-  test("coffeescript modules can be imported and executed", function() {
-
+  test('coffeescript modules can be imported and executed', () => {
     const magicKey = __filename;
     const magicValue = 0xFFFF;
 
@@ -27,32 +37,28 @@ if ((typeof window === 'undefined' || window === null) && (typeof testingBrowser
       }
       return delete global[magicKey];
     }
-});
+  });
 
-  test("javascript modules can be imported", function() {
+  test('javascript modules can be imported', () => {
     const magicVal = 1;
-    return Array.from('import.js import2 .import2 import.extension.js import.unknownextension .coffee .coffee.md'.split(' ')).map((module) =>
-      ok(__guardMethod__(require(`./importing/${module}`), 'value', o => o.value()) === magicVal, module));
+    return Array.from('import.js import2 .import2 import.extension.js import.unknownextension .coffee .coffee.md'.split(' ')).map((module) => ok(__guardMethod__(require(`./importing/${module}`), 'value', (o) => o.value()) === magicVal, module));
   });
 
-  test("coffeescript modules can be imported", function() {
+  test('coffeescript modules can be imported', () => {
     const magicVal = 2;
-    return Array.from('.import.coffee import.coffee import.extension.coffee'.split(' ')).map((module) =>
-      ok(__guardMethod__(require(`./importing/${module}`), 'value', o => o.value()) === magicVal, module));
+    return Array.from('.import.coffee import.coffee import.extension.coffee'.split(' ')).map((module) => ok(__guardMethod__(require(`./importing/${module}`), 'value', (o) => o.value()) === magicVal, module));
   });
 
-  test("literate coffeescript modules can be imported", function() {
+  test('literate coffeescript modules can be imported', () => {
     const magicVal = 3;
     // Leading space intentional to check for index.coffee.md
-    return Array.from(' .import.coffee.md import.coffee.md import.litcoffee import.extension.coffee.md'.split(' ')).map((module) =>
-      ok(__guardMethod__(require(`./importing/${module}`), 'value', o => o.value()) === magicVal, module));
+    return Array.from(' .import.coffee.md import.coffee.md import.litcoffee import.extension.coffee.md'.split(' ')).map((module) => ok(__guardMethod__(require(`./importing/${module}`), 'value', (o) => o.value()) === magicVal, module));
   });
 }
 
 function __guardMethod__(obj, methodName, transform) {
   if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
     return transform(obj, methodName);
-  } else {
-    return undefined;
   }
+  return undefined;
 }

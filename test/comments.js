@@ -1,3 +1,22 @@
+/* eslint-disable
+    class-methods-use-this,
+    func-names,
+    implicit-arrow-linebreak,
+    indent,
+    lines-around-directive,
+    max-classes-per-file,
+    no-constant-condition,
+    no-multi-str,
+    no-nested-ternary,
+    no-return-assign,
+    no-template-curly-in-string,
+    no-undef,
+    no-unused-expressions,
+    no-unused-vars,
+    operator-linebreak,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -12,72 +31,73 @@
 
 // Note: awkward spacing seen in some tests is likely intentional.
 
-test("comments in objects", function() {
+test('comments in objects', () => {
   const obj1 = {
   // comment
     // comment
-      // comment
+    // comment
     one: 1,
-  // comment
-    two: 2
-      // comment
+    // comment
+    two: 2,
+    // comment
   };
 
-  ok(Object.prototype.hasOwnProperty.call(obj1,'one'));
+  ok(Object.prototype.hasOwnProperty.call(obj1, 'one'));
   eq(obj1.one, 1);
-  ok(Object.prototype.hasOwnProperty.call(obj1,'two'));
+  ok(Object.prototype.hasOwnProperty.call(obj1, 'two'));
   return eq(obj1.two, 2);
 });
 
-test("comments in YAML-style objects", function() {
+test('comments in YAML-style objects', () => {
   const obj2 = {
   // comment
     // comment
-      // comment
+    // comment
     three: 3,
-  // comment
-    four: 4
+    // comment
+    four: 4,
   };
-      // comment
+  // comment
 
-  ok(Object.prototype.hasOwnProperty.call(obj2,'three'));
+  ok(Object.prototype.hasOwnProperty.call(obj2, 'three'));
   eq(obj2.three, 3);
-  ok(Object.prototype.hasOwnProperty.call(obj2,'four'));
+  ok(Object.prototype.hasOwnProperty.call(obj2, 'four'));
   return eq(obj2.four, 4);
 });
 
-test("comments following operators that continue lines", function() {
-  const sum =
-    1 +
-    1 + // comment
-    1;
+test('comments following operators that continue lines', () => {
+  const sum = 1
+    + 1 // comment
+    + 1;
   return eq(3, sum);
 });
 
-test("comments in functions", function() {
-  const fn = function() {
+test('comments in functions', () => {
+  const fn = function () {
   // comment
+
     false;
-    false;   // comment
+    false; // comment
     false;
+
     // comment
 
-  // comment before return
+    // comment before return
     return true;
   };
 
   ok(fn());
 
-  const fn2 = () => //comment
-  fn();
+  const fn2 = () => // comment
+    fn();
     // comment after return
 
   return ok(fn2());
 });
 
-test("trailing comment before an outdent", function() {
+test('trailing comment before an outdent', () => {
   const nonce = {};
-  const fn3 = function() {
+  const fn3 = function () {
     if (true) {
       undefined; // comment
     }
@@ -87,43 +107,44 @@ test("trailing comment before an outdent", function() {
   return eq(nonce, fn3());
 });
 
-test("comments in a switch", function() {
+test('comments in a switch', () => {
   const nonce = {};
-  const result = (() => { switch (nonce) { //comment
+  const result = (() => {
+    switch (nonce) { // comment
     // comment
-    case false: return undefined;
-    // comment
-    case null: //comment
-      return undefined;
-    default: return nonce; // comment
-  } })();
+      case false: return undefined;
+        // comment
+      case null: // comment
+        return undefined;
+      default: return nonce; // comment
+    }
+  })();
 
   return eq(nonce, result);
 });
 
-test("comment with conditional statements", function() {
+test('comment with conditional statements', () => {
   const nonce = {};
-  const result = false ? // comment
-    undefined
-  //comment
-  : // comment
+  const result = false // comment
+    ? undefined
+  // comment
+    : // comment
     nonce;
     // comment
   return eq(nonce, result);
 });
 
-test("spaced comments with conditional statements", function() {
+test('spaced comments with conditional statements', () => {
   const nonce = {};
-  const result = false ?
-    undefined
+  const result = false
+    ? undefined
 
   // comment
-  : false ?
-    undefined
+    : false
+      ? undefined
 
-  // comment
-  :
-    nonce;
+    // comment
+      : nonce;
 
   return eq(nonce, result);
 });
@@ -136,7 +157,7 @@ test("spaced comments with conditional statements", function() {
   Kind of like a heredoc.
 */
 
-test("block comments in objects", function() {
+test('block comments in objects', () => {
   const a = {};
   const b = {};
   const obj = {
@@ -144,14 +165,14 @@ test("block comments in objects", function() {
     /*
     block comment in object
     */
-    b
+    b,
   };
 
   eq(a, obj.a);
   return eq(b, obj.b);
 });
 
-test("block comments in YAML-style", function() {
+test('block comments in YAML-style', () => {
   const a = {};
   const b = {};
   const obj = {
@@ -159,7 +180,7 @@ test("block comments in YAML-style", function() {
     /*
     block comment in YAML-style
     */
-    b
+    b,
   };
 
   eq(a, obj.a);
@@ -167,11 +188,11 @@ test("block comments in YAML-style", function() {
 });
 
 
-test("block comments in functions", function() {
+test('block comments in functions', () => {
   const nonce = {};
 
   const fn1 = () => true;
-    /*
+  /*
     false
     */
 
@@ -180,7 +201,7 @@ test("block comments in functions", function() {
   const fn2 = () => /*
       block comment in function 1
       */
-  nonce;
+    nonce;
 
   eq(nonce, fn2());
 
@@ -191,14 +212,14 @@ test("block comments in functions", function() {
 
   eq(nonce, fn3());
 
-  const fn4 = function() {
+  const fn4 = function () {
     let one;
-    return one = function() {
+    return one = function () {
       /*
         block comment in function 3
       */
       let two;
-      return two = function() {
+      return two = function () {
         let three;
         return three = () => nonce;
       };
@@ -208,7 +229,7 @@ test("block comments in functions", function() {
   return eq(nonce, fn4()()()());
 });
 
-test("block comments inside class bodies", function() {
+test('block comments inside class bodies', () => {
   class A {
     a() {}
 
@@ -225,29 +246,32 @@ test("block comments inside class bodies", function() {
     Comment in class body 2
     */
     a() {}
+
     b() {}
   }
 
   return ok(B.prototype.a instanceof Function);
 });
 
-test("#2037: herecomments shouldn't imply line terminators", () => ((function() { /* */ true; return fail; }))());
+test("#2037: herecomments shouldn't imply line terminators", () => ((function () { /* */
+true;
 
-test("#2916: block comment before implicit call with implicit object", function() {
-  const fn = obj => ok(obj.a);
+  return fail;
+})()));
+
+test('#2916: block comment before implicit call with implicit object', () => {
+  const fn = (obj) => ok(obj.a);
   /* */
-  return fn({
-    a: true});
+  return fn({ a: true });
 });
 
-test("#3132: Format single-line block comment nicely", () => eqJS(`\
-### Single-line block comment without additional space here => ###`,
-`\
+test('#3132: Format single-line block comment nicely', () => eqJS('\
+### Single-line block comment without additional space here => ###',
+'\
 /* Single-line block comment without additional space here => */\
-`
-));
+'));
 
-test("#3132: Format multiline block comment nicely", () => eqJS(`\
+test('#3132: Format multiline block comment nicely', () => eqJS(`\
 ###
 # Multiline
 # block
@@ -259,10 +283,9 @@ test("#3132: Format multiline block comment nicely", () => eqJS(`\
 * block
 * comment
 */\
-`
-));
+`));
 
-test("#3132: Format simple block comment nicely", () => eqJS(`\
+test('#3132: Format simple block comment nicely', () => eqJS(`\
 ###
 No
 Preceding hash
@@ -272,11 +295,10 @@ Preceding hash
 No
 Preceding hash
 */\
-`
-));
+`));
 
 
-test("#3132: Format indented block-comment nicely", () => eqJS(`\
+test('#3132: Format indented block-comment nicely', () => eqJS(`\
 fn = ->
 ###
 # Indented
@@ -293,12 +315,11 @@ Multiline
  */
 return 1;
 };\
-`
-));
+`));
 
 // Although adequately working, block comment-placement is not yet perfect.
 // (Considering a case where multiple variables have been declared …)
-test("#3132: Format jsdoc-style block-comment nicely", () => eqJS(`\
+test('#3132: Format jsdoc-style block-comment nicely', () => eqJS(`\
 ###*
 # Multiline for jsdoc-"@doctags"
 #
@@ -316,12 +337,11 @@ var fn;
 
 fn = function() {
 return 1;
-};`
-));
+};`));
 
 // Although adequately working, block comment-placement is not yet perfect.
 // (Considering a case where multiple variables have been declared …)
-test("#3132: Format hand-made (raw) jsdoc-style block-comment nicely", () => eqJS(`\
+test('#3132: Format hand-made (raw) jsdoc-style block-comment nicely', () => eqJS(`\
 ###*
 * Multiline for jsdoc-"@doctags"
 *
@@ -339,12 +359,11 @@ var fn;
 
 fn = function() {
 return 1;
-};`
-));
+};`));
 
 // Although adequately working, block comment-placement is not yet perfect.
 // (Considering a case where multiple variables have been declared …)
-test("#3132: Place block-comments nicely", () => eqJS(`\
+test('#3132: Place block-comments nicely', () => eqJS(`\
 ###*
 # A dummy class definition
 #
@@ -391,10 +410,9 @@ DummyClass.instance = new DummyClass();
 
 return DummyClass;
 
-}).call(this);`
-));
+}).call(this);`));
 
-test("#3638: Demand a whitespace after # symbol", () => eqJS(`\
+test('#3638: Demand a whitespace after # symbol', () => eqJS(`\
 ###
 #No
 #whitespace
@@ -403,36 +421,34 @@ test("#3638: Demand a whitespace after # symbol", () => eqJS(`\
 /*
 #No
 #whitespace
-*/`
-));
+*/`));
 
 
-test("#3761: Multiline comment at end of an object", function() {
-  const anObject =
-    {x: 3};
-    /*
+test('#3761: Multiline comment at end of an object', () => {
+  const anObject = { x: 3 };
+  /*
      *Comment
      */
 
   return ok(anObject.x === 3);
 });
 
-test("#4375: UTF-8 characters in comments", () => // 智に働けば角が立つ、情に掉させば流される。
-ok(true));
+test('#4375: UTF-8 characters in comments', () => // 智に働けば角が立つ、情に掉させば流される。
+  ok(true));
 
-test("#4290: Block comments in array literals", function() {
+test('#4290: Block comments in array literals', () => {
   const arr = [
     /*  */
     3,
     /*
       What is the meaning of life, the universe, and everything?
     */
-    42
+    42,
   ];
   return arrayEq(arr, [3, 42]);
 });
 
-test("Block comments in array literals are properly indented 1", () => eqJS(`\
+test('Block comments in array literals are properly indented 1', () => eqJS(`\
 arr = [
 ### ! ###
 3
@@ -440,10 +456,9 @@ arr = [
 ]`, `\
 var arr;
 
-arr = [/* ! */ 3, 42];`
-));
+arr = [/* ! */ 3, 42];`));
 
-test("Block comments in array literals are properly indented 2", () => eqJS(`\
+test('Block comments in array literals are properly indented 2', () => eqJS(`\
 arr = [
 ###  ###
 3
@@ -461,10 +476,9 @@ arr = [
   What is the meaning of life, the universe, and everything?
 */
 42
-];`
-));
+];`));
 
-test("Block comments in array literals are properly indented 3", () => eqJS(`\
+test('Block comments in array literals are properly indented 3', () => eqJS(`\
 arr = [
 ###
   How many stooges are there?
@@ -482,10 +496,9 @@ arr = [
 3,
 /* Who’s on first? */
 'Who'
-];`
-));
+];`));
 
-test("Block comments in array literals are properly indented 4", () => eqJS(`\
+test('Block comments in array literals are properly indented 4', () => eqJS(`\
 if yes
 arr = [
   1
@@ -508,10 +521,9 @@ arr = [
   /* Who’s on first? */
   'Who'
 ];
-}`
-));
+}`));
 
-test("Line comments in array literals are properly indented 1", () => eqJS(`\
+test('Line comments in array literals are properly indented 1', () => eqJS(`\
 arr = [
 # How many stooges are there?
 3
@@ -525,10 +537,9 @@ arr = [
 3,
 // Who’s on first?
 'Who'
-];`
-));
+];`));
 
-test("Line comments in array literals are properly indented 2", () => eqJS(`\
+test('Line comments in array literals are properly indented 2', () => eqJS(`\
 arr = [
 # How many stooges are there?
 3
@@ -554,10 +565,9 @@ arr = [
   secondBase: 'What',
   leftField: 'Why'
 }
-];`
-));
+];`));
 
-test("Block comments trailing their attached token are properly indented", () => eqJS(`\
+test('Block comments trailing their attached token are properly indented', () => eqJS(`\
 if indented
 if indentedAgain
   a
@@ -577,10 +587,9 @@ if (indentedAgain) {
 */
 a;
 }\
-`
-));
+`));
 
-test("Comments in proper order 1", () => eqJS(`\
+test('Comments in proper order 1', () => eqJS(`\
 # 1
 ### 2 ###
 # 3\
@@ -588,10 +597,9 @@ test("Comments in proper order 1", () => eqJS(`\
 // 1
 /* 2 */
 // 3\
-`
-));
+`));
 
-test("Comments in proper order 2", () => eqJS(`\
+test('Comments in proper order 2', () => eqJS(`\
 if indented
 # 1
 ### 2 ###
@@ -604,10 +612,9 @@ if (indented) {
 // 3
 a;
 }\
-`
-));
+`));
 
-test("Line comment above interpolated string", () => eqJS(`\
+test('Line comment above interpolated string', () => eqJS(`\
 if indented
 # comment
 "#{1}"\
@@ -615,10 +622,9 @@ if indented
 if (indented) {
 // comment
 \`\${1}\`;
-}`
-));
+}`));
 
-test("Line comment above interpolated string object key", () => eqJS(`\
+test('Line comment above interpolated string object key', () => eqJS(`\
 {
 # comment
 "#{1}": 2
@@ -627,10 +633,9 @@ test("Line comment above interpolated string object key", () => eqJS(`\
 ({
 // comment
 [\`\${1}\`]: 2
-});`
-));
+});`));
 
-test("Line comments in classes are properly indented", () => eqJS(`\
+test('Line comments in classes are properly indented', () => eqJS(`\
 class A extends B
 # This is a fine class.
 # I could tell you all about it, but what else do you need to know?
@@ -674,10 +679,9 @@ anotherMethod() {
   return false;
 }
 
-};`
-));
+};`));
 
-test("Line comments are properly indented", () => eqJS(`\
+test('Line comments are properly indented', () => eqJS(`\
 # Unindented comment
 if yes
 # Comment indented one tab
@@ -713,10 +717,9 @@ if (true) {
 4;
 }
 
-// Another unindented comment`
-));
+// Another unindented comment`));
 
-test("Line comments that trail code, followed by line comments that start a new line", () => eqJS(`\
+test('Line comments that trail code, followed by line comments that start a new line', () => eqJS(`\
 a = ->
 b 1 # Trailing comment
 
@@ -732,10 +735,9 @@ return b(1); // Trailing comment
 
 // Comment that starts a new line
 2;\
-`
-));
+`));
 
-test("Empty lines between comments are preserved", () => eqJS(`\
+test('Empty lines between comments are preserved', () => eqJS(`\
 if indented
 # 1
 
@@ -747,15 +749,14 @@ if (indented) {
 
 // 2
 3;
-}`
-));
+}`));
 
-test("Block comment in an interpolated string", function() {
+test('Block comment in an interpolated string', () => {
   eqJS('"a#{### Comment ###}b"', "`a${/* Comment */''}b`;");
   return eqJS('"a#{### 1 ###}b#{### 2 ###}c"', "`a${/* 1 */''}b${/* 2 */''}c`;");
 });
 
-test("#4629: Block comment in CSX interpolation", function() {
+test('#4629: Block comment in CSX interpolation', () => {
   eqJS('<div>{### Comment ###}</div>', '<div>{/* Comment */}</div>;');
   return eqJS(`\
 <div>
@@ -769,19 +770,17 @@ test("#4629: Block comment in CSX interpolation", function() {
   Multiline
   Comment
 */}
-</div>;`
-  );
+</div>;`);
 });
 
-test("Line comment in an interpolated string", () => eqJS(`\
+test('Line comment in an interpolated string', () => eqJS(`\
 "a#{# Comment
 1}b"\
 `, `\
 \`a\${// Comment
-1}b\`;`
-));
+1}b\`;`));
 
-test("Line comments before `throw`", () => eqJS(`\
+test('Line comments before `throw`', () => eqJS(`\
 if indented
 1/0
 # Uh-oh!
@@ -793,32 +792,29 @@ if (indented) {
 // Uh-oh!
 // You really shouldn’t have done that.
 throw DivideByZeroError();
-}`
-));
+}`));
 
-test("Comments before if this exists", function() {
+test('Comments before if this exists', () => {
   const js = CoffeeScript.compile(`\
 1
 # Comment
 if @huh?
   2\
-`
-  );
+`);
   return ok(js.includes('// Comment'));
 });
 
-test("Comment before unary (`not`)", function() {
+test('Comment before unary (`not`)', () => {
   const js = CoffeeScript.compile(`\
 1
 # Comment
 if not doubleNegative
   dontDoIt()\
-`
-  );
+`);
   return ok(js.includes('// Comment'));
 });
 
-test("Comments before postfix", function() {
+test('Comments before postfix', () => {
   const js = CoffeeScript.compile(`\
 # 1
 2
@@ -828,13 +824,12 @@ return unless window?
 
 ### 4 ###
 return if global?\
-`
-  );
+`);
   ok(js.includes('// 3'));
   return ok(js.includes('/* 4 */'));
 });
 
-test("Comments before assignment if", function() {
+test('Comments before assignment if', () => {
   const js = CoffeeScript.compile(`\
 1
 # Line comment
@@ -846,24 +841,22 @@ else
 ### Block comment ###
 c = if d
   5\
-`
-  );
+`);
   ok(js.includes('// Line comment'));
   return ok(js.includes('/* Block comment */'));
 });
 
-test("Comments before for loop", function() {
+test('Comments before for loop', () => {
   const js = CoffeeScript.compile(`\
 1
 # Comment
 for drop in ocean
   drink drop\
-`
-  );
+`);
   return ok(js.includes('// Comment'));
 });
 
-test("Comments after for loop", function() {
+test('Comments after for loop', () => {
   const js = CoffeeScript.compile(`\
 for drop in ocean # Comment after source variable
   drink drop
@@ -871,14 +864,13 @@ for i in [1, 2] # Comment after array literal element
   count i
 for key, val of {a: 1} # Comment after object literal
   turn key\
-`
-  );
+`);
   ok(js.includes('// Comment after source variable'));
   ok(js.includes('// Comment after array literal element'));
   return ok(js.includes('// Comment after object literal'));
 });
 
-test("Comments before soak", function() {
+test('Comments before soak', () => {
   const js = CoffeeScript.compile(`\
 # 1
 2
@@ -888,23 +880,21 @@ return unless window?.location?.hash
 
 ### 4 ###
 return if process?.env?.ENV\
-`
-  );
+`);
   ok(js.includes('// 3'));
   return ok(js.includes('/* 4 */'));
 });
 
-test("Comments before splice", function() {
+test('Comments before splice', () => {
   const js = CoffeeScript.compile(`\
 1
 # Comment
 a[1..2] = [1, 2, 3]\
-`
-  );
+`);
   return ok(js.includes('// Comment'));
 });
 
-test("Comments before object destructuring", function() {
+test('Comments before object destructuring', () => {
   const js = CoffeeScript.compile(`\
 1
 # Comment before splat token
@@ -912,23 +902,21 @@ test("Comments before object destructuring", function() {
 
 # Comment before destructured token
 { x, y, z... } = { x: 1, y: 2, a: 3, b: 4 }\
-`
-  );
+`);
   ok(js.includes('Comment before splat token'));
   return ok(js.includes('Comment before destructured token'));
 });
 
-test("Comment before splat function parameter", function() {
+test('Comment before splat function parameter', () => {
   const js = CoffeeScript.compile(`\
 1
 # Comment
 (blah..., yadda) ->\
-`
-  );
+`);
   return ok(js.includes('Comment'));
 });
 
-test("Comments before static method", () => eqJS(`\
+test('Comments before static method', () => eqJS(`\
 class Child extends Base
 # Static method:
 @method = ->\
@@ -939,10 +927,9 @@ Child = class Child extends Base {
 // Static method:
 static method() {}
 
-};`
-));
+};`));
 
-test("Comment before method that calls `super()`", () => eqJS(`\
+test('Comment before method that calls `super()`', () => eqJS(`\
 class Dismissed
 # Before a method calling \`super\`
 method: ->
@@ -957,30 +944,27 @@ method() {
 }
 
 };\
-`
-));
+`));
 
-test("Comment in interpolated regex", function() {
+test('Comment in interpolated regex', () => {
   const js = CoffeeScript.compile(`\
 1
 ///
   #{1}
   # Comment
 ///\
-`
-  );
+`);
   return ok(js.includes('Comment'));
 });
 
-test("Line comment after line continuation", () => eqJS(`\
+test('Line comment after line continuation', () => eqJS(`\
 1 + \\ # comment
 2\
-`, `\
+`, '\
 1 + 2; // comment\
-`
-));
+'));
 
-test("Comments appear above scope `var` declarations", () => eqJS(`\
+test('Comments appear above scope `var` declarations', () => eqJS(`\
 # @flow
 
 fn = (str) -> str\
@@ -990,20 +974,18 @@ var fn;
 
 fn = function(str) {
 return str;
-};`
-));
+};`));
 
-test("Block comments can appear with function arguments", () => eqJS(`\
+test('Block comments can appear with function arguments', () => eqJS('\
 fn = (str ###: string ###, num ###: number ###) -> str + num\
-`, `\
+', `\
 var fn;
 
 fn = function(str/*: string */, num/*: number */) {
 return str + num;
-};`
-));
+};`));
 
-test("Block comments can appear between function parameters and function opening brace", () => eqJS(`\
+test('Block comments can appear between function parameters and function opening brace', () => eqJS(`\
 fn = (str ###: string ###, num ###: number ###) ###: string ### ->
 str + num\
 `, `\
@@ -1011,10 +993,9 @@ var fn;
 
 fn = function(str/*: string */, num/*: number */)/*: string */ {
 return str + num;
-};`
-));
+};`));
 
-test("Flow comment-based syntax support", () => eqJS(`\
+test('Flow comment-based syntax support', () => eqJS(`\
 # @flow
 
 fn = (str ###: string ###, num ###: number ###) ###: string ### ->
@@ -1025,10 +1006,9 @@ var fn;
 
 fn = function(str/*: string */, num/*: number */)/*: string */ {
 return str + num;
-};`
-));
+};`));
 
-test("#4706: Flow comments around function parameters", () => eqJS(`\
+test('#4706: Flow comments around function parameters', () => eqJS(`\
 identity = ###::<T>### (value ###: T ###) ###: T ### ->
 value\
 `, `\
@@ -1036,20 +1016,18 @@ var identity;
 
 identity = function/*::<T>*/(value/*: T */)/*: T */ {
 return value;
-};`
-));
+};`));
 
-test("#4706: Flow comments around function parameters", () => eqJS(`\
+test('#4706: Flow comments around function parameters', () => eqJS('\
 copy = arr.map(###:: <T> ###(item ###: T ###) ###: T ### => item)\
-`, `\
+', `\
 var copy;
 
 copy = arr.map(/*:: <T> */(item/*: T */)/*: T */ => {
 return item;
-});`
-));
+});`));
 
-test("#4706: Flow comments after class name", () => eqJS(`\
+test('#4706: Flow comments after class name', () => eqJS(`\
 class Container ###::<T> ###
 method: ###::<U> ### () -> true\
 `, `\
@@ -1060,19 +1038,17 @@ method() {
   return true;
 }
 
-};`
-));
+};`));
 
-test("#4706: Identifiers with comments wrapped in parentheses remain wrapped", function() {
+test('#4706: Identifiers with comments wrapped in parentheses remain wrapped', () => {
   eqJS('(arr ###: Array<number> ###)', '(arr/*: Array<number> */);');
   return eqJS('other = (arr ###: any ###)', `\
 var other;
 
-other = (arr/*: any */);`
-  );
+other = (arr/*: any */);`);
 });
 
-test("#4706: Flow comments before class methods", () => eqJS(`\
+test('#4706: Flow comments before class methods', () => eqJS(`\
 class Container
 ###::
 method: (number) => string;
@@ -1091,10 +1067,9 @@ method() {
   return true;
 }
 
-};`
-));
+};`));
 
-test("#4706: Flow comments for class method params", () => eqJS(`\
+test('#4706: Flow comments for class method params', () => eqJS(`\
 class Container
 method: (param ###: string ###) -> true\
 `, `\
@@ -1105,10 +1080,9 @@ method(param/*: string */) {
   return true;
 }
 
-};`
-));
+};`));
 
-test("#4706: Flow comments for class method returns", () => eqJS(`\
+test('#4706: Flow comments for class method returns', () => eqJS(`\
 class Container
 method: () ###: string ### -> true\
 `, `\
@@ -1119,25 +1093,22 @@ method()/*: string */ {
   return true;
 }
 
-};`
-));
+};`));
 
-test("#4706: Flow comments for function spread", () => eqJS(`\
+test('#4706: Flow comments for function spread', () => eqJS('\
 method = (...rest ###: Array<string> ###) =>\
-`, `\
+', `\
 var method;
 
-method = (...rest/*: Array<string> */) => {};`
-));
+method = (...rest/*: Array<string> */) => {};`));
 
-test("#4747: Flow comments for local variable declaration", () => eqJS('a ###: number ### = 1', `\
+test('#4747: Flow comments for local variable declaration', () => eqJS('a ###: number ### = 1', `\
 var a/*: number */;
 
 a = 1;\
-`
-));
+`));
 
-test("#4747: Flow comments for local variable declarations", () => eqJS(`\
+test('#4747: Flow comments for local variable declarations', () => eqJS(`\
 a ###: number ### = 1
 b ###: string ### = 'c'\
 `, `\
@@ -1146,10 +1117,9 @@ var a/*: number */, b/*: string */;
 a = 1;
 
 b = 'c';\
-`
-));
+`));
 
-test("#4747: Flow comments for local variable declarations with reassignment", () => eqJS(`\
+test('#4747: Flow comments for local variable declarations with reassignment', () => eqJS(`\
 a ###: number ### = 1
 b ###: string ### = 'c'
 a ### some other comment ### = 2\
@@ -1161,10 +1131,9 @@ a = 1;
 b = 'c';
 
 a/* some other comment */ = 2;\
-`
-));
+`));
 
-test("#4756: Comment before ? operation", () => eqJS(`\
+test('#4756: Comment before ? operation', () => eqJS(`\
 do ->
 ### Comment ###
 @foo ? 42\
@@ -1174,5 +1143,4 @@ var ref;
 /* Comment */
 return (ref = this.foo) != null ? ref : 42;
 })();\
-`
-));
+`));
