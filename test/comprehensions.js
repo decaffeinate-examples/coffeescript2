@@ -1,578 +1,1099 @@
-# Comprehensions
-# --------------
-
-# * Array Comprehensions
-# * Range Comprehensions
-# * Object Comprehensions
-# * Implicit Destructuring Assignment
-# * Comprehensions with Nonstandard Step
-
-# TODO: refactor comprehension tests
-
-test "Basic array comprehensions.", ->
-
-  nums    = (n * n for n in [1, 2, 3] when n & 1)
-  results = (n * 2 for n in nums)
-
-  ok results.join(',') is '2,18'
-
-
-test "Basic object comprehensions.", ->
-
-  obj   = {one: 1, two: 2, three: 3}
-  names = (prop + '!' for prop of obj)
-  odds  = (prop + '!' for prop, value of obj when value & 1)
-
-  ok names.join(' ') is "one! two! three!"
-  ok odds.join(' ')  is "one! three!"
-
-
-test "Basic range comprehensions.", ->
-
-  nums = (i * 3 for i in [1..3])
-
-  negs = (x for x in [-20..-5*2])
-  negs = negs[0..2]
-
-  result = nums.concat(negs).join(', ')
-
-  ok result is '3, 6, 9, -20, -19, -18'
-
-
-test "With range comprehensions, you can loop in steps.", ->
-
-  results = (x for x in [0...15] by 5)
-  ok results.join(' ') is '0 5 10'
-
-  results = (x for x in [0..100] by 10)
-  ok results.join(' ') is '0 10 20 30 40 50 60 70 80 90 100'
-
-
-test "And can loop downwards, with a negative step.", ->
-
-  results = (x for x in [5..1])
-
-  ok results.join(' ') is '5 4 3 2 1'
-  ok results.join(' ') is [(10-5)..(-2+3)].join(' ')
-
-  results = (x for x in [10..1])
-  ok results.join(' ') is [10..1].join(' ')
-
-  results = (x for x in [10...0] by -2)
-  ok results.join(' ') is [10, 8, 6, 4, 2].join(' ')
-
-
-test "Range comprehension gymnastics.", ->
-
-  eq "#{i for i in [5..1]}", '5,4,3,2,1'
-  eq "#{i for i in [5..-5] by -5}", '5,0,-5'
-
-  a = 6
-  b = 0
-  c = -2
-
-  eq "#{i for i in [a..b]}", '6,5,4,3,2,1,0'
-  eq "#{i for i in [a..b] by c}", '6,4,2,0'
-
-
-test "Multiline array comprehension with filter.", ->
-
-  evens = for num in [1, 2, 3, 4, 5, 6] when not (num & 1)
-             num *= -1
-             num -= 2
-             num * -1
-  eq evens + '', '4,6,8'
-
-
-  test "The in operator still works, standalone.", ->
-
-    ok 2 of evens
-
-
-test "all isn't reserved.", ->
-
-  all = 1
-
-
-test "Ensure that the closure wrapper preserves local variables.", ->
-
-  obj = {}
-
-  for method in ['one', 'two', 'three'] then do (method) ->
-    obj[method] = ->
-      "I'm " + method
-
-  ok obj.one()   is "I'm one"
-  ok obj.two()   is "I'm two"
-  ok obj.three() is "I'm three"
-
-
-test "Index values at the end of a loop.", ->
-
-  i = 0
-  for i in [1..3]
-    -> 'func'
-    break if false
-  ok i is 4
-
-
-test "Ensure that local variables are closed over for range comprehensions.", ->
-
-  funcs = for i in [1..3]
-    do (i) ->
-      -> -i
-
-  eq (func() for func in funcs).join(' '), '-1 -2 -3'
-  ok i is 4
-
-
-test "Even when referenced in the filter.", ->
-
-  list = ['one', 'two', 'three']
-
-  methods = for num, i in list when num isnt 'two' and i isnt 1
-    do (num, i) ->
-      -> num + ' ' + i
-
-  ok methods.length is 2
-  ok methods[0]() is 'one 0'
-  ok methods[1]() is 'three 2'
-
-
-test "Even a convoluted one.", ->
-
-  funcs = []
-
-  for i in [1..3]
-    do (i) ->
-      x = i * 2
-      ((z)->
-        funcs.push -> z + ' ' + i
-      )(x)
-
-  ok (func() for func in funcs).join(', ') is '2 1, 4 2, 6 3'
-
-  funcs = []
-
-  results = for i in [1..3]
-    do (i) ->
-      z = (x * 3 for x in [1..i])
-      ((a, b, c) -> [a, b, c].join(' ')).apply this, z
-
-  ok results.join(', ') is '3  , 3 6 , 3 6 9'
-
-
-test "Naked ranges are expanded into arrays.", ->
-
-  array = [0..10]
-  ok(num % 2 is 0 for num in array by 2)
-
-
-test "Nested shared scopes.", ->
-
-  foo = ->
-    for i in [0..7]
-      do (i) ->
-        for j in [0..7]
-          do (j) ->
-            -> i + j
-
-  eq foo()[3][4](), 7
-
-
-test "Scoped loop pattern matching.", ->
-
-  a = [[0], [1]]
-  funcs = []
-
-  for [v] in a
-    do (v) ->
-      funcs.push -> v
-
-  eq funcs[0](), 0
-  eq funcs[1](), 1
-
-
-test "Nested comprehensions.", ->
-
-  multiLiner =
-    for x in [3..5]
-      for y in [3..5]
-        [x, y]
-
-  singleLiner =
-    (([x, y] for y in [3..5]) for x in [3..5])
-
-  ok multiLiner.length is singleLiner.length
-  ok 5 is multiLiner[2][2][1]
-  ok 5 is singleLiner[2][2][1]
-
-
-test "Comprehensions within parentheses.", ->
-
-  result = null
-  store = (obj) -> result = obj
-  store (x * 2 for x in [3, 2, 1])
-
-  ok result.join(' ') is '6 4 2'
-
-
-test "Closure-wrapped comprehensions that refer to the 'arguments' object.", ->
-
-  expr = ->
-    result = (item * item for item in arguments)
-
-  ok expr(2, 4, 8).join(' ') is '4 16 64'
-
-
-test "Fast object comprehensions over all properties, including prototypal ones.", ->
-
-  class Cat
-    constructor: -> @name = 'Whiskers'
-    breed: 'tabby'
-    hair:  'cream'
-
-  whiskers = new Cat
-  own = (value for own key, value of whiskers)
-  all = (value for key, value of whiskers)
-
-  ok own.join(' ') is 'Whiskers'
-  ok all.sort().join(' ') is 'Whiskers cream tabby'
-
-
-test "Optimized range comprehensions.", ->
-
-  exxes = ('x' for [0...10])
-  ok exxes.join(' ') is 'x x x x x x x x x x'
-
-
-test "#3671: Allow step in optimized range comprehensions.", ->
-
-  exxes = ('x' for [0...10] by 2)
-  eq exxes.join(' ') , 'x x x x x'
-
-
-test "#3671: Disallow guard in optimized range comprehensions.", ->
-
-  throws -> CoffeeScript.compile "exxes = ('x' for [0...10] when a)"
-
-
-test "Loop variables should be able to reference outer variables", ->
-  outer = 1
-  do ->
-    null for outer in [1, 2, 3]
-  eq outer, 3
-
-
-test "Lenient on pure statements not trying to reach out of the closure", ->
-
-  val = for i in [1]
-    for j in [] then break
-    i
-  ok val[0] is i
-
-
-test "Comprehensions only wrap their last line in a closure, allowing other lines
-  to have pure expressions in them.", ->
-
-  func = -> for i in [1]
-    break if i is 2
-    j for j in [1]
-
-  ok func()[0][0] is 1
-
-  i = 6
-  odds = while i--
-    continue unless i & 1
-    i
-
-  ok odds.join(', ') is '5, 3, 1'
-
-
-test "Issue #897: Ensure that plucked function variables aren't leaked.", ->
-
-  facets = {}
-  list = ['one', 'two']
-
-  (->
-    for entity in list
-      facets[entity] = -> entity
-  )()
-
-  eq typeof entity, 'undefined'
-  eq facets['two'](), 'two'
-
-
-test "Issue #905. Soaks as the for loop subject.", ->
-
-  a = {b: {c: [1, 2, 3]}}
-  for d in a.b?.c
-    e = d
-
-  eq e, 3
-
-
-test "Issue #948. Capturing loop variables.", ->
-
-  funcs = []
-  list  = ->
-    [1, 2, 3]
-
-  for y in list()
-    do (y) ->
-      z = y
-      funcs.push -> "y is #{y} and z is #{z}"
-
-  eq funcs[1](), "y is 2 and z is 2"
-
-
-test "Cancel the comprehension if there's a jump inside the loop.", ->
-
-  result = try
-    for i in [0...10]
-      continue if i < 5
-    i
-
-  eq result, 10
-
-
-test "Comprehensions over break.", ->
-
-  arrayEq (break for [1..10]), []
-
-
-test "Comprehensions over continue.", ->
-
-  arrayEq (continue for [1..10]), []
-
-
-test "Comprehensions over function literals.", ->
-
-  a = 0
-  for f in [-> a = 1]
-    do (f) ->
-      do f
-
-  eq a, 1
-
-
-test "Comprehensions that mention arguments.", ->
-
-  list = [arguments: 10]
-  args = for f in list
-    do (f) ->
-      f.arguments
-  eq args[0], 10
-
-
-test "expression conversion under explicit returns", ->
-  nonce = {}
-  fn = ->
-    return (nonce for x in [1,2,3])
-  arrayEq [nonce,nonce,nonce], fn()
-  fn = ->
-    return [nonce for x in [1,2,3]][0]
-  arrayEq [nonce,nonce,nonce], fn()
-  fn = ->
-    return [(nonce for x in [1..3])][0]
-  arrayEq [nonce,nonce,nonce], fn()
-
-
-test "implicit destructuring assignment in object of objects", ->
-  a={}; b={}; c={}
-  obj = {
-    a: { d: a },
-    b: { d: b }
-    c: { d: c }
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS201: Simplify complex destructure assignments
+ * DS202: Simplify dynamic range loops
+ * DS203: Remove `|| {}` from converted for-own loops
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS206: Consider reworking classes to avoid initClass
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+// Comprehensions
+// --------------
+
+// * Array Comprehensions
+// * Range Comprehensions
+// * Object Comprehensions
+// * Implicit Destructuring Assignment
+// * Comprehensions with Nonstandard Step
+
+// TODO: refactor comprehension tests
+
+test("Basic array comprehensions.", function() {
+
+  let n;
+  const nums    = ((() => {
+    const result = [];
+    for (n of [1, 2, 3]) {       if (n & 1) {
+        result.push(n * n);
+      }
+    }
+    return result;
+  })());
+  const results = ((() => {
+    const result1 = [];
+    for (n of Array.from(nums)) {       result1.push(n * 2);
+    }
+    return result1;
+  })());
+
+  return ok(results.join(',') === '2,18');
+});
+
+
+test("Basic object comprehensions.", function() {
+
+  let prop;
+  const obj   = {one: 1, two: 2, three: 3};
+  const names = ((() => {
+    const result = [];
+    for (prop in obj) {
+      result.push(prop + '!');
+    }
+    return result;
+  })());
+  const odds  = ((() => {
+    const result1 = [];
+    for (prop in obj) {
+      const value = obj[prop];
+      if (value & 1) {
+        result1.push(prop + '!');
+      }
+    }
+    return result1;
+  })());
+
+  ok(names.join(' ') === "one! two! three!");
+  return ok(odds.join(' ')  === "one! three!");
+});
+
+
+test("Basic range comprehensions.", function() {
+
+  const nums = ([1, 2, 3].map((i) => i * 3));
+
+  let negs = (__range__(-20, -5*2, true));
+  negs = negs.slice(0, 3);
+
+  const result = nums.concat(negs).join(', ');
+
+  return ok(result === '3, 6, 9, -20, -19, -18');
+});
+
+
+test("With range comprehensions, you can loop in steps.", function() {
+
+  let x;
+  let results = ((() => {
+    const result = [];
+    for (x = 0; x < 15; x += 5) {
+      result.push(x);
+    }
+    return result;
+  })());
+  ok(results.join(' ') === '0 5 10');
+
+  results = ((() => {
+    const result1 = [];
+    for (x = 0; x <= 100; x += 10) {
+      result1.push(x);
+    }
+    return result1;
+  })());
+  return ok(results.join(' ') === '0 10 20 30 40 50 60 70 80 90 100');
+});
+
+
+test("And can loop downwards, with a negative step.", function() {
+
+  let x;
+  let results = ((() => {
+    const result = [];
+    for (x = 5; x >= 1; x--) {
+      result.push(x);
+    }
+    return result;
+  })());
+
+  ok(results.join(' ') === '5 4 3 2 1');
+  ok(results.join(' ') === __range__((10-5), (-2+3), true).join(' '));
+
+  results = ((() => {
+    const result1 = [];
+    for (x = 10; x >= 1; x--) {
+      result1.push(x);
+    }
+    return result1;
+  })());
+  ok(results.join(' ') === [10, 9, 8, 7, 6, 5, 4, 3, 2, 1].join(' '));
+
+  results = ((() => {
+    const result2 = [];
+    for (x = 10; x > 0; x -= 2) {
+      result2.push(x);
+    }
+    return result2;
+  })());
+  return ok(results.join(' ') === [10, 8, 6, 4, 2].join(' '));
+});
+
+
+test("Range comprehension gymnastics.", function() {
+
+  let i;
+  eq(`${(() => {
+    const result = [];
+    for (i = 5; i >= 1; i--) {
+      result.push(i);
+    }
+    return result;
+  })()}`, '5,4,3,2,1');
+  eq(`${(() => {
+    let end;
+    const result1 = [];
+    for (i = 5, end = -5; i >= end; i -= 5) {
+      result1.push(i);
+    }
+    return result1;
+  })()}`, '5,0,-5');
+
+  const a = 6;
+  const b = 0;
+  const c = -2;
+
+  eq(`${(() => {
+    let asc, end1;
+    const result2 = [];
+    for (i = a, end1 = b, asc = a <= end1; asc ? i <= end1 : i >= end1; asc ? i++ : i--) {
+      result2.push(i);
+    }
+    return result2;
+  })()}`, '6,5,4,3,2,1,0');
+  return eq(`${(() => {
+    let asc1, end2, step;
+    const result3 = [];
+    for (i = a, end2 = b, step = c, asc1 = step > 0; asc1 ? i <= end2 : i >= end2; i += step) {
+      result3.push(i);
+    }
+    return result3;
+  })()}`, '6,4,2,0');
+});
+
+
+test("Multiline array comprehension with filter.", function() {
+
+  const evens = (() => {
+    const result = [];
+    for (let num of [1, 2, 3, 4, 5, 6]) {
+      if (!(num & 1)) {
+         num *= -1;
+         num -= 2;
+         result.push(num * -1);
+      }
+    }
+    return result;
+  })();
+  eq(evens + '', '4,6,8');
+
+
+  return test("The in operator still works, standalone.", () => ok(2 in evens));
+});
+
+
+test("all isn't reserved.", function() {
+
+  let all;
+  return all = 1;
+});
+
+
+test("Ensure that the closure wrapper preserves local variables.", function() {
+
+  const obj = {};
+
+  for (let method of ['one', 'two', 'three']) { ((method => obj[method] = () => "I'm " + method))(method); }
+
+  ok(obj.one()   === "I'm one");
+  ok(obj.two()   === "I'm two");
+  return ok(obj.three() === "I'm three");
+});
+
+
+test("Index values at the end of a loop.", function() {
+
+  let i = 0;
+  for (i = 1; i <= 3; i++) {
+    (() => 'func');
+    if (false) { break; }
   }
-  result = ([y,z] for y, { d: z } of obj)
-  arrayEq [['a',a],['b',b],['c',c]], result
+  return ok(i === 4);
+});
 
 
-test "implicit destructuring assignment in array of objects", ->
-  a={}; b={}; c={}; d={}; e={}; f={}
-  arr = [
-    { a: a, b: { c: b } },
+test("Ensure that local variables are closed over for range comprehensions.", function() {
+
+  let i;
+  const funcs = (() => {
+    const result = [];
+    for (i = 1; i <= 3; i++) {
+      result.push(((i => () => -i))(i));
+    }
+    return result;
+  })();
+
+  eq((Array.from(funcs).map((func) => func())).join(' '), '-1 -2 -3');
+  return ok(i === 4);
+});
+
+
+test("Even when referenced in the filter.", function() {
+
+  const list = ['one', 'two', 'three'];
+
+  const methods = (() => {
+    const result = [];
+    for (let i = 0; i < list.length; i++) {
+      const num = list[i];
+      if ((num !== 'two') && (i !== 1)) {
+        result.push((((num, i) => () => num + ' ' + i))(num, i));
+      }
+    }
+    return result;
+  })();
+
+  ok(methods.length === 2);
+  ok(methods[0]() === 'one 0');
+  return ok(methods[1]() === 'three 2');
+});
+
+
+test("Even a convoluted one.", function() {
+
+  let i, z, x;
+  let funcs = [];
+
+  for (i = 1; i <= 3; i++) {
+    (function(i) {
+      x = i * 2;
+      return ((z => funcs.push(() => z + ' ' + i)))(x);
+    })(i);
+  }
+
+  ok((Array.from(funcs).map((func) => func())).join(', ') === '2 1, 4 2, 6 3');
+
+  funcs = [];
+
+  const results = (() => {
+    const result = [];
+    for (i = 1; i <= 3; i++) {
+      result.push((function(i) {
+        z = (__range__(1, i, true).map((x) => x * 3));
+        return (((a, b, c) => [a, b, c].join(' '))).apply(this, z);
+      })(i));
+    }
+    return result;
+  })();
+
+  return ok(results.join(', ') === '3  , 3 6 , 3 6 9');
+});
+
+
+test("Naked ranges are expanded into arrays.", function() {
+
+  const array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  return ok((() => {
+    const result = [];
+    for (let i = 0; i < array.length; i += 2) {
+      const num = array[i];
+      result.push((num % 2) === 0);
+    }
+    return result;
+  })());
+});
+
+
+test("Nested shared scopes.", function() {
+
+  const foo = () => [0, 1, 2, 3, 4, 5, 6, 7].map((i) =>
+    ((i => [0, 1, 2, 3, 4, 5, 6, 7].map((j) =>
+      ((j => () => i + j))(j))))(i));
+
+  return eq(foo()[3][4](), 7);
+});
+
+
+test("Scoped loop pattern matching.", function() {
+
+  const a = [[0], [1]];
+  const funcs = [];
+
+  for (let [v] of Array.from(a)) {
+    ((v => funcs.push(() => v)))(v);
+  }
+
+  eq(funcs[0](), 0);
+  return eq(funcs[1](), 1);
+});
+
+
+test("Nested comprehensions.", function() {
+
+  let x, y;
+  const multiLiner =
+    (() => {
+    const result = [];
+    for (x = 3; x <= 5; x++) {
+      result.push((() => {
+        const result1 = [];
+        for (y = 3; y <= 5; y++) {
+          result1.push([x, y]);
+        }
+        return result1;
+      })());
+    }
+    return result;
+  })();
+
+  const singleLiner =
+    ((() => {
+    const result2 = [];
+    for (x = 3; x <= 5; x++) {
+      result2.push(((() => {
+        const result3 = [];
+        for (y = 3; y <= 5; y++) {
+          result3.push([x, y]);
+        }
+        return result3;
+      })()));
+    }
+    return result2;
+  })());
+
+  ok(multiLiner.length === singleLiner.length);
+  ok(5 === multiLiner[2][2][1]);
+  return ok(5 === singleLiner[2][2][1]);
+});
+
+
+test("Comprehensions within parentheses.", function() {
+
+  let result = null;
+  const store = obj => result = obj;
+  store(([3, 2, 1].map((x) => x * 2)));
+
+  return ok(result.join(' ') === '6 4 2');
+});
+
+
+test("Closure-wrapped comprehensions that refer to the 'arguments' object.", function() {
+
+  const expr = function() {
+    let result;
+    return result = (Array.from(arguments).map((item) => item * item));
+  };
+
+  return ok(expr(2, 4, 8).join(' ') === '4 16 64');
+});
+
+
+test("Fast object comprehensions over all properties, including prototypal ones.", function() {
+
+  let key, value;
+  class Cat {
+    static initClass() {
+      this.prototype.breed = 'tabby';
+      this.prototype.hair =  'cream';
+    }
+    constructor() { this.name = 'Whiskers'; }
+  }
+  Cat.initClass();
+
+  const whiskers = new Cat;
+  const own = ((() => {
+    const result = [];
+    for (key of Object.keys(whiskers || {})) {
+      value = whiskers[key];
+      result.push(value);
+    }
+    return result;
+  })());
+  const all = ((() => {
+    const result1 = [];
+    for (key in whiskers) {
+      value = whiskers[key];
+      result1.push(value);
+    }
+    return result1;
+  })());
+
+  ok(own.join(' ') === 'Whiskers');
+  return ok(all.sort().join(' ') === 'Whiskers cream tabby');
+});
+
+
+test("Optimized range comprehensions.", function() {
+
+  const exxes = ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => 'x'));
+  return ok(exxes.join(' ') === 'x x x x x x x x x x');
+});
+
+
+test("#3671: Allow step in optimized range comprehensions.", function() {
+
+  const exxes = ((() => {
+    const result = [];
+    for (let i = 0; i < 10; i += 2) {
+      result.push('x');
+    }
+    return result;
+  })());
+  return eq(exxes.join(' ') , 'x x x x x');
+});
+
+
+test("#3671: Disallow guard in optimized range comprehensions.", () => throws(() => CoffeeScript.compile("exxes = ('x' for [0...10] when a)")));
+
+
+test("Loop variables should be able to reference outer variables", function() {
+  let outer = 1;
+  ((() => (() => {
+    const result = [];
+    for (outer of [1, 2, 3]) {         result.push(null);
+    }
+    return result;
+  })()))();
+  return eq(outer, 3);
+});
+
+
+test("Lenient on pure statements not trying to reach out of the closure", function() {
+
+  let i;
+  const val = (() => {
+    const result = [];
+    for (i of [1]) {
+      for (let j of []) { break; }
+      result.push(i);
+    }
+    return result;
+  })();
+  return ok(val[0] === i);
+});
+
+
+test(`Comprehensions only wrap their last line in a closure, allowing other lines \
+to have pure expressions in them.`, function() {
+
+  const func = () => (() => {
+    const result = [];
+    for (let i of [1]) {
+      if (i === 2) { break; }
+      result.push([1]);
+    }
+    return result;
+  })();
+
+  ok(func()[0][0] === 1);
+
+  let i = 6;
+  const odds = (() => {
+    const result = [];
+    while (i--) {
+      if (!(i & 1)) { continue; }
+      result.push(i);
+    }
+    return result;
+  })();
+
+  return ok(odds.join(', ') === '5, 3, 1');
+});
+
+
+test("Issue #897: Ensure that plucked function variables aren't leaked.", function() {
+
+  const facets = {};
+  const list = ['one', 'two'];
+
+  ((() => Array.from(list).map((entity) =>
+    (facets[entity] = () => entity))))();
+
+  eq(typeof entity, 'undefined');
+  return eq(facets['two'](), 'two');
+});
+
+
+test("Issue #905. Soaks as the for loop subject.", function() {
+
+  let e;
+  const a = {b: {c: [1, 2, 3]}};
+  for (let d of Array.from((a.b != null ? a.b.c : undefined))) {
+    e = d;
+  }
+
+  return eq(e, 3);
+});
+
+
+test("Issue #948. Capturing loop variables.", function() {
+
+  const funcs = [];
+  const list  = () => [1, 2, 3];
+
+  for (let y of Array.from(list())) {
+    (function(y) {
+      const z = y;
+      return funcs.push(() => `y is ${y} and z is ${z}`);
+    })(y);
+  }
+
+  return eq(funcs[1](), "y is 2 and z is 2");
+});
+
+
+test("Cancel the comprehension if there's a jump inside the loop.", function() {
+
+  const result = (() => { try {
+    let i;
+    for (i = 0; i < 10; i++) {
+      if (i < 5) { continue; }
+    }
+    return i;
+  } catch (error) {} })();
+
+  return eq(result, 10);
+});
+
+
+test("Comprehensions over break.", () => arrayEq(((() => {
+  const result = [];
+  for (let i = 1; i <= 10; i++) {
+    break;
+  }
+  return result;
+})()), []));
+
+
+test("Comprehensions over continue.", () => arrayEq(((() => {
+  const result = [];
+  for (let i = 1; i <= 10; i++) {
+    continue;
+  }
+  return result;
+})()), []));
+
+
+test("Comprehensions over function literals.", function() {
+
+  let a = 0;
+  for (let f of [() => a = 1]) {
+    ((f => f()))(f);
+  }
+
+  return eq(a, 1);
+});
+
+
+test("Comprehensions that mention arguments.", function() {
+
+  const list = [{arguments: 10}];
+  const args = Array.from(list).map((f) =>
+    (function(f) {
+      return f.arguments;
+    })(f));
+  return eq(args[0], 10);
+});
+
+
+test("expression conversion under explicit returns", function() {
+  const nonce = {};
+  let fn = () => [1,2,3].map((x) => nonce);
+  arrayEq([nonce,nonce,nonce], fn());
+  fn = () => [[1,2,3].map((x) => nonce)][0];
+  arrayEq([nonce,nonce,nonce], fn());
+  fn = () => [([1, 2, 3].map((x) => nonce))][0];
+  return arrayEq([nonce,nonce,nonce], fn());
+});
+
+
+test("implicit destructuring assignment in object of objects", function() {
+  const a={}; const b={}; const c={};
+  const obj = {
+    a: { d: a },
+    b: { d: b },
+    c: { d: c }
+  };
+  const result = ((() => {
+    const result1 = [];
+    for (let y in obj) {
+      const { d: z } = obj[y];
+      result1.push([y,z]);
+    }
+    return result1;
+  })());
+  return arrayEq([['a',a],['b',b],['c',c]], result);
+});
+
+
+test("implicit destructuring assignment in array of objects", function() {
+  const a={}; const b={}; const c={}; const d={}; const e={}; const f={};
+  const arr = [
+    { a, b: { c: b } },
     { a: c, b: { c: d } },
     { a: e, b: { c: f } }
-  ]
-  result = ([y,z] for { a: y, b: { c: z } } in arr)
-  arrayEq [[a,b],[c,d],[e,f]], result
+  ];
+  const result = ((() => {
+    const result1 = [];
+    for (let { a: y, b: { c: z } } of Array.from(arr)) {       result1.push([y,z]);
+    }
+    return result1;
+  })());
+  return arrayEq([[a,b],[c,d],[e,f]], result);
+});
 
 
-test "implicit destructuring assignment in array of arrays", ->
-  a={}; b={}; c={}; d={}; e={}; f={}
-  arr = [[a, [b]], [c, [d]], [e, [f]]]
-  result = ([y,z] for [y, [z]] in arr)
-  arrayEq [[a,b],[c,d],[e,f]], result
+test("implicit destructuring assignment in array of arrays", function() {
+  const a={}; const b={}; const c={}; const d={}; const e={}; const f={};
+  const arr = [[a, [b]], [c, [d]], [e, [f]]];
+  const result = ((() => {
+    const result1 = [];
+    for (let [y, [z]] of Array.from(arr)) {       result1.push([y,z]);
+    }
+    return result1;
+  })());
+  return arrayEq([[a,b],[c,d],[e,f]], result);
+});
 
-test "issue #1124: don't assign a variable in two scopes", ->
-  lista = [1, 2, 3, 4, 5]
-  listb = (_i + 1 for _i in lista)
-  arrayEq [2, 3, 4, 5, 6], listb
+test("issue #1124: don't assign a variable in two scopes", function() {
+  const lista = [1, 2, 3, 4, 5];
+  const listb = (Array.from(lista).map((_i) => _i + 1));
+  return arrayEq([2, 3, 4, 5, 6], listb);
+});
 
-test "#1326: `by` value is uncached", ->
-  a = [0,1,2]
-  fi = gi = hi = 0
-  f = -> ++fi
-  g = -> ++gi
-  h = -> ++hi
+test("#1326: `by` value is uncached", function() {
+  let gi, hi;
+  let asc, step;
+  let i;
+  const a = [0,1,2];
+  let fi = (gi = (hi = 0));
+  const f = () => ++fi;
+  const g = () => ++gi;
+  const h = () => ++hi;
 
-  forCompile = []
-  rangeCompileSimple = []
+  const forCompile = [];
+  let rangeCompileSimple = [];
 
-  #exercises For.compile
-  for v, i in a by f()
-    forCompile.push i
-
-  #exercises Range.compileSimple
-  rangeCompileSimple = (i for i in [0..2] by g())
-
-  arrayEq a, forCompile
-  arrayEq a, rangeCompileSimple
-  #exercises Range.compile
-  eq "#{i for i in [0..2] by h()}", '0,1,2'
-
-test "#1669: break/continue should skip the result only for that branch", ->
-  ns = for n in [0..99]
-    if n > 9
-      break
-    else if n & 1
-      continue
-    else
-      n
-  eq "#{ns}", '0,2,4,6,8'
-
-  # `else undefined` is implied.
-  ns = for n in [1..9]
-    if n % 2
-      continue unless n % 5
-      n
-  eq "#{ns}", "1,,3,,,7,,9"
-
-  # Ditto.
-  ns = for n in [1..9]
-    switch
-      when n % 2
-        continue unless n % 5
-        n
-  eq "#{ns}", "1,,3,,,7,,9"
-
-test "#1850: inner `for` should not be expression-ized if `return`ing", ->
-  eq '3,4,5', do ->
-    for a in [1..9] then \
-    for b in [1..9]
-      c = Math.sqrt a*a + b*b
-      return String [a, b, c] unless c % 1
-
-test "#1910: loop index should be mutable within a loop iteration and immutable between loop iterations", ->
-  n = 1
-  iterations = 0
-  arr = [0..n]
-  for v, k in arr
-    ++iterations
-    v = k = 5
-    eq 5, k
-  eq 2, k
-  eq 2, iterations
-
-  iterations = 0
-  for v in [0..n]
-    ++iterations
-  eq 2, k
-  eq 2, iterations
-
-  arr = ([v, v + 1] for v in [0..5])
-  iterations = 0
-  for [v0, v1], k in arr when v0
-    k += 3
-    ++iterations
-  eq 6, k
-  eq 5, iterations
-
-test "#2007: Return object literal from comprehension", ->
-  y = for x in [1, 2]
-    foo: "foo" + x
-  eq 2, y.length
-  eq "foo1", y[0].foo
-  eq "foo2", y[1].foo
-
-  x = 2
-  y = while x
-    x: --x
-  eq 2, y.length
-  eq 1, y[0].x
-  eq 0, y[1].x
-
-test "#2274: Allow @values as loop variables", ->
-  obj = {
-    item: null
-    method: ->
-      for @item in [1, 2, 3]
-        null
+  //exercises For.compile
+  for (step = f(), asc = step > 0, i = asc ? 0 : a.length - 1; asc ? i < a.length : i >= 0; i += step) {
+    const v = a[i];
+    forCompile.push(i);
   }
-  eq obj.item, null
-  obj.method()
-  eq obj.item, 3
 
-test "#4411: Allow @values as loop indices", ->
-  obj =
-    index: null
-    get: -> @index
-    method: ->
-      @get() for _, @index in [1, 2, 3]
-  eq obj.index, null
-  arrayEq obj.method(), [0, 1, 2]
-  eq obj.index, 3
+  //exercises Range.compileSimple
+  rangeCompileSimple = ((() => {
+    let step1;
+    const result = [];
+    for (i = 0, step1 = g(); i <= 2; i += step1) {
+      result.push(i);
+    }
+    return result;
+  })());
 
-test "#2525, #1187, #1208, #1758, looping over an array forwards", ->
-  list = [0, 1, 2, 3, 4]
+  arrayEq(a, forCompile);
+  arrayEq(a, rangeCompileSimple);
+  //exercises Range.compile
+  return eq(`${(() => {
+    let step2;
+    const result1 = [];
+    for (i = 0, step2 = h(); i <= 2; i += step2) {
+      result1.push(i);
+    }
+    return result1;
+  })()}`, '0,1,2');
+});
 
-  ident = (x) -> x
+test("#1669: break/continue should skip the result only for that branch", function() {
+  let n;
+  let ns = (() => {
+    const result = [];
+    for (n = 0; n <= 99; n++) {
+      if (n > 9) {
+        break;
+      } else if (n & 1) {
+        continue;
+      } else {
+        result.push(n);
+      }
+    }
+    return result;
+  })();
+  eq(`${ns}`, '0,2,4,6,8');
 
-  arrayEq (i for i in list), list
+  // `else undefined` is implied.
+  ns = (() => {
+    const result1 = [];
+    for (n = 1; n <= 9; n++) {
+      if (n % 2) {
+        if (!(n % 5)) { continue; }
+        result1.push(n);
+      } else {
+        result1.push(undefined);
+      }
+    }
+    return result1;
+  })();
+  eq(`${ns}`, "1,,3,,,7,,9");
 
-  arrayEq (index for i, index in list), list
+  // Ditto.
+  ns = (() => {
+    const result2 = [];
+    for (n = 1; n <= 9; n++) {
+      switch (false) {
+        case !(n % 2):
+          if (!(n % 5)) { continue; }
+          result2.push(n);
+          break;
+        default:
+          result2.push(undefined);
+      }
+    }
+    return result2;
+  })();
+  return eq(`${ns}`, "1,,3,,,7,,9");
+});
 
-  arrayEq (i for i in list by 1), list
+test("#1850: inner `for` should not be expression-ized if `return`ing", () => eq('3,4,5', (function() {
+  for (let a = 1; a <= 9; a++) { 
+    for (let b = 1; b <= 9; b++) {
+      const c = Math.sqrt((a*a) + (b*b));
+      if (!(c % 1)) { return String([a, b, c]); }
+    }
+  }
+})()
+));
 
-  arrayEq (i for i in list by ident 1), list
+test("#1910: loop index should be mutable within a loop iteration and immutable between loop iterations", function() {
+  let i;
+  let k;
+  let asc, end;
+  let j;
+  let v;
+  const n = 1;
+  let iterations = 0;
+  let arr = __range__(0, n, true);
+  for (i = 0, k = i; i < arr.length; i++, k = i) {
+    v = arr[k];
+    ++iterations;
+    v = (k = 5);
+    eq(5, k);
+  }
+  eq(2, k);
+  eq(2, iterations);
 
-  arrayEq (i for i in list by ident(1) * 2), [0, 2, 4]
+  iterations = 0;
+  for (v = 0, end = n, asc = 0 <= end; asc ? v <= end : v >= end; asc ? v++ : v--) {
+    ++iterations;
+  }
+  eq(2, k);
+  eq(2, iterations);
 
-  arrayEq (index for i, index in list by ident(1) * 2), [0, 2, 4]
+  arr = ((() => {
+    const result = [];
+    for (v = 0; v <= 5; v++) {
+      result.push([v, v + 1]);
+    }
+    return result;
+  })());
+  iterations = 0;
+  for (j = 0, k = j; j < arr.length; j++, k = j) {
+    const [v0, v1] = arr[k];
+    if (v0) {
+      k += 3;
+      ++iterations;
+    }
+  }
+  eq(6, k);
+  return eq(5, iterations);
+});
 
-test "#2525, #1187, #1208, #1758, looping over an array backwards", ->
-  list = [0, 1, 2, 3, 4]
-  backwards = [4, 3, 2, 1, 0]
+test("#2007: Return object literal from comprehension", function() {
+  let x;
+  let y = (() => {
+    const result = [];
+    for (x of [1, 2]) {
+      result.push({foo: "foo" + x});
+    }
+    return result;
+  })();
+  eq(2, y.length);
+  eq("foo1", y[0].foo);
+  eq("foo2", y[1].foo);
 
-  ident = (x) -> x
+  x = 2;
+  y = (() => {
+    const result1 = [];
+    while (x) {
+      result1.push({x: --x});
+    }
+    return result1;
+  })();
+  eq(2, y.length);
+  eq(1, y[0].x);
+  return eq(0, y[1].x);
+});
 
-  arrayEq (i for i in list by -1), backwards
+test("#2274: Allow @values as loop variables", function() {
+  const obj = {
+    item: null,
+    method() {
+      return (() => {
+        const result = [];
+        for (this.item of [1, 2, 3]) {
+          result.push(null);
+        }
+        return result;
+      })();
+    }
+  };
+  eq(obj.item, null);
+  obj.method();
+  return eq(obj.item, 3);
+});
 
-  arrayEq (index for i, index in list by -1), backwards
+test("#4411: Allow @values as loop indices", function() {
+  const obj = {
+    index: null,
+    get() { return this.index; },
+    method() {
+      return (() => {
+        let i;
+        const result = [];
+        const iterable = [1, 2, 3];
+        for (i = 0, this.index = i; i < iterable.length; i++, this.index = i) {
+          const _ = iterable[this.index];
+          result.push(this.get());
+        }
+        return result;
+      })();
+    }
+  };
+  eq(obj.index, null);
+  arrayEq(obj.method(), [0, 1, 2]);
+  return eq(obj.index, 3);
+});
 
-  arrayEq (i for i in list by ident -1), backwards
+test("#2525, #1187, #1208, #1758, looping over an array forwards", function() {
+  let i, index;
+  const list = [0, 1, 2, 3, 4];
 
-  arrayEq (i for i in list by ident(-1) * 2), [4, 2, 0]
+  const ident = x => x;
 
-  arrayEq (index for i, index in list by ident(-1) * 2), [4, 2, 0]
+  arrayEq(((() => {
+    const result = [];
+    for (i of Array.from(list)) {       result.push(i);
+    }
+    return result;
+  })()), list);
 
-test "splats in destructuring in comprehensions", ->
-  list = [[0, 1, 2], [2, 3, 4], [4, 5, 6]]
-  arrayEq (seq for [rep, seq...] in list), [[1, 2], [3, 4], [5, 6]]
+  arrayEq(((() => {
+    const result1 = [];
+    for (index = 0; index < list.length; index++) {
+      i = list[index];
+      result1.push(index);
+    }
+    return result1;
+  })()), list);
 
-test "#156: expansion in destructuring in comprehensions", ->
-  list = [[0, 1, 2], [2, 3, 4], [4, 5, 6]]
-  arrayEq (last for [..., last] in list), [2, 4, 6]
+  arrayEq(((() => {
+    const result2 = [];
+    for (let j = 0; j < list.length; j++) {
+      i = list[j];
+      result2.push(i);
+    }
+    return result2;
+  })()), list);
 
-test "#3778: Consistently always cache for loop range boundaries and steps, even
-      if they are simple identifiers", ->
-  a = 1; arrayEq [1, 2, 3], (for n in [1, 2, 3] by  a then a = 4; n)
-  a = 1; arrayEq [1, 2, 3], (for n in [1, 2, 3] by +a then a = 4; n)
-  a = 1; arrayEq [1, 2, 3], (for n in [a..3]          then a = 4; n)
-  a = 1; arrayEq [1, 2, 3], (for n in [+a..3]         then a = 4; n)
-  a = 3; arrayEq [1, 2, 3], (for n in [1..a]          then a = 4; n)
-  a = 3; arrayEq [1, 2, 3], (for n in [1..+a]         then a = 4; n)
-  a = 1; arrayEq [1, 2, 3], (for n in [1..3] by  a    then a = 4; n)
-  a = 1; arrayEq [1, 2, 3], (for n in [1..3] by +a    then a = 4; n)
+  arrayEq(((() => {
+    const result3 = [];
+    for (let step = ident(1), asc = step > 0, k = asc ? 0 : list.length - 1; asc ? k < list.length : k >= 0; k += step) {
+      i = list[k];
+      result3.push(i);
+    }
+    return result3;
+  })()), list);
+
+  arrayEq(((() => {
+    const result4 = [];
+    for (let step1 = ident(1) * 2, asc1 = step1 > 0, i1 = asc1 ? 0 : list.length - 1; asc1 ? i1 < list.length : i1 >= 0; i1 += step1) {
+      i = list[i1];
+      result4.push(i);
+    }
+    return result4;
+  })()), [0, 2, 4]);
+
+  return arrayEq(((() => {
+    let asc2, step2;
+    const result5 = [];
+    for (step2 = ident(1) * 2, asc2 = step2 > 0, index = asc2 ? 0 : list.length - 1; asc2 ? index < list.length : index >= 0; index += step2) {
+      i = list[index];
+      result5.push(index);
+    }
+    return result5;
+  })()), [0, 2, 4]);
+});
+
+test("#2525, #1187, #1208, #1758, looping over an array backwards", function() {
+  let i, index;
+  const list = [0, 1, 2, 3, 4];
+  const backwards = [4, 3, 2, 1, 0];
+
+  const ident = x => x;
+
+  arrayEq(((() => {
+    const result = [];
+    for (let j = list.length - 1; j >= 0; j--) {
+      i = list[j];
+      result.push(i);
+    }
+    return result;
+  })()), backwards);
+
+  arrayEq(((() => {
+    const result1 = [];
+    for (index = list.length - 1; index >= 0; index--) {
+      i = list[index];
+      result1.push(index);
+    }
+    return result1;
+  })()), backwards);
+
+  arrayEq(((() => {
+    const result2 = [];
+    for (let step = ident(-1), asc = step > 0, k = asc ? 0 : list.length - 1; asc ? k < list.length : k >= 0; k += step) {
+      i = list[k];
+      result2.push(i);
+    }
+    return result2;
+  })()), backwards);
+
+  arrayEq(((() => {
+    const result3 = [];
+    for (let step1 = ident(-1) * 2, asc1 = step1 > 0, i1 = asc1 ? 0 : list.length - 1; asc1 ? i1 < list.length : i1 >= 0; i1 += step1) {
+      i = list[i1];
+      result3.push(i);
+    }
+    return result3;
+  })()), [4, 2, 0]);
+
+  return arrayEq(((() => {
+    let asc2, step2;
+    const result4 = [];
+    for (step2 = ident(-1) * 2, asc2 = step2 > 0, index = asc2 ? 0 : list.length - 1; asc2 ? index < list.length : index >= 0; index += step2) {
+      i = list[index];
+      result4.push(index);
+    }
+    return result4;
+  })()), [4, 2, 0]);
+});
+
+test("splats in destructuring in comprehensions", function() {
+  const list = [[0, 1, 2], [2, 3, 4], [4, 5, 6]];
+  return arrayEq(((() => {
+    const result = [];
+    for (let [rep, ...seq] of Array.from(list)) {       result.push(seq);
+    }
+    return result;
+  })()), [[1, 2], [3, 4], [5, 6]]);
+});
+
+test("#156: expansion in destructuring in comprehensions", function() {
+  const list = [[0, 1, 2], [2, 3, 4], [4, 5, 6]];
+  return arrayEq(((() => {
+    const result = [];
+    for (let value of Array.from(list)) {       const last = value[value.length - 1]; result.push(last);
+    }
+    return result;
+  })()), [2, 4, 6]);
+});
+
+test(`#3778: Consistently always cache for loop range boundaries and steps, even \
+if they are simple identifiers`, function() {
+  let n, a;
+  a = 1; arrayEq([1, 2, 3], ((() => {
+    const result = [];
+    const iterable = [1, 2, 3];
+    for (let step = a, asc = step > 0, i = asc ? 0 : iterable.length - 1; asc ? i < iterable.length : i >= 0; i += step) {
+      n = iterable[i];
+      a = 4; result.push(n);
+    }
+    return result;
+  })()));
+  a = 1; arrayEq([1, 2, 3], ((() => {
+    const result1 = [];
+    const iterable1 = [1, 2, 3];
+    for (let step1 = +a, asc1 = step1 > 0, j = asc1 ? 0 : iterable1.length - 1; asc1 ? j < iterable1.length : j >= 0; j += step1) {
+      n = iterable1[j];
+      a = 4; result1.push(n);
+    }
+    return result1;
+  })()));
+  a = 1; arrayEq([1, 2, 3], ((() => {
+    let asc2;
+    const result2 = [];
+    for (n = a, asc2 = a <= 3; asc2 ? n <= 3 : n >= 3; asc2 ? n++ : n--) {
+      a = 4; result2.push(n);
+    }
+    return result2;
+  })()));
+  a = 1; arrayEq([1, 2, 3], ((() => {
+    let asc3;
+    const result3 = [];
+    for (n = +a, asc3 = +a <= 3; asc3 ? n <= 3 : n >= 3; asc3 ? n++ : n--) {
+      a = 4; result3.push(n);
+    }
+    return result3;
+  })()));
+  a = 3; arrayEq([1, 2, 3], ((() => {
+    let asc4, end;
+    const result4 = [];
+    for (n = 1, end = a, asc4 = 1 <= end; asc4 ? n <= end : n >= end; asc4 ? n++ : n--) {
+      a = 4; result4.push(n);
+    }
+    return result4;
+  })()));
+  a = 3; arrayEq([1, 2, 3], ((() => {
+    let asc5, end1;
+    const result5 = [];
+    for (n = 1, end1 = +a, asc5 = 1 <= end1; asc5 ? n <= end1 : n >= end1; asc5 ? n++ : n--) {
+      a = 4; result5.push(n);
+    }
+    return result5;
+  })()));
+  a = 1; arrayEq([1, 2, 3], ((() => {
+    let step2;
+    const result6 = [];
+    for (n = 1, step2 = a; n <= 3; n += step2) {
+      a = 4; result6.push(n);
+    }
+    return result6;
+  })()));
+  a = 1; return arrayEq([1, 2, 3], ((() => {
+    let step3;
+    const result7 = [];
+    for (n = 1, step3 = +a; n <= 3; n += step3) {
+      a = 4; result7.push(n);
+    }
+    return result7;
+  })()));
+});
+
+function __range__(left, right, inclusive) {
+  let range = [];
+  let ascending = left < right;
+  let end = !inclusive ? right : ascending ? right + 1 : right - 1;
+  for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
+    range.push(i);
+  }
+  return range;
+}
