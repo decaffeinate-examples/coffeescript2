@@ -1,62 +1,27 @@
-                                               @@@@@@@                @@@@  @@@@@
-                    {                         @@@@@@@@@@              @@@   @@@
-                 }   }   {                   @@@@     @@              @@@   @@@
-                {   {  }  }                 @@@@          @@@@@@@    @@@   @@@     @@@@@@    @@@@@@
-                 }   }{  {                 @@@@          @@@   @@  @@@@@  @@@@@@  @@@   @@  @@@@  @@
-                {  }{  }  }                @@@@         @@@@   @@   @@@    @@@   @@@   @@@ @@@   @@@
-               { }{ }{  { }                @@@@        @@@@    @@   @@@    @@@   @@@@@@@@  @@@@@@@@
-             {  { } { } { }  }             @@@@@       @@@@   @@    @@@    @@@   @@@       @@@
-              { }   { }   { }               @@@@@@@@@@ @@@@@@@@    @@@    @@@    @@@@@@@@  @@@@@@@@
-       @@@@@@   { }   { }    @@@@@@@           @@@@@               @@@    @@@      @@@@@     @@@@@
-       @@@@@@@@@@@@@@@@@@@@@@@@@@@@                               @@@    @@@
-     @@ @@@@@@@@@@@@@@@@@@@@@@@@@@             @@@@@@            @@@    @@@
-    @@   @@@@@@@@@@@@@@@@@@@@@@@@           @@@@    @@          @@@   @@@@
-    @@@   @@@@@@@@@@@@@@@@@@@@@             @@@@   @@@                       @@                  @@@@
-     @@@    @@@@@@@@@@@@@@@@@@              @@@@@          @@@@@   @@  @@   @@@     @@@@@@@     @@@@@
-       @@@   @@@@@@@@@@@@@@@@                 @@@@@      @@@  @@@ @@@@@@@@         @@@@  @@@@  @@@@@@@
-              @@@@@@@@@@@@@@                    @@@@@   @@@       @@@@     @@@@    @@@    @@@   @@@
-                                          @@@@@  @@@@  @@@@      @@@@      @@@@   @@@@   @@@@  @@@@
-                                         @@@     @@@@  @@@       @@@@     @@@@    @@@    @@@@  @@@@
-                                         @@@     @@@@  @@@@     @@@@      @@@@   @@@@   @@@@  @@@@
-                                          @@@@@@@@@     @@@@@@  @@@@       @@@@  @@@@@@@@@    @@@@
-                                                                                 @@@          @@@@
-                                                                                @@@
-                                                                                @@@
+# decaffeinate fork of coffeescript2
 
-CoffeeScript is a little language that compiles into JavaScript.
+![Conversion Status](https://decaffeinate-examples.github.io/coffeescript2/conversion-status.svg)
+![Test Status](https://decaffeinate-examples.github.io/coffeescript2/test-status.svg)
 
-## Installation
+[Travis logs](https://travis-ci.org/decaffeinate/decaffeinate-example-builder/jobs/652796021)
 
-Once you have Node.js installed:
+## Conversion results
 
-```shell
-npm install --global coffeescript
-```
 
-Leave off the `--global` if you don’t wish to install globally.
+There were 5 errors out of
+60 total files.
 
-## Getting Started
+For more details on the errors, view the [error logs](./decaffeinate-errors.log)
 
-Execute a script:
 
-```shell
-coffee /path/to/script.coffee
-```
+## Test results
 
-Compile a script:
+The patch to set up tests did not apply cleanly.
 
-```shell
-coffee -c /path/to/script.coffee
-```
+## About this repository
 
-For documentation, usage, and examples, see: http://coffeescript.org/
+This repository was generated automatically by the [decaffeinate-examples]
+project using the [decaffeinate] tool.
 
-To suggest a feature or report a bug: https://github.com/jashkenas/coffeescript/issues
-
-If you’d like to chat, drop by #coffeescript on Freenode IRC.
-
-The source repository: https://github.com/jashkenas/coffeescript.git
-
-Changelog: http://coffeescript.org/#changelog
-
-Our lovely and talented contributors are listed here: https://github.com/jashkenas/coffeescript/contributors
+[decaffeinate-examples]: https://github.com/decaffeinate/decaffeinate-examples
+[decaffeinate]: https://github.com/decaffeinate/decaffeinate
