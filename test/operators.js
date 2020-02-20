@@ -1,462 +1,595 @@
-# Operators
-# ---------
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS202: Simplify dynamic range loops
+ * DS204: Change includes calls to have a more natural evaluation order
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS206: Consider reworking classes to avoid initClass
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+// Operators
+// ---------
 
-# * Operators
-# * Existential Operator (Binary)
-# * Existential Operator (Unary)
-# * Aliased Operators
-# * [not] in/of
-# * Chained Comparison
+// * Operators
+// * Existential Operator (Binary)
+// * Existential Operator (Unary)
+// * Aliased Operators
+// * [not] in/of
+// * Chained Comparison
 
-test "binary (2-ary) math operators do not require spaces", ->
-  a = 1
-  b = -1
-  eq +1, a*-b
-  eq -1, a*+b
-  eq +1, a/-b
-  eq -1, a/+b
+test("binary (2-ary) math operators do not require spaces", function() {
+  const a = 1;
+  const b = -1;
+  eq(+1, a*-b);
+  eq(-1, a*+b);
+  eq(+1, a/-b);
+  return eq(-1, a/+b);
+});
 
-test "operators should respect new lines as spaced", ->
-  a = 123 +
-  456
-  eq 579, a
+test("operators should respect new lines as spaced", function() {
+  const a = 123 +
+  456;
+  eq(579, a);
 
-  b = "1#{2}3" +
-  "456"
-  eq '123456', b
+  const b = `1${2}3` +
+  "456";
+  return eq('123456', b);
+});
 
-test "multiple operators should space themselves", ->
-  eq (+ +1), (- -1)
+test("multiple operators should space themselves", () => eq((+ +1), (- -1)));
 
-test "compound operators on successive lines", ->
-  a = 1
+test("compound operators on successive lines", function() {
+  let a = 1;
   a +=
-  1
-  eq a, 2
+  1;
+  return eq(a, 2);
+});
 
-test "bitwise operators", ->
-  eq  2, (10 &   3)
-  eq 11, (10 |   3)
-  eq  9, (10 ^   3)
-  eq 80, (10 <<  3)
-  eq  1, (10 >>  3)
-  eq  1, (10 >>> 3)
-  num = 10; eq  2, (num &=   3)
-  num = 10; eq 11, (num |=   3)
-  num = 10; eq  9, (num ^=   3)
-  num = 10; eq 80, (num <<=  3)
-  num = 10; eq  1, (num >>=  3)
-  num = 10; eq  1, (num >>>= 3)
+test("bitwise operators", function() {
+  eq(2, (10 &   3));
+  eq(11, (10 |   3));
+  eq(9, (10 ^   3));
+  eq(80, (10 <<  3));
+  eq(1, (10 >>  3));
+  eq(1, (10 >>> 3));
+  let num = 10; eq(2, (num &=   3));
+  num = 10; eq(11, (num |=   3));
+  num = 10; eq(9, (num ^=   3));
+  num = 10; eq(80, (num <<=  3));
+  num = 10; eq(1, (num >>=  3));
+  num = 10; return eq(1, (num >>>= 3));
+});
 
-test "`instanceof`", ->
-  ok new String instanceof String
-  ok new Boolean instanceof Boolean
-  # `instanceof` supports negation by prefixing the operator with `not`
-  ok new Number not instanceof String
-  ok new Array not instanceof Boolean
+test("`instanceof`", function() {
+  ok(new String instanceof String);
+  ok(new Boolean instanceof Boolean);
+  // `instanceof` supports negation by prefixing the operator with `not`
+  ok(!(new Number instanceof String));
+  return ok(!(new Array instanceof Boolean));
+});
 
-test "use `::` operator on keywords `this` and `@`", ->
-  nonce = {}
-  obj =
-    withAt:   -> @::prop
-    withThis: -> this::prop
-  obj.prototype = prop: nonce
-  eq nonce, obj.withAt()
-  eq nonce, obj.withThis()
-
-
-# Existential Operator (Binary)
-
-test "binary existential operator", ->
-  nonce = {}
-
-  b = a ? nonce
-  eq nonce, b
-
-  a = null
-  b = undefined
-  b = a ? nonce
-  eq nonce, b
-
-  a = false
-  b = a ? nonce
-  eq false, b
-
-  a = 0
-  b = a ? nonce
-  eq 0, b
-
-test "binary existential operator conditionally evaluates second operand", ->
-  i = 1
-  func = -> i -= 1
-  result = func() ? func()
-  eq result, 0
-
-test "binary existential operator with negative number", ->
-  a = null ? - 1
-  eq -1, a
+test("use `::` operator on keywords `this` and `@`", function() {
+  const nonce = {};
+  const obj = {
+    withAt() { return this.prototype.prop; },
+    withThis() { return this.prototype.prop; }
+  };
+  obj.prototype = {prop: nonce};
+  eq(nonce, obj.withAt());
+  return eq(nonce, obj.withThis());
+});
 
 
-# Existential Operator (Unary)
+// Existential Operator (Binary)
 
-test "postfix existential operator", ->
-  ok (if nonexistent? then false else true)
-  defined = true
-  ok defined?
-  defined = false
-  ok defined?
+test("binary existential operator", function() {
+  const nonce = {};
 
-test "postfix existential operator only evaluates its operand once", ->
-  semaphore = 0
-  fn = ->
-    ok false if semaphore
-    ++semaphore
-  ok(if fn()? then true else false)
+  let b = a != null ? a : nonce;
+  eq(nonce, b);
 
-test "negated postfix existential operator", ->
-  ok !nothing?.value
+  var a = null;
+  b = undefined;
+  b = a != null ? a : nonce;
+  eq(nonce, b);
 
-test "postfix existential operator on expressions", ->
-  eq true, (1 or 0)?, true
+  a = false;
+  b = a != null ? a : nonce;
+  eq(false, b);
 
+  a = 0;
+  b = a != null ? a : nonce;
+  return eq(0, b);
+});
 
-# `is`,`isnt`,`==`,`!=`
+test("binary existential operator conditionally evaluates second operand", function() {
+  let left;
+  let i = 1;
+  const func = () => i -= 1;
+  const result = (left = func()) != null ? left : func();
+  return eq(result, 0);
+});
 
-test "`==` and `is` should be interchangeable", ->
-  a = b = 1
-  ok a is 1 and b == 1
-  ok a == b
-  ok a is b
-
-test "`!=` and `isnt` should be interchangeable", ->
-  a = 0
-  b = 1
-  ok a isnt 1 and b != 0
-  ok a != b
-  ok a isnt b
+test("binary existential operator with negative number", function() {
+  const a = null != null ? null : - 1;
+  return eq(-1, a);
+});
 
 
-# [not] in/of
+// Existential Operator (Unary)
 
-# - `in` should check if an array contains a value using `indexOf`
-# - `of` should check if a property is defined on an object using `in`
-test "in, of", ->
-  arr = [1]
-  ok 0 of arr
-  ok 1 in arr
-  # prefixing `not` to `in and `of` should negate them
-  ok 1 not of arr
-  ok 0 not in arr
+test("postfix existential operator", function() {
+  ok(((typeof nonexistent !== 'undefined' && nonexistent !== null) ? false : true));
+  let defined = true;
+  ok(defined != null);
+  defined = false;
+  return ok(defined != null);
+});
 
-test "`in` should be able to operate on an array literal", ->
-  ok 2 in [0, 1, 2, 3]
-  ok 4 not in [0, 1, 2, 3]
-  arr = [0, 1, 2, 3]
-  ok 2 in arr
-  ok 4 not in arr
-  # should cache the value used to test the array
-  arr = [0]
-  val = 0
-  ok val++ in arr
-  ok val++ not in arr
-  val = 0
-  ok val++ of arr
-  ok val++ not of arr
+test("postfix existential operator only evaluates its operand once", function() {
+  let semaphore = 0;
+  const fn = function() {
+    if (semaphore) { ok(false); }
+    return ++semaphore;
+  };
+  return ok((fn() != null) ? true : false);
+});
 
-test "`of` and `in` should be able to operate on instance variables", ->
-  obj = {
-    list: [2,3]
-    in_list: (value) -> value in @list
-    not_in_list: (value) -> value not in @list
-    of_list: (value) -> value of @list
-    not_of_list: (value) -> value not of @list
+test("negated postfix existential operator", () => ok(!(typeof nothing !== 'undefined' && nothing !== null ? nothing.value : undefined)));
+
+test("postfix existential operator on expressions", () => eq(true, ((1 || 0) != null), true));
+
+
+// `is`,`isnt`,`==`,`!=`
+
+test("`==` and `is` should be interchangeable", function() {
+  let b;
+  const a = (b = 1);
+  ok((a === 1) && (b === 1));
+  ok(a === b);
+  return ok(a === b);
+});
+
+test("`!=` and `isnt` should be interchangeable", function() {
+  const a = 0;
+  const b = 1;
+  ok((a !== 1) && (b !== 0));
+  ok(a !== b);
+  return ok(a !== b);
+});
+
+
+// [not] in/of
+
+// - `in` should check if an array contains a value using `indexOf`
+// - `of` should check if a property is defined on an object using `in`
+test("in, of", function() {
+  const arr = [1];
+  ok(0 in arr);
+  ok(Array.from(arr).includes(1));
+  // prefixing `not` to `in and `of` should negate them
+  ok(!(1 in arr));
+  return ok(!Array.from(arr).includes(0));
+});
+
+test("`in` should be able to operate on an array literal", function() {
+  let needle, needle1;
+  ok([0, 1, 2, 3].includes(2));
+  ok(![0, 1, 2, 3].includes(4));
+  let arr = [0, 1, 2, 3];
+  ok(Array.from(arr).includes(2));
+  ok(!Array.from(arr).includes(4));
+  // should cache the value used to test the array
+  arr = [0];
+  let val = 0;
+  ok((needle = val++, Array.from(arr).includes(needle)));
+  ok((needle1 = val++, !Array.from(arr).includes(needle1)));
+  val = 0;
+  ok(val++ in arr);
+  return ok(!(val++ in arr));
+});
+
+test("`of` and `in` should be able to operate on instance variables", function() {
+  const obj = {
+    list: [2,3],
+    in_list(value) { return Array.from(this.list).includes(value); },
+    not_in_list(value) { return !Array.from(this.list).includes(value); },
+    of_list(value) { return value in this.list; },
+    not_of_list(value) { return !(value in this.list); }
+  };
+  ok(obj.in_list(3));
+  ok(obj.not_in_list(1));
+  ok(obj.of_list(0));
+  return ok(obj.not_of_list(2));
+});
+
+test("#???: `in` with cache and `__indexOf` should work in argument lists", function() {
+  let needle;
+  return eq(1, [(needle = Object(), Array.from(Array()).includes(needle))].length);
+});
+
+test("#737: `in` should have higher precedence than logical operators", () => eq(1, [1].includes(1) && 1));
+
+test("#768: `in` should preserve evaluation order", function() {
+  let needle;
+  let share = 0;
+  const a = function() { if (share === 0) { return share++; } };
+  const b = function() { if (share === 1) { return share++; } };
+  const c = function() { if (share === 2) { return share++; } };
+  ok((needle = a(), ![b(),c()].includes(needle)));
+  return eq(3, share);
+});
+
+test("#1099: empty array after `in` should compile to `false`", function() {
+  eq(1, [[].includes(5)].length);
+  return eq(false, ((() => [].includes(0)))());
+});
+
+test("#1354: optimized `in` checks should not happen when splats are present", function() {
+  let needle;
+  const a = [6, 9];
+  return eq((needle = 9, [3, ...a].includes(needle)), true);
+});
+
+test("#1100: precedence in or-test compilation of `in`", function() {
+  ok([1 && 0].includes(0));
+  ok([1, 1 && 0].includes(0));
+  return ok(!([1, 0 || 1].includes(0)));
+});
+
+test("#1630: `in` should check `hasOwnProperty`", function() {
+  let needle;
+  return ok((needle = undefined, !Array.from({length: 1}).includes(needle)));
+});
+
+test("#1714: lexer bug with raw range `for` followed by `in`", function() {
+  for (let i = 1; i <= 2; i++) { 0; }
+  ok(!(['b'].includes('a')));
+
+  for (let j = 1; j <= 2; j++) { 0; } ok(!(['b'].includes('a')));
+
+  for (let k = 1; k <= 10; k++) { 0; } // comment ending
+  ok(!(['b'].includes('a')));
+
+  // lexer state (specifically @seenFor) should be reset before each compilation
+  CoffeeScript.compile("0 for [1..2]");
+  return CoffeeScript.compile("'a' in ['b']");
+});
+
+test("#1099: statically determined `not in []` reporting incorrect result", () => ok(![].includes(0)));
+
+test("#1099: make sure expression tested gets evaluted when array is empty", function() {
+  let needle;
+  let a = 0;
+  ((needle = ((() => a = 1))()), [].includes(needle));
+  return eq(a, 1);
+});
+
+// Chained Comparison
+
+test("chainable operators", function() {
+  ok(100 > 10 && 10 > 1 && 1 > 0 && 0 > -1);
+  return ok(-1 < 0 && 0 < 1 && 1 < 10 && 10 < 100);
+});
+
+test("`is` and `isnt` may be chained", function() {
+  ok(true === !false && !false === true && true === !false);
+  return ok(0 === 0 && 0 !== 1 && 1 === 1);
+});
+
+test("different comparison operators (`>`,`<`,`is`,etc.) may be combined", function() {
+  let middle;
+  ok(1 < 2 && 2 > 1);
+  return ok(10 < 20 && 20 > (middle = 2+3) && middle === 5);
+});
+
+test("some chainable operators can be negated by `unless`", () => ok((0!==10 || 10===100 ? true : undefined)));
+
+test("operator precedence: `|` lower than `<`", () => eq(1, 1 | (2 < 3 && 3 < 4)));
+
+test("preserve references", function() {
+  let b, c;
+  const a = (b = (c = 1));
+  // `a == b <= c` should become `a === b && b <= c`
+  // (this test does not seem to test for this)
+  return ok(a === b && b <= c);
+});
+
+test("chained operations should evaluate each value only once", function() {
+  let middle;
+  let a = 0;
+  return ok(1 > (middle = a++) && middle < 1);
+});
+
+test("#891: incorrect inversion of chained comparisons", function() {
+  let middle;
+  ok((!(0 > 1 && 1 > 2) ? true : undefined));
+  return ok((!((this.NaN = 0/0) < (middle = 0/0) && middle < this.NaN) ? true : undefined));
+});
+
+test("#1234: Applying a splat to :: applies the splat to the wrong object", function() {
+  const nonce = {};
+  class C {
+    static initClass() {
+      this.prototype.nonce = nonce;
+    }
+    method() { return this.nonce; }
   }
-  ok obj.in_list 3
-  ok obj.not_in_list 1
-  ok obj.of_list 0
-  ok obj.not_of_list 2
+  C.initClass();
 
-test "#???: `in` with cache and `__indexOf` should work in argument lists", ->
-  eq 1, [Object() in Array()].length
+  const arr = [];
+  return eq(nonce, C.prototype.method(...arr));
+}); // should be applied to `C::`
 
-test "#737: `in` should have higher precedence than logical operators", ->
-  eq 1, 1 in [1] and 1
+test("#1102: String literal prevents line continuation", () => eq("': '", '' +
+   "': '"
+));
 
-test "#768: `in` should preserve evaluation order", ->
-  share = 0
-  a = -> share++ if share is 0
-  b = -> share++ if share is 1
-  c = -> share++ if share is 2
-  ok a() not in [b(),c()]
-  eq 3, share
+test("#1703, ---x is invalid JS", function() {
+  let x = 2;
+  return eq((- --x), -1);
+});
 
-test "#1099: empty array after `in` should compile to `false`", ->
-  eq 1, [5 in []].length
-  eq false, do -> return 0 in []
+test("Regression with implicit calls against an indented assignment", function() {
+  let a;
+  eq(1, (a =
+    1)
+  );
 
-test "#1354: optimized `in` checks should not happen when splats are present", ->
-  a = [6, 9]
-  eq 9 in [3, a...], true
+  return eq(a, 1);
+});
 
-test "#1100: precedence in or-test compilation of `in`", ->
-  ok 0 in [1 and 0]
-  ok 0 in [1, 1 and 0]
-  ok not (0 in [1, 0 or 1])
+test("#2155 ... conditional assignment to a closure", function() {
+  let x = null;
+  const func = () => x != null ? x : (x = (function() { if (true) { return 'hi'; } }));
+  func();
+  return eq(x(), 'hi');
+});
 
-test "#1630: `in` should check `hasOwnProperty`", ->
-  ok undefined not in length: 1
+test("#2197: Existential existential double trouble", function() {
+  let counter = 0;
+  const func = () => counter++;
+  if ((func() != null) == null) { 100; }
+  return eq(counter, 1);
+});
 
-test "#1714: lexer bug with raw range `for` followed by `in`", ->
-  0 for [1..2]
-  ok not ('a' in ['b'])
+test("#2567: Optimization of negated existential produces correct result", function() {
+  const a = 1;
+  ok(!((a == null)));
+  return ok((typeof b === 'undefined' || b === null));
+});
 
-  0 for [1..2]; ok not ('a' in ['b'])
+test("#2508: Existential access of the prototype", function() {
+  eq(typeof NonExistent !== 'undefined' && NonExistent !== null ? NonExistent.prototype.nothing : undefined, undefined);
+  return ok(typeof Object !== 'undefined' && Object !== null ? Object.prototype.toString : undefined);
+});
 
-  0 for [1..10] # comment ending
-  ok not ('a' in ['b'])
+test("power operator", () => eq(27, Math.pow(3, 3)));
 
-  # lexer state (specifically @seenFor) should be reset before each compilation
-  CoffeeScript.compile "0 for [1..2]"
-  CoffeeScript.compile "'a' in ['b']"
+test("power operator has higher precedence than other maths operators", function() {
+  eq(55, 1 + (Math.pow(3, 3) * 2));
+  eq(-4, -Math.pow(2, 2));
+  eq(false, !Math.pow(2, 2));
+  eq(0, Math.pow((!2), 2));
+  return eq(-2, ~Math.pow(1, 5));
+});
 
-test "#1099: statically determined `not in []` reporting incorrect result", ->
-  ok 0 not in []
+test("power operator is right associative", () => eq(2, Math.pow(2, Math.pow(1, 3))));
 
-test "#1099: make sure expression tested gets evaluted when array is empty", ->
-  a = 0
-  (do -> a = 1) in []
-  eq a, 1
+test("power operator compound assignment", function() {
+  let a = 2;
+  a **= 3;
+  return eq(8, a);
+});
 
-# Chained Comparison
+test("floor division operator", function() {
+  eq(2, Math.floor(7 / 3));
+  eq(-3, Math.floor(-7 / 3));
+  return eq(NaN, Math.floor(0 / 0));
+});
 
-test "chainable operators", ->
-  ok 100 > 10 > 1 > 0 > -1
-  ok -1 < 0 < 1 < 10 < 100
+test("floor division operator compound assignment", function() {
+  let a = 7;
+  a = Math.floor(a / (1 + 1));
+  return eq(3, a);
+});
 
-test "`is` and `isnt` may be chained", ->
-  ok true is not false is true is not false
-  ok 0 is 0 isnt 1 is 1
+test("modulo operator", function() {
+  const check = (a, b, expected) => eq(expected, __mod__(a, b), `expected ${a} %%%% ${b} to be ${expected}`);
+  check(0, 1, 0);
+  check(0, -1, -0);
+  check(1, 0, NaN);
+  check(1, 2, 1);
+  check(1, -2, -1);
+  check(1, 3, 1);
+  check(2, 3, 2);
+  check(3, 3, 0);
+  check(4, 3, 1);
+  check(-1, 3, 2);
+  check(-2, 3, 1);
+  check(-3, 3, 0);
+  check(-4, 3, 2);
+  check(5.5, 2.5, 0.5);
+  return check(-5.5, 2.5, 2.0);
+});
 
-test "different comparison operators (`>`,`<`,`is`,etc.) may be combined", ->
-  ok 1 < 2 > 1
-  ok 10 < 20 > 2+3 is 5
+test("modulo operator compound assignment", function() {
+  let a = -2;
+  a = __mod__(a, 5);
+  return eq(3, a);
+});
 
-test "some chainable operators can be negated by `unless`", ->
-  ok (true unless 0==10!=100)
+test("modulo operator converts arguments to numbers", function() {
+  eq(1, __mod__(1, '42'));
+  eq(1, __mod__('1', 42));
+  return eq(1, __mod__('1', '42'));
+});
 
-test "operator precedence: `|` lower than `<`", ->
-  eq 1, 1 | 2 < 3 < 4
+test("#3361: Modulo operator coerces right operand once", function() {
+  let count = 0;
+  const res = __mod__(42, {valueOf() { return count += 1; }});
+  eq(1, count);
+  return eq(0, res);
+});
 
-test "preserve references", ->
-  a = b = c = 1
-  # `a == b <= c` should become `a === b && b <= c`
-  # (this test does not seem to test for this)
-  ok a == b <= c
+test("#3363: Modulo operator coercing order", function() {
+  let count = 2;
+  const a = {valueOf() { return count *= 2; }};
+  const b = {valueOf() { return count += 1; }};
+  eq(4, __mod__(a, b));
+  return eq(5, count);
+});
 
-test "chained operations should evaluate each value only once", ->
-  a = 0
-  ok 1 > a++ < 1
+test("#3598: Unary + and - coerce the operand once when it is an identifier", function() {
+  // Unary + and - do not generate `_ref`s when the operand is a number, for
+  // readability. To make sure that they do when the operand is an identifier,
+  // test that they are consistent with another unary operator as well as another
+  // complex expression.
+  // Tip: Making one of the tests temporarily fail lets you easily inspect the
+  // compiled JavaScript.
 
-test "#891: incorrect inversion of chained comparisons", ->
-  ok (true unless 0 > 1 > 2)
-  ok (true unless (this.NaN = 0/0) < 0/0 < this.NaN)
+  let n;
+  const assertOneCoercion = function(fn) {
+    let count = 0;
+    const value = {valueOf() { count++; return 1; }};
+    fn(value);
+    return eq(1, count);
+  };
 
-test "#1234: Applying a splat to :: applies the splat to the wrong object", ->
-  nonce = {}
-  class C
-    method: -> @nonce
-    nonce: nonce
+  eq(1, 1 != null ? 1 : 0);
+  eq(1, +1 != null ? +1 : 0);
+  eq(-1, -1 != null ? -1 : 0);
+  assertOneCoercion(a => eq(1, +a != null ? +a : 0));
+  assertOneCoercion(a => eq(-1, -a != null ? -a : 0));
+  assertOneCoercion(a => eq(-2, ~a != null ? ~a : 0));
+  assertOneCoercion(function(a) {
+    let left;
+    return eq(0.5, (left = a / 2) != null ? left : 0);
+  });
 
-  arr = []
-  eq nonce, C::method arr... # should be applied to `C::`
+  ok(-2 <= 1 && 1 < 2);
+  ok(-2 <= +1 && +1 < 2);
+  ok(-2 <= -1 && -1 < 2);
+  assertOneCoercion(a => ok(-2 <= +a && +a < 2));
+  assertOneCoercion(a => ok(-2 <= -a && -a < 2));
+  assertOneCoercion(a => ok(-2 <= ~a && ~a < 2));
+  assertOneCoercion(function(a) {
+    let middle;
+    return ok(-2 <= (middle = a / 2) && middle < 2);
+  });
 
-test "#1102: String literal prevents line continuation", ->
-  eq "': '", '' +
-     "': '"
+  arrayEq([0], ((() => {
+    const result = [];
+    const iterable = [0];
+    for (let i = 0; i < iterable.length; i++) {
+      n = iterable[i];
+      result.push(n);
+    }
+    return result;
+  })()));
+  arrayEq([0], ((() => {
+    const result1 = [];
+    const iterable1 = [0];
+    for (let step = +1, asc = step > 0, j = asc ? 0 : iterable1.length - 1; asc ? j < iterable1.length : j >= 0; j += step) {
+      n = iterable1[j];
+      result1.push(n);
+    }
+    return result1;
+  })()));
+  arrayEq([0], ((() => {
+    const result2 = [];
+    const iterable2 = [0];
+    for (let k = iterable2.length - 1; k >= 0; k--) {
+      n = iterable2[k];
+      result2.push(n);
+    }
+    return result2;
+  })()));
+  assertOneCoercion(a => arrayEq([0], ((() => {
+    const result3 = [];
+    const iterable3 = [0];
+    for (let step1 = +a, asc1 = step1 > 0, i1 = asc1 ? 0 : iterable3.length - 1; asc1 ? i1 < iterable3.length : i1 >= 0; i1 += step1) {
+      n = iterable3[i1];
+      result3.push(n);
+    }
+    return result3;
+  })())));
+  assertOneCoercion(a => arrayEq([0], ((() => {
+    const result3 = [];
+    const iterable3 = [0];
+    for (let step1 = -a, asc1 = step1 > 0, i1 = asc1 ? 0 : iterable3.length - 1; asc1 ? i1 < iterable3.length : i1 >= 0; i1 += step1) {
+      n = iterable3[i1];
+      result3.push(n);
+    }
+    return result3;
+  })())));
+  assertOneCoercion(a => arrayEq([0], ((() => {
+    const result3 = [];
+    const iterable3 = [0];
+    for (let step1 = ~a, asc1 = step1 > 0, i1 = asc1 ? 0 : iterable3.length - 1; asc1 ? i1 < iterable3.length : i1 >= 0; i1 += step1) {
+      n = iterable3[i1];
+      result3.push(n);
+    }
+    return result3;
+  })())));
+  assertOneCoercion(a => arrayEq([0], ((() => {
+    const result3 = [];
+    const iterable3 = [0];
+    for (let step1 = (a * 2) / 2, asc1 = step1 > 0, i1 = asc1 ? 0 : iterable3.length - 1; asc1 ? i1 < iterable3.length : i1 >= 0; i1 += step1) {
+      n = iterable3[i1];
+      result3.push(n);
+    }
+    return result3;
+  })())));
 
-test "#1703, ---x is invalid JS", ->
-  x = 2
-  eq (- --x), -1
+  ok([0, 1].includes(1));
+  ok([0, 1].includes(+1));
+  ok([0, -1].includes(-1));
+  assertOneCoercion(a => ok([0, 1].includes(+a)));
+  assertOneCoercion(a => ok([0, -1].includes(-a)));
+  assertOneCoercion(a => ok([0, -2].includes(~a)));
+  return assertOneCoercion(a => ok([0, 0.5].includes(a / 2)));
+});
 
-test "Regression with implicit calls against an indented assignment", ->
-  eq 1, a =
-    1
+test("'new' target", function() {
+  const nonce = {};
+  let ctor  = () => nonce;
 
-  eq a, 1
+  eq((new ctor), nonce);
+  eq((new ctor()), nonce);
 
-test "#2155 ... conditional assignment to a closure", ->
-  x = null
-  func = -> x ?= (-> if true then 'hi')
-  func()
-  eq x(), 'hi'
+  ok(new (class {}),
 
-test "#2197: Existential existential double trouble", ->
-  counter = 0
-  func = -> counter++
-  func()? ? 100
-  eq counter, 1
+  (ctor  = class {}),
+  ok((new ctor) instanceof ctor),
+  ok((new ctor()) instanceof ctor),
 
-test "#2567: Optimization of negated existential produces correct result", ->
-  a = 1
-  ok !(!a?)
-  ok !b?
+  // Force an executable class body
+  (ctor  = (function() {
+    let a = undefined;
+    const Cls = class {
+      static initClass() {
+        a = 1;
+      }
+    };
+    Cls.initClass();
+    return Cls;
+  })()));
+  ok((new ctor) instanceof ctor);
 
-test "#2508: Existential access of the prototype", ->
-  eq NonExistent?::nothing, undefined
-  ok Object?::toString
+  const get   = () => ctor;
+  ok(!((new get()) instanceof ctor));
+  ok((new (get())()) instanceof ctor);
 
-test "power operator", ->
-  eq 27, 3 ** 3
+  // classes must be called with `new`. In this case `new` applies to `get` only
+  return throws(() => new get()());
+});
 
-test "power operator has higher precedence than other maths operators", ->
-  eq 55, 1 + 3 ** 3 * 2
-  eq -4, -2 ** 2
-  eq false, !2 ** 2
-  eq 0, (!2) ** 2
-  eq -2, ~1 ** 5
-
-test "power operator is right associative", ->
-  eq 2, 2 ** 1 ** 3
-
-test "power operator compound assignment", ->
-  a = 2
-  a **= 3
-  eq 8, a
-
-test "floor division operator", ->
-  eq 2, 7 // 3
-  eq -3, -7 // 3
-  eq NaN, 0 // 0
-
-test "floor division operator compound assignment", ->
-  a = 7
-  a //= 1 + 1
-  eq 3, a
-
-test "modulo operator", ->
-  check = (a, b, expected) ->
-    eq expected, a %% b, "expected #{a} %%%% #{b} to be #{expected}"
-  check 0, 1, 0
-  check 0, -1, -0
-  check 1, 0, NaN
-  check 1, 2, 1
-  check 1, -2, -1
-  check 1, 3, 1
-  check 2, 3, 2
-  check 3, 3, 0
-  check 4, 3, 1
-  check -1, 3, 2
-  check -2, 3, 1
-  check -3, 3, 0
-  check -4, 3, 2
-  check 5.5, 2.5, 0.5
-  check -5.5, 2.5, 2.0
-
-test "modulo operator compound assignment", ->
-  a = -2
-  a %%= 5
-  eq 3, a
-
-test "modulo operator converts arguments to numbers", ->
-  eq 1, 1 %% '42'
-  eq 1, '1' %% 42
-  eq 1, '1' %% '42'
-
-test "#3361: Modulo operator coerces right operand once", ->
-  count = 0
-  res = 42 %% valueOf: -> count += 1
-  eq 1, count
-  eq 0, res
-
-test "#3363: Modulo operator coercing order", ->
-  count = 2
-  a = valueOf: -> count *= 2
-  b = valueOf: -> count += 1
-  eq 4, a %% b
-  eq 5, count
-
-test "#3598: Unary + and - coerce the operand once when it is an identifier", ->
-  # Unary + and - do not generate `_ref`s when the operand is a number, for
-  # readability. To make sure that they do when the operand is an identifier,
-  # test that they are consistent with another unary operator as well as another
-  # complex expression.
-  # Tip: Making one of the tests temporarily fail lets you easily inspect the
-  # compiled JavaScript.
-
-  assertOneCoercion = (fn) ->
-    count = 0
-    value = valueOf: -> count++; 1
-    fn value
-    eq 1, count
-
-  eq 1, 1 ? 0
-  eq 1, +1 ? 0
-  eq -1, -1 ? 0
-  assertOneCoercion (a) ->
-    eq 1, +a ? 0
-  assertOneCoercion (a) ->
-    eq -1, -a ? 0
-  assertOneCoercion (a) ->
-    eq -2, ~a ? 0
-  assertOneCoercion (a) ->
-    eq 0.5, a / 2 ? 0
-
-  ok -2 <= 1 < 2
-  ok -2 <= +1 < 2
-  ok -2 <= -1 < 2
-  assertOneCoercion (a) ->
-    ok -2 <= +a < 2
-  assertOneCoercion (a) ->
-    ok -2 <= -a < 2
-  assertOneCoercion (a) ->
-    ok -2 <= ~a < 2
-  assertOneCoercion (a) ->
-    ok -2 <= a / 2 < 2
-
-  arrayEq [0], (n for n in [0] by 1)
-  arrayEq [0], (n for n in [0] by +1)
-  arrayEq [0], (n for n in [0] by -1)
-  assertOneCoercion (a) ->
-    arrayEq [0], (n for n in [0] by +a)
-  assertOneCoercion (a) ->
-    arrayEq [0], (n for n in [0] by -a)
-  assertOneCoercion (a) ->
-    arrayEq [0], (n for n in [0] by ~a)
-  assertOneCoercion (a) ->
-    arrayEq [0], (n for n in [0] by a * 2 / 2)
-
-  ok 1 in [0, 1]
-  ok +1 in [0, 1]
-  ok -1 in [0, -1]
-  assertOneCoercion (a) ->
-    ok +a in [0, 1]
-  assertOneCoercion (a) ->
-    ok -a in [0, -1]
-  assertOneCoercion (a) ->
-    ok ~a in [0, -2]
-  assertOneCoercion (a) ->
-    ok a / 2 in [0, 0.5]
-
-test "'new' target", ->
-  nonce = {}
-  ctor  = -> nonce
-
-  eq (new ctor), nonce
-  eq (new ctor()), nonce
-
-  ok new class
-
-  ctor  = class
-  ok (new ctor) instanceof ctor
-  ok (new ctor()) instanceof ctor
-
-  # Force an executable class body
-  ctor  = class then a = 1
-  ok (new ctor) instanceof ctor
-
-  get   = -> ctor
-  ok (new get()) not instanceof ctor
-  ok (new (get())()) instanceof ctor
-
-  # classes must be called with `new`. In this case `new` applies to `get` only
-  throws -> new get()()
+function __mod__(a, b) {
+  a = +a;
+  b = +b;
+  return (a % b + b) % b;
+}
