@@ -1,0 +1,82 @@
+===== /home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-779678623229/test/classes.coffee
+Cannot handle a super call in an inner function in a constructor. Please either rewrite your CoffeeScript code to not use this construct or file a bug to discuss ways that decaffeinate could handle this case.
+  1290 |     constructor: (param) ->
+  1291 |       @param = param;
+> 1292 |       do => super()
+       |             ^^^^^
+  1293 |       eq(@param, nonce)
+  1294 | 
+
+
+===== /home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-779678623229/test/control_flow.coffee
+MainStage failed to parse: unexpected if
+  1082 | 
+  1083 |   c = 0
+> 1084 |   if (arg) -> (arg ?= undefined); yes then c++
+       |   ^^
+  1085 |   eq(1, c)
+  1086 |   d = 0
+
+
+===== /home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-779678623229/test/formatting.coffee
+AddVariableDeclarationsStage failed to parse: Unexpected token, expected "," (505:51)
+  503 | 
+  504 |   eq(3,
+> 505 |     __guard__((function(b) { return {a: 3}; })((c) { return c; }), x => x.a)
+      |                                                    ^
+  506 |   );
+  507 | 
+
+
+===== /home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-779678623229/test/objects.coffee
+AddVariableDeclarationsStage failed to parse: Unexpected token (881:16)
+  879 |   o1 = { [ref = []]: ref };
+  880 |   deepEqual(o1, { [[]]: [] });
+> 881 |   arrayEq(o1[[],], []);
+      |                 ^
+  882 |   o2 = { [[]]: 1 };
+  883 |   deepEqual(o2, { [[]]: 1 });
+
+
+===== /home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-779678623229/test/regexps.coffee
+/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/cli.js:304
+        throw err;
+        ^
+
+AssertionError [ERR_ASSERTION]: unknown: No tab width specified but encountered tabs in string
+/\	b/g
+    at Object.fromString (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/lines.js:593:22)
+    at genericPrintNoParens (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/printer.js:667:28)
+    at genericPrint (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/printer.js:133:30)
+    at print (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/printer.js:87:15)
+    at /home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/patcher.js:162:28
+    at Array.forEach (<anonymous>)
+    at /home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/patcher.js:150:18
+    at print (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/printer.js:86:15)
+    at /home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/printer.js:58:20
+    at Object.printComments (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/comments.js:283:22)
+    at print (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/printer.js:65:31)
+    at Printer.print (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/printer.js:98:21)
+    at Object.print (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/main.js:39:43)
+    at generate (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/@codemod/core/src/RecastPlugin.js:15:19)
+    at generateCode (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/@babel/core/lib/transformation/file/generate.js:48:24)
+    at run (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/@babel/core/lib/transformation/index.js:55:33)
+    at run.next (<anonymous>)
+    at Object.transform (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/@babel/core/lib/transform.js:27:41)
+    at transform.next (<anonymous>)
+    at evaluateSync (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/gensync/index.js:244:28)
+    at Object.sync (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/gensync/index.js:84:14)
+    at Object.transform (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/@codemod/core/src/index.js:32:19)
+    at Function.ResugarStage.run (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/stages/resugar/index.js:20:27)
+    at runStage (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/index.js:96:22)
+    at /home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/index.js:88:18
+    at Array.forEach (<anonymous>)
+    at runStages (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/index.js:87:12)
+    at Object.convert (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/index.js:60:18)
+    at runWithCode (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/cli.js:296:28)
+    at ReadStream.<anonymous> (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/cli.js:278:42)
+    at emitNone (events.js:111:20)
+    at ReadStream.emit (events.js:208:7)
+    at endReadableNT (_stream_readable.js:1064:12)
+    at _combinedTickCallback (internal/process/next_tick.js:139:11)
+    at process._tickCallback (internal/process/next_tick.js:181:9)
