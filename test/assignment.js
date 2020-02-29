@@ -1,987 +1,1177 @@
-# Assignment
-# ----------
+/*
+ * decaffeinate suggestions:
+ * DS001: Remove Babel/TypeScript constructor workaround
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS201: Simplify complex destructure assignments
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS206: Consider reworking classes to avoid initClass
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+// Assignment
+// ----------
 
-# * Assignment
-# * Compound Assignment
-# * Destructuring Assignment
-# * Context Property (@) Assignment
-# * Existential Assignment (?=)
-# * Assignment to variables similar to generated variables
+// * Assignment
+// * Compound Assignment
+// * Destructuring Assignment
+// * Context Property (@) Assignment
+// * Existential Assignment (?=)
+// * Assignment to variables similar to generated variables
 
-test "context property assignment (using @)", ->
-  nonce = {}
-  addMethod = ->
-    @method = -> nonce
-    this
-  eq nonce, addMethod.call({}).method()
+test("context property assignment (using @)", function() {
+  const nonce = {};
+  const addMethod = function() {
+    this.method = () => nonce;
+    return this;
+  };
+  return eq(nonce, addMethod.call({}).method());
+});
 
-test "unassignable values", ->
-  nonce = {}
-  for nonref in ['', '""', '0', 'f()'].concat CoffeeScript.RESERVED
-    eq nonce, (try CoffeeScript.compile "#{nonref} = v" catch e then nonce)
+test("unassignable values", function() {
+  const nonce = {};
+  return Array.from(['', '""', '0', 'f()'].concat(CoffeeScript.RESERVED)).map((nonref) =>
+    eq(nonce, ((() => { try { return CoffeeScript.compile(`${nonref} = v`); } catch (e) { return nonce; } })())));
+});
 
-# Compound Assignment
+// Compound Assignment
 
-test "boolean operators", ->
-  nonce = {}
+test("boolean operators", function() {
+  let f;
+  const nonce = {};
 
-  a  = 0
-  a or= nonce
-  eq nonce, a
+  let a  = 0;
+  if (!a) { a = nonce; }
+  eq(nonce, a);
 
-  b  = 1
-  b or= nonce
-  eq 1, b
+  let b  = 1;
+  if (!b) { b = nonce; }
+  eq(1, b);
 
-  c = 0
-  c and= nonce
-  eq 0, c
+  let c = 0;
+  if (c) { c = nonce; }
+  eq(0, c);
 
-  d = 1
-  d and= nonce
-  eq nonce, d
+  let d = 1;
+  if (d) { d = nonce; }
+  eq(nonce, d);
 
-  # ensure that RHS is treated as a group
-  e = f = false
-  e and= f or true
-  eq false, e
+  // ensure that RHS is treated as a group
+  let e = (f = false);
+  if (e) { e = f || true; }
+  return eq(false, e);
+});
 
-test "compound assignment as a sub expression", ->
-  [a, b, c] = [1, 2, 3]
-  eq 6, (a + b += c)
-  eq 1, a
-  eq 5, b
-  eq 3, c
+test("compound assignment as a sub expression", function() {
+  let [a, b, c] = [1, 2, 3];
+  eq(6, (a + (b += c)));
+  eq(1, a);
+  eq(5, b);
+  return eq(3, c);
+});
 
-# *note: this test could still use refactoring*
-test "compound assignment should be careful about caching variables", ->
-  count = 0
-  list = []
+// *note: this test could still use refactoring*
+test("compound assignment should be careful about caching variables", function() {
+  let base1, base2, base3, name, name1, name2;
+  let count = 0;
+  const list = [];
 
-  list[++count] or= 1
-  eq 1, list[1]
-  eq 1, count
+  if (!list[name = ++count]) { list[name] = 1; }
+  eq(1, list[1]);
+  eq(1, count);
 
-  list[++count] ?= 2
-  eq 2, list[2]
-  eq 2, count
+  if (list[name1 = ++count] == null) { list[name1] = 2; }
+  eq(2, list[2]);
+  eq(2, count);
 
-  list[count++] and= 6
-  eq 6, list[2]
-  eq 3, count
+  if (list[name2 = count++]) { list[name2] = 6; }
+  eq(6, list[2]);
+  eq(3, count);
 
-  base = ->
-    ++count
-    base
+  var base = function() {
+    ++count;
+    return base;
+  };
 
-  base().four or= 4
-  eq 4, base.four
-  eq 4, count
+  if (!(base1 = base()).four) { base1.four = 4; }
+  eq(4, base.four);
+  eq(4, count);
 
-  base().five ?= 5
-  eq 5, base.five
-  eq 5, count
+  if ((base2 = base()).five == null) { base2.five = 5; }
+  eq(5, base.five);
+  eq(5, count);
 
-  eq 5, base().five ?= 6
-  eq 6, count
+  eq(5, (base3 = base()).five != null ? base3.five : (base3.five = 6));
+  return eq(6, count);
+});
 
-test "compound assignment with implicit objects", ->
-  obj = undefined
-  obj ?=
-    one: 1
+test("compound assignment with implicit objects", function() {
+  let obj = undefined;
+  if (obj == null) { obj =
+    {one: 1}; }
 
-  eq 1, obj.one
+  eq(1, obj.one);
 
-  obj and=
-    two: 2
+  if (obj) { obj = {two: 2}; }
 
-  eq undefined, obj.one
-  eq         2, obj.two
+  eq(undefined, obj.one);
+  return eq(2, obj.two);
+});
 
-test "compound assignment (math operators)", ->
-  num = 10
-  num -= 5
-  eq 5, num
+test("compound assignment (math operators)", function() {
+  let num = 10;
+  num -= 5;
+  eq(5, num);
 
-  num *= 10
-  eq 50, num
+  num *= 10;
+  eq(50, num);
 
-  num /= 10
-  eq 5, num
+  num /= 10;
+  eq(5, num);
 
-  num %= 3
-  eq 2, num
+  num %= 3;
+  return eq(2, num);
+});
 
-test "more compound assignment", ->
-  a = {}
-  val = undefined
-  val ||= a
-  val ||= true
-  eq a, val
+test("more compound assignment", function() {
+  const a = {};
+  let val = undefined;
+  if (!val) { val = a; }
+  if (!val) { val = true; }
+  eq(a, val);
 
-  b = {}
-  val &&= true
-  eq val, true
-  val &&= b
-  eq b, val
+  const b = {};
+  if (val) { val = true; }
+  eq(val, true);
+  if (val) { val = b; }
+  eq(b, val);
 
-  c = {}
-  val = null
-  val ?= c
-  val ?= true
-  eq c, val
+  const c = {};
+  val = null;
+  if (val == null) { val = c; }
+  if (val == null) { val = true; }
+  return eq(c, val);
+});
 
-test "#1192: assignment starting with object literals", ->
-  doesNotThrow (-> CoffeeScript.run "{}.p = 0")
-  doesNotThrow (-> CoffeeScript.run "{}.p++")
-  doesNotThrow (-> CoffeeScript.run "{}[0] = 1")
-  doesNotThrow (-> CoffeeScript.run """{a: 1, 'b', "#{1}": 2}.p = 0""")
-  doesNotThrow (-> CoffeeScript.run "{a:{0:{}}}.a[0] = 0")
+test("#1192: assignment starting with object literals", function() {
+  doesNotThrow((() => CoffeeScript.run("{}.p = 0")));
+  doesNotThrow((() => CoffeeScript.run("{}.p++")));
+  doesNotThrow((() => CoffeeScript.run("{}[0] = 1")));
+  doesNotThrow((() => CoffeeScript.run(`{a: 1, 'b', "${1}": 2}.p = 0`)));
+  return doesNotThrow((() => CoffeeScript.run("{a:{0:{}}}.a[0] = 0")));
+});
 
 
-# Destructuring Assignment
+// Destructuring Assignment
 
-test "empty destructuring assignment", ->
-  {} = {}
-  [] = []
+test("empty destructuring assignment", function() {
+  let ref;
+  ({} = {});
+  return ref = [], ref;
+});
 
-test "chained destructuring assignments", ->
-  [a] = {0: b} = {'0': c} = [nonce={}]
-  eq nonce, a
-  eq nonce, b
-  eq nonce, c
+test("chained destructuring assignments", function() {
+  let b, c, nonce;
+  const [a] = ({0: b} = ({'0': c} = [(nonce={})]));
+  eq(nonce, a);
+  eq(nonce, b);
+  return eq(nonce, c);
+});
 
-test "variable swapping to verify caching of RHS values when appropriate", ->
-  a = nonceA = {}
-  b = nonceB = {}
-  c = nonceC = {}
-  [a, b, c] = [b, c, a]
-  eq nonceB, a
-  eq nonceC, b
-  eq nonceA, c
-  [a, b, c] = [b, c, a]
-  eq nonceC, a
-  eq nonceA, b
-  eq nonceB, c
-  fn = ->
-    [a, b, c] = [b, c, a]
-  arrayEq [nonceA,nonceB,nonceC], fn()
-  eq nonceA, a
-  eq nonceB, b
-  eq nonceC, c
+test("variable swapping to verify caching of RHS values when appropriate", function() {
+  let nonceA, nonceB, nonceC;
+  let a = (nonceA = {});
+  let b = (nonceB = {});
+  let c = (nonceC = {});
+  [a, b, c] = [b, c, a];
+  eq(nonceB, a);
+  eq(nonceC, b);
+  eq(nonceA, c);
+  [a, b, c] = [b, c, a];
+  eq(nonceC, a);
+  eq(nonceA, b);
+  eq(nonceB, c);
+  const fn = () => [a, b, c] = [b, c, a];
+  arrayEq([nonceA,nonceB,nonceC], fn());
+  eq(nonceA, a);
+  eq(nonceB, b);
+  return eq(nonceC, c);
+});
 
-test "#713: destructuring assignment should return right-hand-side value", ->
-  nonces = [nonceA={},nonceB={}]
-  eq nonces, [a, b] = [c, d] = nonces
-  eq nonceA, a
-  eq nonceA, c
-  eq nonceB, b
-  eq nonceB, d
+test("#713: destructuring assignment should return right-hand-side value", function() {
+  let a, b, c, d, nonceA, nonceB;
+  const nonces = [(nonceA={}),(nonceB={})];
+  eq(nonces, ([a, b] = ([c, d] = nonces)));
+  eq(nonceA, a);
+  eq(nonceA, c);
+  eq(nonceB, b);
+  return eq(nonceB, d);
+});
 
-test "#4787 destructuring of objects within arrays", ->
-  arr = [1, {a:1, b:2}]
-  [...,{a, b}] = arr
-  eq a, 1
-  eq b, arr[1].b
-  deepEqual {a, b}, arr[1]
+test("#4787 destructuring of objects within arrays", function() {
+  const arr = [1, {a:1, b:2}];
+  const {a, b} = arr[arr.length - 1];
+  eq(a, 1);
+  eq(b, arr[1].b);
+  return deepEqual({a, b}, arr[1]);
+});
 
-test "#4798 destructuring of objects with splat within arrays", ->
-  arr = [1, {a:1, b:2}]
-  [...,{a, r...}] = arr
-  eq a, 1
-  deepEqual r, {b:2}
-  [b, {q...}] = arr
-  eq b, 1
-  deepEqual q, arr[1]
-  eq q.b, r.b
-  eq q.a, a
+test("#4798 destructuring of objects with splat within arrays", function() {
+  const arr = [1, {a:1, b:2}];
+  const {a, ...r} = arr[arr.length - 1];
+  eq(a, 1);
+  deepEqual(r, {b:2});
+  const [b, {...q}] = arr;
+  eq(b, 1);
+  deepEqual(q, arr[1]);
+  eq(q.b, r.b);
+  return eq(q.a, a);
+});
 
-test "destructuring assignment with splats", ->
-  a = {}; b = {}; c = {}; d = {}; e = {}
-  [x,y...,z] = [a,b,c,d,e]
-  eq a, x
-  arrayEq [b,c,d], y
-  eq e, z
+test("destructuring assignment with splats", function() {
+  let adjustedLength1, array1;
+  const a = {}; const b = {}; const c = {}; const d = {}; const e = {};
+  let array = [a,b,c,d,e], x = array[0], adjustedLength = Math.max(array.length, 2), y = array.slice(1, adjustedLength - 1), z = array[adjustedLength - 1];
+  eq(a, x);
+  arrayEq([b,c,d], y);
+  eq(e, z);
 
-  # Should not trigger implicit call, e.g. rest ... => rest(...)
-  [x,y ...,z] = [a,b,c,d,e]
-  eq a, x
-  arrayEq [b,c,d], y
-  eq e, z
+  // Should not trigger implicit call, e.g. rest ... => rest(...)
+  array1 = [a,b,c,d,e],
+    x = array1[0],
+    adjustedLength1 = Math.max(array1.length, 2),
+    y = array1.slice(1, adjustedLength1 - 1),
+    z = array1[adjustedLength1 - 1];
+  eq(a, x);
+  arrayEq([b,c,d], y);
+  return eq(e, z);
+});
 
-test "deep destructuring assignment with splats", ->
-  a={}; b={}; c={}; d={}; e={}; f={}; g={}; h={}; i={}
-  [u, [v, w..., x], y..., z] = [a, [b, c, d, e], f, g, h, i]
-  eq a, u
-  eq b, v
-  arrayEq [c,d], w
-  eq e, x
-  arrayEq [f,g,h], y
-  eq i, z
+test("deep destructuring assignment with splats", function() {
+  const a={}; const b={}; const c={}; const d={}; const e={}; const f={}; const g={}; const h={}; const i={};
+  const array = [a, [b, c, d, e], f, g, h, i], u = array[0], array1 = array[1], v = array1[0], adjustedLength = Math.max(array1.length, 2), w = array1.slice(1, adjustedLength - 1), x = array1[adjustedLength - 1], adjustedLength1 = Math.max(array.length, 3), y = array.slice(2, adjustedLength1 - 1), z = array[adjustedLength1 - 1];
+  eq(a, u);
+  eq(b, v);
+  arrayEq([c,d], w);
+  eq(e, x);
+  arrayEq([f,g,h], y);
+  return eq(i, z);
+});
 
-test "destructuring assignment with objects", ->
-  a={}; b={}; c={}
-  obj = {a,b,c}
-  {a:x, b:y, c:z} = obj
-  eq a, x
-  eq b, y
-  eq c, z
+test("destructuring assignment with objects", function() {
+  const a={}; const b={}; const c={};
+  const obj = {a,b,c};
+  const {a:x, b:y, c:z} = obj;
+  eq(a, x);
+  eq(b, y);
+  return eq(c, z);
+});
 
-test "deep destructuring assignment with objects", ->
-  a={}; b={}; c={}; d={}
-  obj = {
-    a
+test("deep destructuring assignment with objects", function() {
+  const a={}; const b={}; const c={}; const d={};
+  const obj = {
+    a,
     b: {
       'c': {
         d: [
-          b
+          b,
           {e: c, f: d}
         ]
       }
     }
-  }
-  {a: w, 'b': {c: d: [x, {'f': z, e: y}]}} = obj
-  eq a, w
-  eq b, x
-  eq c, y
-  eq d, z
+  };
+  const {a: w, 'b': {c: {d: [x, {'f': z, e: y}]}}} = obj;
+  eq(a, w);
+  eq(b, x);
+  eq(c, y);
+  return eq(d, z);
+});
 
-test "destructuring assignment with objects and splats", ->
-  a={}; b={}; c={}; d={}
-  obj = a: b: [a, b, c, d]
-  {a: b: [y, z...]} = obj
-  eq a, y
-  arrayEq [b,c,d], z
+test("destructuring assignment with objects and splats", function() {
+  const a={}; const b={}; const c={}; const d={};
+  const obj = {a: {b: [a, b, c, d]}};
+  let {a: {b: [y, ...z]}} = obj;
+  eq(a, y);
+  arrayEq([b,c,d], z);
 
-  # Should not trigger implicit call, e.g. rest ... => rest(...)
-  {a: b: [y, z ...]} = obj
-  eq a, y
-  arrayEq [b,c,d], z
+  // Should not trigger implicit call, e.g. rest ... => rest(...)
+  ({a: {b: [y, ...z]}} = obj);
+  eq(a, y);
+  return arrayEq([b,c,d], z);
+});
 
-test "destructuring assignment against an expression", ->
-  a={}; b={}
-  [y, z] = if true then [a, b] else [b, a]
-  eq a, y
-  eq b, z
+test("destructuring assignment against an expression", function() {
+  const a={}; const b={};
+  const [y, z] = true ? [a, b] : [b, a];
+  eq(a, y);
+  return eq(b, z);
+});
 
-test "destructuring assignment with objects and splats: ES2015", ->
-  obj = {a: 1, b: 2, c: 3, d: 4, e: 5}
-  throws (-> CoffeeScript.compile "{a, r..., s...} = x"), null, "multiple rest elements are disallowed"
-  throws (-> CoffeeScript.compile "{a, r..., s..., b} = x"), null, "multiple rest elements are disallowed"
-  prop = "b"
-  {a, b, r...} = obj
-  eq a, 1
-  eq b, 2
-  eq r.e, obj.e
-  eq r.a, undefined
-  {d, c: x, r...} = obj
-  eq x, 3
-  eq d, 4
-  eq r.c, undefined
-  eq r.b, 2
-  {a, 'b': z, g = 9, r...} = obj
-  eq g, 9
-  eq z, 2
-  eq r.b, undefined
+test("destructuring assignment with objects and splats: ES2015", function() {
+  let d, g, x, z;
+  const obj = {a: 1, b: 2, c: 3, d: 4, e: 5};
+  throws((() => CoffeeScript.compile("{a, r..., s...} = x")), null, "multiple rest elements are disallowed");
+  throws((() => CoffeeScript.compile("{a, r..., s..., b} = x")), null, "multiple rest elements are disallowed");
+  const prop = "b";
+  let {a, b, ...r} = obj;
+  eq(a, 1);
+  eq(b, 2);
+  eq(r.e, obj.e);
+  eq(r.a, undefined);
+  ({d, c: x, ...r} = obj);
+  eq(x, 3);
+  eq(d, 4);
+  eq(r.c, undefined);
+  eq(r.b, 2);
+  ({a, 'b': z, g = 9, ...r} = obj);
+  eq(g, 9);
+  eq(z, 2);
+  return eq(r.b, undefined);
+});
 
-test "destructuring assignment with splats and default values", ->
-  obj = {}
-  c = {b: 1}
-  { a: {b} = c, d...} = obj
+test("destructuring assignment with splats and default values", function() {
+  const obj = {};
+  const c = {b: 1};
+  let { a: {b} = c, ...d} = obj;
 
-  eq b, 1
-  deepEqual d, {}
+  eq(b, 1);
+  deepEqual(d, {});
 
-  # Should not trigger implicit call, e.g. rest ... => rest(...)
-  {
-    a: {b} = c
-    d ...
-  } = obj
+  // Should not trigger implicit call, e.g. rest ... => rest(...)
+  ({
+    a: {b} = c,
+    ...d
+  } = obj);
 
-  eq b, 1
-  deepEqual d, {}
+  eq(b, 1);
+  return deepEqual(d, {});
+});
 
-test "destructuring assignment with splat with default value", ->
-  obj = {}
-  c = {val: 1}
-  { a: {b...} = c } = obj
+test("destructuring assignment with splat with default value", function() {
+  const obj = {};
+  const c = {val: 1};
+  const { a: {...b} = c } = obj;
 
-  deepEqual b, val: 1
+  return deepEqual(b, {val: 1});
+});
 
-test "destructuring assignment with multiple splats in different objects", ->
-  obj = { a: {val: 1}, b: {val: 2} }
-  { a: {a...}, b: {b...} } = obj
-  deepEqual a, val: 1
-  deepEqual b, val: 2
+test("destructuring assignment with multiple splats in different objects", function() {
+  const obj = { a: {val: 1}, b: {val: 2} };
+  let { a: {...a}, b: {...b} } = obj;
+  deepEqual(a, {val: 1});
+  deepEqual(b, {val: 2});
 
-  o = {
+  const o = {
     props: {
       p: {
-        n: 1
+        n: 1,
         m: 5
-      }
+      },
       s: 6
     }
-  }
-  {p: {m, q..., t = {obj...}}, r...} = o.props
-  eq m, o.props.p.m
-  deepEqual r, s: 6
-  deepEqual q, n: 1
-  deepEqual t, obj
+  };
+  let obj1 = o.props.p,
+      {
+        m
+      } = obj1,
+      q = __objectWithoutKeys__(obj1, ['m', 't']),
+      val = obj1.t,
+      t = val !== undefined ? val : {...obj},
+      r = __objectWithoutKeys__(o.props, ['p']);
+  eq(m, o.props.p.m);
+  deepEqual(r, {s: 6});
+  deepEqual(q, {n: 1});
+  deepEqual(t, obj);
 
-  @props = o.props
-  {p: {m}, r...} = @props
-  eq m, @props.p.m
-  deepEqual r, s: 6
+  this.props = o.props;
+  ({p: {m}, ...r} = this.props);
+  eq(m, this.props.p.m);
+  deepEqual(r, {s: 6});
 
-  {p: {m}, r...} = {o.props..., p:{m:9}}
-  eq m, 9
+  ({p: {m}, ...r} = {...o.props, p:{m:9}});
+  eq(m, 9);
 
-  # Should not trigger implicit call, e.g. rest ... => rest(...)
-  {
+  // Should not trigger implicit call, e.g. rest ... => rest(...)
+  ({
     a: {
-      a ...
-    }
+      ...a
+    },
     b: {
-      b ...
+      ...b
     }
-  } = obj
-  deepEqual a, val: 1
-  deepEqual b, val: 2
+  } = obj);
+  deepEqual(a, {val: 1});
+  return deepEqual(b, {val: 2});
+});
 
-test "destructuring assignment with dynamic keys and splats", ->
-  i = 0
-  foo = -> ++i
+test("destructuring assignment with dynamic keys and splats", function() {
+  let i = 0;
+  const foo = () => ++i;
 
-  obj = {1: 'a', 2: 'b'}
-  { "#{foo()}": a, b... } = obj
+  const obj = {1: 'a', 2: 'b'};
+  const { [foo()]: a, ...b } = obj;
 
-  eq a, 'a'
-  eq i, 1
-  deepEqual b, 2: 'b'
+  eq(a, 'a');
+  eq(i, 1);
+  return deepEqual(b, {2: 'b'});
+});
 
-# Tests from https://babeljs.io/docs/plugins/transform-object-rest-spread/.
-test "destructuring assignment with objects and splats: Babel tests", ->
-  # What Babel calls “rest properties:”
-  { x, y, z... } = { x: 1, y: 2, a: 3, b: 4 }
-  eq x, 1
-  eq y, 2
-  deepEqual z, { a: 3, b: 4 }
+// Tests from https://babeljs.io/docs/plugins/transform-object-rest-spread/.
+test("destructuring assignment with objects and splats: Babel tests", function() {
+  // What Babel calls “rest properties:”
+  let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
+  eq(x, 1);
+  eq(y, 2);
+  deepEqual(z, { a: 3, b: 4 });
 
-  # What Babel calls “spread properties:”
-  n = { x, y, z... }
-  deepEqual n, { x: 1, y: 2, a: 3, b: 4 }
+  // What Babel calls “spread properties:”
+  let n = { x, y, ...z };
+  deepEqual(n, { x: 1, y: 2, a: 3, b: 4 });
 
-  # Should not trigger implicit call, e.g. rest ... => rest(...)
-  { x, y, z ... } = { x: 1, y: 2, a: 3, b: 4 }
-  eq x, 1
-  eq y, 2
-  deepEqual z, { a: 3, b: 4 }
+  // Should not trigger implicit call, e.g. rest ... => rest(...)
+  ({ x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 });
+  eq(x, 1);
+  eq(y, 2);
+  deepEqual(z, { a: 3, b: 4 });
 
-  n = { x, y, z ... }
-  deepEqual n, { x: 1, y: 2, a: 3, b: 4 }
+  n = { x, y, ...z };
+  return deepEqual(n, { x: 1, y: 2, a: 3, b: 4 });
+});
 
-test "deep destructuring assignment with objects: ES2015", ->
-  a1={}; b1={}; c1={}; d1={}
-  obj = {
-    a: a1
+test("deep destructuring assignment with objects: ES2015", function() {
+  const a1={}; const b1={}; const c1={}; const d1={};
+  const obj = {
+    a: a1,
     b: {
       'c': {
         d: {
-          b1
-          e: c1
+          b1,
+          e: c1,
           f: d1
         }
       }
-    }
+    },
     b2: {b1, c1}
-  }
-  {a: w, b: {c: {d: {b1: bb, r1...}}}, r2...} = obj
-  eq r1.e, c1
-  eq r2.b, undefined
-  eq bb, b1
-  eq r2.b2, obj.b2
+  };
+  let {a: w, b: {c: {d: {b1: bb, ...r1}}}, ...r2} = obj;
+  eq(r1.e, c1);
+  eq(r2.b, undefined);
+  eq(bb, b1);
+  eq(r2.b2, obj.b2);
 
-  # Should not trigger implicit call, e.g. rest ... => rest(...)
-  {a: w, b: {c: {d: {b1: bb, r1 ...}}}, r2 ...} = obj
-  eq r1.e, c1
-  eq r2.b, undefined
-  eq bb, b1
-  eq r2.b2, obj.b2
+  // Should not trigger implicit call, e.g. rest ... => rest(...)
+  ({a: w, b: {c: {d: {b1: bb, ...r1}}}, ...r2} = obj);
+  eq(r1.e, c1);
+  eq(r2.b, undefined);
+  eq(bb, b1);
+  return eq(r2.b2, obj.b2);
+});
 
-test "deep destructuring assignment with defaults: ES2015", ->
-  obj =
-    b: { c: 1, baz: 'qux' }
+test("deep destructuring assignment with defaults: ES2015", function() {
+  let val1;
+  const obj = {
+    b: { c: 1, baz: 'qux' },
     foo: 'bar'
-  j =
-    f: 'world'
-  i =
-    some: 'prop'
-  {
-    a...
-    b: { c, d... }
-    e: {
-      f: hello
-      g: { h... } = i
-    } = j
-  } = obj
+  };
+  const j =
+    {f: 'world'};
+  const i =
+    {some: 'prop'};
+  let a = __objectWithoutKeys__(obj, ['b', 'e']),
+      { c, ...d } = obj.b,
+      val = obj.e,
+      {
+        f: hello,
+        g: { ...h } = i
+      } = val !== undefined ? val : j;
 
-  deepEqual a, foo: 'bar'
-  eq c, 1
-  deepEqual d, baz: 'qux'
-  eq hello, 'world'
-  deepEqual h, some: 'prop'
+  deepEqual(a, {foo: 'bar'});
+  eq(c, 1);
+  deepEqual(d, {baz: 'qux'});
+  eq(hello, 'world');
+  deepEqual(h, {some: 'prop'});
 
-  # Should not trigger implicit call, e.g. rest ... => rest(...)
-  {
-    a ...
-    b: {
+  // Should not trigger implicit call, e.g. rest ... => rest(...)
+  a = __objectWithoutKeys__(obj, ['b', 'e']),
+    ({
       c,
-      d ...
-    }
-    e: {
-      f: hello
+      ...d
+    } = obj.b),
+    val1 = obj.e,
+    ({
+      f: hello,
       g: {
-        h ...
+        ...h
       } = i
-    } = j
-  } = obj
+    } = val1 !== undefined ? val1 : j);
 
-  deepEqual a, foo: 'bar'
-  eq c, 1
-  deepEqual d, baz: 'qux'
-  eq hello, 'world'
-  deepEqual h, some: 'prop'
+  deepEqual(a, {foo: 'bar'});
+  eq(c, 1);
+  deepEqual(d, {baz: 'qux'});
+  eq(hello, 'world');
+  return deepEqual(h, {some: 'prop'});
+});
 
-test "object spread properties: ES2015", ->
-  obj = {a: 1, b: 2, c: 3, d: 4, e: 5}
-  obj2 = {obj..., c:9}
-  eq obj2.c, 9
-  eq obj.a, obj2.a
+test("object spread properties: ES2015", function() {
+  let obj = {a: 1, b: 2, c: 3, d: 4, e: 5};
+  let obj2 = {...obj, c:9};
+  eq(obj2.c, 9);
+  eq(obj.a, obj2.a);
 
-  # Should not trigger implicit call, e.g. rest ... => rest(...)
+  // Should not trigger implicit call, e.g. rest ... => rest(...)
   obj2 = {
-    obj ...
+    ...obj,
     c:9
-  }
-  eq obj2.c, 9
-  eq obj.a, obj2.a
+  };
+  eq(obj2.c, 9);
+  eq(obj.a, obj2.a);
 
-  obj2 = {obj..., a: 8, c: 9, obj...}
-  eq obj2.c, 3
-  eq obj.a, obj2.a
+  obj2 = {...obj, a: 8, c: 9, ...obj};
+  eq(obj2.c, 3);
+  eq(obj.a, obj2.a);
 
-  # Should not trigger implicit call, e.g. rest ... => rest(...)
+  // Should not trigger implicit call, e.g. rest ... => rest(...)
   obj2 = {
-    obj ...
-    a: 8
-    c: 9
-    obj ...
-  }
-  eq obj2.c, 3
-  eq obj.a, obj2.a
+    ...obj,
+    a: 8,
+    c: 9,
+    ...obj
+  };
+  eq(obj2.c, 3);
+  eq(obj.a, obj2.a);
 
-  obj3 = {obj..., b: 7, g: {obj2..., c: 1}}
-  eq obj3.g.c, 1
-  eq obj3.b, 7
-  deepEqual obj3.g, {obj..., c: 1}
+  const obj3 = {...obj, b: 7, g: {...obj2, c: 1}};
+  eq(obj3.g.c, 1);
+  eq(obj3.b, 7);
+  deepEqual(obj3.g, {...obj, c: 1});
 
-  (({a, b, r...}) ->
-    eq 1, a
-    deepEqual r, {c: 3, d: 44, e: 55}
-  ) {obj2..., d: 44, e: 55}
+  (function({a, b, ...r}) {
+    eq(1, a);
+    return deepEqual(r, {c: 3, d: 44, e: 55});
+  })({...obj2, d: 44, e: 55});
 
-  obj = {a: 1, b: 2, c: {d: 3, e: 4, f: {g: 5}}}
-  obj4 = {a: 10, obj.c...}
-  eq obj4.a, 10
-  eq obj4.d, 3
-  eq obj4.f.g, 5
-  deepEqual obj4.f, obj.c.f
+  obj = {a: 1, b: 2, c: {d: 3, e: 4, f: {g: 5}}};
+  let obj4 = {a: 10, ...obj.c};
+  eq(obj4.a, 10);
+  eq(obj4.d, 3);
+  eq(obj4.f.g, 5);
+  deepEqual(obj4.f, obj.c.f);
 
-  # Should not trigger implicit call, e.g. rest ... => rest(...)
-  (({
-    a
-    b
-    r ...
-    }) ->
-    eq 1, a
-    deepEqual r, {c: 3, d: 44, e: 55}
-  ) {
-    obj2 ...
-    d: 44
+  // Should not trigger implicit call, e.g. rest ... => rest(...)
+  (function({
+    a,
+    b,
+    ...r
+    }) {
+    eq(1, a);
+    return deepEqual(r, {c: 3, d: 44, e: 55});
+  })({
+    ...obj2,
+    d: 44,
     e: 55
-  }
+  });
 
-  # Should not trigger implicit call, e.g. rest ... => rest(...)
+  // Should not trigger implicit call, e.g. rest ... => rest(...)
   obj4 = {
-    a: 10
-    obj.c ...
-  }
-  eq obj4.a, 10
-  eq obj4.d, 3
-  eq obj4.f.g, 5
-  deepEqual obj4.f, obj.c.f
+    a: 10,
+    ...obj.c
+  };
+  eq(obj4.a, 10);
+  eq(obj4.d, 3);
+  eq(obj4.f.g, 5);
+  deepEqual(obj4.f, obj.c.f);
 
-  obj5 = {obj..., ((k) -> {b: k})(99)...}
-  eq obj5.b, 99
-  deepEqual obj5.c, obj.c
+  let obj5 = {...obj, ...((k => ({
+    b: k
+  })))(99)};
+  eq(obj5.b, 99);
+  deepEqual(obj5.c, obj.c);
 
-  # Should not trigger implicit call, e.g. rest ... => rest(...)
+  // Should not trigger implicit call, e.g. rest ... => rest(...)
   obj5 = {
-    obj ...
-    ((k) -> {b: k})(99) ...
-  }
-  eq obj5.b, 99
-  deepEqual obj5.c, obj.c
+    ...obj,
+    ...((k => ({
+      b: k
+    })))(99)
+  };
+  eq(obj5.b, 99);
+  deepEqual(obj5.c, obj.c);
 
-  fn = -> {c: {d: 33, e: 44, f: {g: 55}}}
-  obj6 = {obj..., fn()...}
-  eq obj6.c.d, 33
-  deepEqual obj6.c, {d: 33, e: 44, f: {g: 55}}
+  const fn = () => ({
+    c: {d: 33, e: 44, f: {g: 55}}
+  });
+  const obj6 = {...obj, ...fn()};
+  eq(obj6.c.d, 33);
+  deepEqual(obj6.c, {d: 33, e: 44, f: {g: 55}});
 
-  obj7 = {obj..., fn()..., {c: {d: 55, e: 66, f: {77}}}...}
-  eq obj7.c.d, 55
-  deepEqual obj6.c, {d: 33, e: 44, f: {g: 55}}
+  let obj7 = {...obj, ...fn(), ...{c: {d: 55, e: 66, f: {77: 77}}}};
+  eq(obj7.c.d, 55);
+  deepEqual(obj6.c, {d: 33, e: 44, f: {g: 55}});
 
-  # Should not trigger implicit call, e.g. rest ... => rest(...)
+  // Should not trigger implicit call, e.g. rest ... => rest(...)
   obj7 = {
-    obj ...
-    fn() ...
-    {c: {d: 55, e: 66, f: {77}}} ...
-  }
-  eq obj7.c.d, 55
-  deepEqual obj6.c, {d: 33, e: 44, f: {g: 55}}
+    ...obj,
+    ...fn(),
+    ...{c: {d: 55, e: 66, f: {77: 77}}}
+  };
+  eq(obj7.c.d, 55);
+  deepEqual(obj6.c, {d: 33, e: 44, f: {g: 55}});
 
-  obj =
-    a:
-      b:
-        c:
-          d:
+  obj = {
+    a: {
+      b: {
+        c: {
+          d: {
             e: {}
-  obj9 = {a:1, obj.a.b.c..., g:3}
-  deepEqual obj9.d, {e: {}}
+          }
+        }
+      }
+    }
+  };
+  let obj9 = {a:1, ...obj.a.b.c, g:3};
+  deepEqual(obj9.d, {e: {}});
 
-  a = "a"
-  c = "c"
-  obj9 = {a:1, obj[a].b[c]..., g:3}
-  deepEqual obj9.d, {e: {}}
+  const a = "a";
+  const c = "c";
+  obj9 = {a:1, ...obj[a].b[c], g:3};
+  deepEqual(obj9.d, {e: {}});
 
-  obj9 = {a:1, obj.a["b"].c["d"]..., g:3}
-  deepEqual obj9["e"], {}
+  obj9 = {a:1, ...obj.a["b"].c["d"], g:3};
+  return deepEqual(obj9["e"], {});
+});
 
-test "bracket insertion when necessary", ->
-  [a] = [0] ? [1]
-  eq a, 0
+test("bracket insertion when necessary", function() {
+  let left;
+  const [a] = (left = [0]) != null ? left : [1];
+  return eq(a, 0);
+});
 
-# for implicit destructuring assignment in comprehensions, see the comprehension tests
+// for implicit destructuring assignment in comprehensions, see the comprehension tests
 
-test "destructuring assignment with context (@) properties", ->
-  a={}; b={}; c={}; d={}; e={}
-  obj =
-    fn: () ->
-      local = [a, {b, c}, d, e]
-      [@a, {b: @b, c: @c}, @d, @e] = local
-  eq undefined, obj[key] for key in ['a','b','c','d','e']
-  obj.fn()
-  eq a, obj.a
-  eq b, obj.b
-  eq c, obj.c
-  eq d, obj.d
-  eq e, obj.e
+test("destructuring assignment with context (@) properties", function() {
+  const a={}; const b={}; const c={}; const d={}; const e={};
+  const obj = {
+    fn() {
+      const local = [a, {b, c}, d, e];
+      return [this.a, {b: this.b, c: this.c}, this.d, this.e] = local;
+    }
+  };
+  for (let key of ['a','b','c','d','e']) { eq(undefined, obj[key]); }
+  obj.fn();
+  eq(a, obj.a);
+  eq(b, obj.b);
+  eq(c, obj.c);
+  eq(d, obj.d);
+  return eq(e, obj.e);
+});
 
-test "#1024: destructure empty assignments to produce javascript-like results", ->
-  eq 2 * [] = 3 + 5, 16
+test("#1024: destructure empty assignments to produce javascript-like results", function() {
+  let ref;
+  return eq(2 * (ref = 3 + 5, ref), 16);
+});
 
-test "#1005: invalid identifiers allowed on LHS of destructuring assignment", ->
-  disallowed = ['eval', 'arguments'].concat CoffeeScript.RESERVED
-  throws (-> CoffeeScript.compile "[#{disallowed.join ', '}] = x"), null, 'all disallowed'
-  throws (-> CoffeeScript.compile "[#{disallowed.join '..., '}...] = x"), null, 'all disallowed as splats'
-  t = tSplat = null
-  for v in disallowed when v isnt 'class' # `class` by itself is an expression
-    throws (-> CoffeeScript.compile t), null, t = "[#{v}] = x"
-    throws (-> CoffeeScript.compile tSplat), null, tSplat = "[#{v}...] = x"
-  doesNotThrow ->
-    for v in disallowed
-      CoffeeScript.compile "[a.#{v}] = x"
-      CoffeeScript.compile "[a.#{v}...] = x"
-      CoffeeScript.compile "[@#{v}] = x"
-      CoffeeScript.compile "[@#{v}...] = x"
+test("#1005: invalid identifiers allowed on LHS of destructuring assignment", function() {
+  let tSplat, v;
+  const disallowed = ['eval', 'arguments'].concat(CoffeeScript.RESERVED);
+  throws((() => CoffeeScript.compile(`[${disallowed.join(', ')}] = x`)), null, 'all disallowed');
+  throws((() => CoffeeScript.compile(`[${disallowed.join('..., ')}...] = x`)), null, 'all disallowed as splats');
+  let t = (tSplat = null);
+  for (v of Array.from(disallowed)) { // `class` by itself is an expression
+    if (v !== 'class') {
+      throws((() => CoffeeScript.compile(t)), null, (t = `[${v}] = x`));
+      throws((() => CoffeeScript.compile(tSplat)), null, (tSplat = `[${v}...] = x`));
+    }
+  }
+  return doesNotThrow(() => (() => {
+    const result = [];
+    for (v of Array.from(disallowed)) {
+      CoffeeScript.compile(`[a.${v}] = x`);
+      CoffeeScript.compile(`[a.${v}...] = x`);
+      CoffeeScript.compile(`[@${v}] = x`);
+      result.push(CoffeeScript.compile(`[@${v}...] = x`));
+    }
+    return result;
+  })());
+});
 
-test "#2055: destructuring assignment with `new`", ->
-  {length} = new Array
-  eq 0, length
+test("#2055: destructuring assignment with `new`", function() {
+  const {length} = new Array;
+  return eq(0, length);
+});
 
-test "#156: destructuring with expansion", ->
-  array = [1..5]
-  [first, ..., last] = array
-  eq 1, first
-  eq 5, last
-  [..., lastButOne, last] = array
-  eq 4, lastButOne
-  eq 5, last
-  [first, second, ..., last] = array
-  eq 2, second
-  [..., last] = 'strings as well -> x'
-  eq 'x', last
-  throws (-> CoffeeScript.compile "[1, ..., 3]"),        null, "prohibit expansion outside of assignment"
-  throws (-> CoffeeScript.compile "[..., a, b...] = c"), null, "prohibit expansion and a splat"
-  throws (-> CoffeeScript.compile "[...] = c"),          null, "prohibit lone expansion"
+test("#156: destructuring with expansion", function() {
+  let lastButOne, second;
+  const array = [1, 2, 3, 4, 5];
+  let first = array[0], last = array[array.length - 1];
+  eq(1, first);
+  eq(5, last);
+  lastButOne = array[array.length - 2], last = array[array.length - 1];
+  eq(4, lastButOne);
+  eq(5, last);
+  first = array[0], second = array[1], last = array[array.length - 1];
+  eq(2, second);
+  last = 'strings as well -> x'['strings as well -> x'.length - 1];
+  eq('x', last);
+  throws((() => CoffeeScript.compile("[1, ..., 3]")),        null, "prohibit expansion outside of assignment");
+  throws((() => CoffeeScript.compile("[..., a, b...] = c")), null, "prohibit expansion and a splat");
+  return throws((() => CoffeeScript.compile("[...] = c")),          null, "prohibit lone expansion");
+});
 
-test "destructuring with dynamic keys", ->
-  {"#{'a'}": a, """#{'b'}""": b, c} = {a: 1, b: 2, c: 3}
-  eq 1, a
-  eq 2, b
-  eq 3, c
-  throws -> CoffeeScript.compile '{"#{a}"} = b'
+test("destructuring with dynamic keys", function() {
+  const {['a']: a, ['b']: b, c} = {a: 1, b: 2, c: 3};
+  eq(1, a);
+  eq(2, b);
+  eq(3, c);
+  return throws(() => CoffeeScript.compile('{"#{a}"} = b'));
+});
 
-test "simple array destructuring defaults", ->
-  [a = 1] = []
-  eq 1, a
-  [a = 2] = [undefined]
-  eq 2, a
-  [a = 3] = [null]
-  eq null, a # Breaking change in CS2: per ES2015, default values are applied for `undefined` but not for `null`.
-  [a = 4] = [0]
-  eq 0, a
-  arr = [a = 5]
-  eq 5, a
-  arrayEq [5], arr
+test("simple array destructuring defaults", function() {
+  let [a = 1] = [];
+  eq(1, a);
+  [a = 2] = [undefined];
+  eq(2, a);
+  [a = 3] = [null];
+  eq(null, a); // Breaking change in CS2: per ES2015, default values are applied for `undefined` but not for `null`.
+  [a = 4] = [0];
+  eq(0, a);
+  const arr = [(a = 5)];
+  eq(5, a);
+  return arrayEq([5], arr);
+});
 
-test "simple object destructuring defaults", ->
-  {b = 1} = {}
-  eq b, 1
-  {b = 2} = {b: undefined}
-  eq b, 2
-  {b = 3} = {b: null}
-  eq b, null # Breaking change in CS2: per ES2015, default values are applied for `undefined` but not for `null`.
-  {b = 4} = {b: 0}
-  eq b, 0
+test("simple object destructuring defaults", function() {
+  let {b = 1} = {};
+  eq(b, 1);
+  ({b = 2} = {b: undefined});
+  eq(b, 2);
+  ({b = 3} = {b: null});
+  eq(b, null); // Breaking change in CS2: per ES2015, default values are applied for `undefined` but not for `null`.
+  ({b = 4} = {b: 0});
+  eq(b, 0);
 
-  {b: c = 1} = {}
-  eq c, 1
-  {b: c = 2} = {b: undefined}
-  eq c, 2
-  {b: c = 3} = {b: null}
-  eq c, null # Breaking change in CS2: per ES2015, default values are applied for `undefined` but not for `null`.
-  {b: c = 4} = {b: 0}
-  eq c, 0
+  let {b: c = 1} = {};
+  eq(c, 1);
+  ({b: c = 2} = {b: undefined});
+  eq(c, 2);
+  ({b: c = 3} = {b: null});
+  eq(c, null); // Breaking change in CS2: per ES2015, default values are applied for `undefined` but not for `null`.
+  ({b: c = 4} = {b: 0});
+  return eq(c, 0);
+});
 
-test "multiple array destructuring defaults", ->
-  [a = 1, b = 2, c] = [undefined, 12, 13]
-  eq a, 1
-  eq b, 12
-  eq c, 13
-  [a, b = 2, c = 3] = [undefined, 12, 13]
-  eq a, undefined
-  eq b, 12
-  eq c, 13
-  [a = 1, b, c = 3] = [11, 12]
-  eq a, 11
-  eq b, 12
-  eq c, 3
+test("multiple array destructuring defaults", function() {
+  let [a = 1, b = 2, c] = [undefined, 12, 13];
+  eq(a, 1);
+  eq(b, 12);
+  eq(c, 13);
+  [a, b = 2, c = 3] = [undefined, 12, 13];
+  eq(a, undefined);
+  eq(b, 12);
+  eq(c, 13);
+  [a = 1, b, c = 3] = [11, 12];
+  eq(a, 11);
+  eq(b, 12);
+  return eq(c, 3);
+});
 
-test "multiple object destructuring defaults", ->
-  {a = 1, b: bb = 2, 'c': c = 3, "#{0}": d = 4} = {"#{'b'}": 12}
-  eq a, 1
-  eq bb, 12
-  eq c, 3
-  eq d, 4
+test("multiple object destructuring defaults", function() {
+  const {a = 1, b: bb = 2, 'c': c = 3, [0]: d = 4} = {['b']: 12};
+  eq(a, 1);
+  eq(bb, 12);
+  eq(c, 3);
+  return eq(d, 4);
+});
 
-test "array destructuring defaults with splats", ->
-  [..., a = 9] = []
-  eq a, 9
-  [..., b = 9] = [19]
-  eq b, 19
+test("array destructuring defaults with splats", function() {
+  const array = [], val = array[array.length - 1], a = val !== undefined ? val : 9;
+  eq(a, 9);
+  const array1 = [19], val1 = array1[array1.length - 1], b = val1 !== undefined ? val1 : 9;
+  return eq(b, 19);
+});
 
-test "deep destructuring assignment with defaults", ->
-  [a, [{b = 1, c = 3}] = [c: 2]] = [0]
-  eq a, 0
-  eq b, 1
-  eq c, 2
+test("deep destructuring assignment with defaults", function() {
+  const [a, [{b = 1, c = 3}] = [{c: 2}]] = [0];
+  eq(a, 0);
+  eq(b, 1);
+  return eq(c, 2);
+});
 
-test "destructuring assignment with context (@) properties and defaults", ->
-  a={}; b={}; c={}; d={}; e={}
-  obj =
-    fn: () ->
-      local = [a, {b, c: undefined}, d]
-      [@a, {b: @b = b, @c = c}, @d, @e = e] = local
-  eq undefined, obj[key] for key in ['a','b','c','d','e']
-  obj.fn()
-  eq a, obj.a
-  eq b, obj.b
-  eq c, obj.c
-  eq d, obj.d
-  eq e, obj.e
+test("destructuring assignment with context (@) properties and defaults", function() {
+  const a={}; const b={}; const c={}; const d={}; const e={};
+  const obj = {
+    fn() {
+      const local = [a, {b, c: undefined}, d];
+      return [this.a, {b: this.b = b, c: this.c = c}, this.d, this.e = e] = local;
+    }
+  };
+  for (let key of ['a','b','c','d','e']) { eq(undefined, obj[key]); }
+  obj.fn();
+  eq(a, obj.a);
+  eq(b, obj.b);
+  eq(c, obj.c);
+  eq(d, obj.d);
+  return eq(e, obj.e);
+});
 
-test "destructuring assignment with defaults single evaluation", ->
-  callCount = 0
-  fn = -> callCount++
-  [a = fn()] = []
-  eq 0, a
-  eq 1, callCount
-  [a = fn()] = [10]
-  eq 10, a
-  eq 1, callCount
-  {a = fn(), b: c = fn()} = {a: 20, b: undefined}
-  eq 20, a
-  eq c, 1
-  eq callCount, 2
+test("destructuring assignment with defaults single evaluation", function() {
+  let c;
+  let callCount = 0;
+  const fn = () => callCount++;
+  let [a = fn()] = [];
+  eq(0, a);
+  eq(1, callCount);
+  [a = fn()] = [10];
+  eq(10, a);
+  eq(1, callCount);
+  ({a = fn(), b: c = fn()} = {a: 20, b: undefined});
+  eq(20, a);
+  eq(c, 1);
+  return eq(callCount, 2);
+});
 
 
-# Existential Assignment
+// Existential Assignment
 
-test "existential assignment", ->
-  nonce = {}
-  a = false
-  a ?= nonce
-  eq false, a
-  b = undefined
-  b ?= nonce
-  eq nonce, b
-  c = null
-  c ?= nonce
-  eq nonce, c
+test("existential assignment", function() {
+  const nonce = {};
+  let a = false;
+  if (a == null) { a = nonce; }
+  eq(false, a);
+  let b = undefined;
+  if (b == null) { b = nonce; }
+  eq(nonce, b);
+  let c = null;
+  if (c == null) { c = nonce; }
+  return eq(nonce, c);
+});
 
-test "#1627: prohibit conditional assignment of undefined variables", ->
-  throws (-> CoffeeScript.compile "x ?= 10"),        null, "prohibit (x ?= 10)"
-  throws (-> CoffeeScript.compile "x ||= 10"),       null, "prohibit (x ||= 10)"
-  throws (-> CoffeeScript.compile "x or= 10"),       null, "prohibit (x or= 10)"
-  throws (-> CoffeeScript.compile "do -> x ?= 10"),  null, "prohibit (do -> x ?= 10)"
-  throws (-> CoffeeScript.compile "do -> x ||= 10"), null, "prohibit (do -> x ||= 10)"
-  throws (-> CoffeeScript.compile "do -> x or= 10"), null, "prohibit (do -> x or= 10)"
-  doesNotThrow (-> CoffeeScript.compile "x = null; x ?= 10"),        "allow (x = null; x ?= 10)"
-  doesNotThrow (-> CoffeeScript.compile "x = null; x ||= 10"),       "allow (x = null; x ||= 10)"
-  doesNotThrow (-> CoffeeScript.compile "x = null; x or= 10"),       "allow (x = null; x or= 10)"
-  doesNotThrow (-> CoffeeScript.compile "x = null; do -> x ?= 10"),  "allow (x = null; do -> x ?= 10)"
-  doesNotThrow (-> CoffeeScript.compile "x = null; do -> x ||= 10"), "allow (x = null; do -> x ||= 10)"
-  doesNotThrow (-> CoffeeScript.compile "x = null; do -> x or= 10"), "allow (x = null; do -> x or= 10)"
+test("#1627: prohibit conditional assignment of undefined variables", function() {
+  throws((() => CoffeeScript.compile("x ?= 10")),        null, "prohibit (x ?= 10)");
+  throws((() => CoffeeScript.compile("x ||= 10")),       null, "prohibit (x ||= 10)");
+  throws((() => CoffeeScript.compile("x or= 10")),       null, "prohibit (x or= 10)");
+  throws((() => CoffeeScript.compile("do -> x ?= 10")),  null, "prohibit (do -> x ?= 10)");
+  throws((() => CoffeeScript.compile("do -> x ||= 10")), null, "prohibit (do -> x ||= 10)");
+  throws((() => CoffeeScript.compile("do -> x or= 10")), null, "prohibit (do -> x or= 10)");
+  doesNotThrow((() => CoffeeScript.compile("x = null; x ?= 10")),        "allow (x = null; x ?= 10)");
+  doesNotThrow((() => CoffeeScript.compile("x = null; x ||= 10")),       "allow (x = null; x ||= 10)");
+  doesNotThrow((() => CoffeeScript.compile("x = null; x or= 10")),       "allow (x = null; x or= 10)");
+  doesNotThrow((() => CoffeeScript.compile("x = null; do -> x ?= 10")),  "allow (x = null; do -> x ?= 10)");
+  doesNotThrow((() => CoffeeScript.compile("x = null; do -> x ||= 10")), "allow (x = null; do -> x ||= 10)");
+  doesNotThrow((() => CoffeeScript.compile("x = null; do -> x or= 10")), "allow (x = null; do -> x or= 10)");
 
-  throws (-> CoffeeScript.compile "-> -> -> x ?= 10"), null, "prohibit (-> -> -> x ?= 10)"
-  doesNotThrow (-> CoffeeScript.compile "x = null; -> -> -> x ?= 10"), "allow (x = null; -> -> -> x ?= 10)"
+  throws((() => CoffeeScript.compile("-> -> -> x ?= 10")), null, "prohibit (-> -> -> x ?= 10)");
+  return doesNotThrow((() => CoffeeScript.compile("x = null; -> -> -> x ?= 10")), "allow (x = null; -> -> -> x ?= 10)");
+});
 
-test "more existential assignment", ->
-  global.temp ?= 0
-  eq global.temp, 0
-  global.temp or= 100
-  eq global.temp, 100
-  delete global.temp
+test("more existential assignment", function() {
+  if (global.temp == null) { global.temp = 0; }
+  eq(global.temp, 0);
+  if (!global.temp) { global.temp = 100; }
+  eq(global.temp, 100);
+  return delete global.temp;
+});
 
-test "#1348, #1216: existential assignment compilation", ->
-  nonce = {}
-  a = nonce
-  b = (a ?= 0)
-  eq nonce, b
-  #the first ?= compiles into a statement; the second ?= compiles to a ternary expression
-  eq a ?= b ?= 1, nonce
+test("#1348, #1216: existential assignment compilation", function() {
+  const nonce = {};
+  let a = nonce;
+  let b = (a != null ? a : (a = 0));
+  eq(nonce, b);
+  //the first ?= compiles into a statement; the second ?= compiles to a ternary expression
+  eq(a != null ? a : (a = b != null ? b : (b = 1)), nonce);
 
-  if a then a ?= 2 else a = 3
-  eq a, nonce
+  if (a) { if (a == null) { a = 2; } } else { a = 3; }
+  return eq(a, nonce);
+});
 
-test "#1591, #1101: splatted expressions in destructuring assignment must be assignable", ->
-  nonce = {}
-  for nonref in ['', '""', '0', 'f()', '(->)'].concat CoffeeScript.RESERVED
-    eq nonce, (try CoffeeScript.compile "[#{nonref}...] = v" catch e then nonce)
+test("#1591, #1101: splatted expressions in destructuring assignment must be assignable", function() {
+  const nonce = {};
+  return Array.from(['', '""', '0', 'f()', '(->)'].concat(CoffeeScript.RESERVED)).map((nonref) =>
+    eq(nonce, ((() => { try { return CoffeeScript.compile(`[${nonref}...] = v`); } catch (e) { return nonce; } })())));
+});
 
-test "#1643: splatted accesses in destructuring assignments should not be declared as variables", ->
-  nonce = {}
-  accesses = ['o.a', 'o["a"]', '(o.a)', '(o.a).a', '@o.a', 'C::a', 'f().a', 'o?.a', 'o?.a.b', 'f?().a']
-  for access in accesses
-    for i,j in [1,2,3] #position can matter
+test("#1643: splatted accesses in destructuring assignments should not be declared as variables", function() {
+  let code, i, j;
+  let e;
+  const nonce = {};
+  const accesses = ['o.a', 'o["a"]', '(o.a)', '(o.a).a', '@o.a', 'C::a', 'f().a', 'o?.a', 'o?.a.b', 'f?().a'];
+  for (let access of Array.from(accesses)) {
+    const iterable = [1,2,3];
+    for (j = 0; j < iterable.length; j++) { //position can matter
+      i = iterable[j];
       code =
-        """
-        nonce = {}; nonce2 = {}; nonce3 = {};
-        @o = o = new (class C then a:{}); f = -> o
-        [#{new Array(i).join('x,')}#{access}...] = [#{new Array(i).join('0,')}nonce, nonce2, nonce3]
-        unless #{access}[0] is nonce and #{access}[1] is nonce2 and #{access}[2] is nonce3 then throw new Error('[...]')
-        """
-      eq nonce, unless (try CoffeeScript.run code, bare: true catch e then true) then nonce
-  # subpatterns like `[[a]...]` and `[{a}...]`
-  subpatterns = ['[sub, sub2, sub3]', '{0: sub, 1: sub2, 2: sub3}']
-  for subpattern in subpatterns
-    for i,j in [1,2,3]
-      code =
-        """
-        nonce = {}; nonce2 = {}; nonce3 = {};
-        [#{new Array(i).join('x,')}#{subpattern}...] = [#{new Array(i).join('0,')}nonce, nonce2, nonce3]
-        unless sub is nonce and sub2 is nonce2 and sub3 is nonce3 then throw new Error('[sub...]')
-        """
-      eq nonce, unless (try CoffeeScript.run code, bare: true catch e then true) then nonce
+        `\
+nonce = {}; nonce2 = {}; nonce3 = {};
+@o = o = new (class C then a:{}); f = -> o
+[${new Array(i).join('x,')}${access}...] = [${new Array(i).join('0,')}nonce, nonce2, nonce3]
+unless ${access}[0] is nonce and ${access}[1] is nonce2 and ${access}[2] is nonce3 then throw new Error('[...]')\
+`;
+      eq(nonce, (!(() => { try { return CoffeeScript.run(code, {bare: true}); } catch (error) { e = error; return true; } })()) ? nonce : undefined);
+    }
+  }
+  // subpatterns like `[[a]...]` and `[{a}...]`
+  const subpatterns = ['[sub, sub2, sub3]', '{0: sub, 1: sub2, 2: sub3}'];
+  return Array.from(subpatterns).map((subpattern) =>
+    (() => {
+      const result = [];
+      const iterable1 = [1,2,3];
+      for (j = 0; j < iterable1.length; j++) {
+        i = iterable1[j];
+        code =
+          `\
+nonce = {}; nonce2 = {}; nonce3 = {};
+[${new Array(i).join('x,')}${subpattern}...] = [${new Array(i).join('0,')}nonce, nonce2, nonce3]
+unless sub is nonce and sub2 is nonce2 and sub3 is nonce3 then throw new Error('[sub...]')\
+`;
+        result.push(eq(nonce, (!(() => { try { return CoffeeScript.run(code, {bare: true}); } catch (error1) { e = error1; return true; } })()) ? nonce : undefined));
+      }
+      return result;
+    })());
+});
 
-test "#1838: Regression with variable assignment", ->
-  name =
-  'dave'
+test("#1838: Regression with variable assignment", function() {
+  const name =
+  'dave';
 
-  eq name, 'dave'
+  return eq(name, 'dave');
+});
 
-test '#2211: splats in destructured parameters', ->
-  doesNotThrow -> CoffeeScript.compile '([a...]) ->'
-  doesNotThrow -> CoffeeScript.compile '([a...],b) ->'
-  doesNotThrow -> CoffeeScript.compile '([a...],[b...]) ->'
-  throws -> CoffeeScript.compile '([a...,[a...]]) ->'
-  doesNotThrow -> CoffeeScript.compile '([a...,[b...]]) ->'
+test('#2211: splats in destructured parameters', function() {
+  doesNotThrow(() => CoffeeScript.compile('([a...]) ->'));
+  doesNotThrow(() => CoffeeScript.compile('([a...],b) ->'));
+  doesNotThrow(() => CoffeeScript.compile('([a...],[b...]) ->'));
+  throws(() => CoffeeScript.compile('([a...,[a...]]) ->'));
+  return doesNotThrow(() => CoffeeScript.compile('([a...,[b...]]) ->'));
+});
 
-test '#2213: invocations within destructured parameters', ->
-  throws -> CoffeeScript.compile '([a()])->'
-  throws -> CoffeeScript.compile '([a:b()])->'
-  throws -> CoffeeScript.compile '([a:b.c()])->'
-  throws -> CoffeeScript.compile '({a()})->'
-  throws -> CoffeeScript.compile '({a:b()})->'
-  throws -> CoffeeScript.compile '({a:b.c()})->'
+test('#2213: invocations within destructured parameters', function() {
+  throws(() => CoffeeScript.compile('([a()])->'));
+  throws(() => CoffeeScript.compile('([a:b()])->'));
+  throws(() => CoffeeScript.compile('([a:b.c()])->'));
+  throws(() => CoffeeScript.compile('({a()})->'));
+  throws(() => CoffeeScript.compile('({a:b()})->'));
+  return throws(() => CoffeeScript.compile('({a:b.c()})->'));
+});
 
-test '#2532: compound assignment with terminator', ->
-  doesNotThrow -> CoffeeScript.compile """
-  a = "hello"
-  a +=
-  "
-  world
-  !
-  "
-  """
+test('#2532: compound assignment with terminator', () => doesNotThrow(() => CoffeeScript.compile(`\
+a = "hello"
+a +=
+"
+world
+!
+"\
+`
+)));
 
-test "#2613: parens on LHS of destructuring", ->
-  a = {}
-  [(a).b] = [1, 2, 3]
-  eq a.b, 1
+test("#2613: parens on LHS of destructuring", function() {
+  const a = {};
+  [(a).b] = [1, 2, 3];
+  return eq(a.b, 1);
+});
 
-test "#2181: conditional assignment as a subexpression", ->
-  a = false
-  false && a or= true
-  eq false, a
-  eq false, not a or= true
+test("#2181: conditional assignment as a subexpression", function() {
+  let a = false;
+  false && (a || (a = true));
+  eq(false, a);
+  return eq(false, !(a || (a = true)));
+});
 
-test "#1500: Assignment to variables similar to generated variables", ->
-  len = 0
-  x = ((results = null; n) for n in [1, 2, 3])
-  arrayEq [1, 2, 3], x
-  eq 0, len
+test("#1500: Assignment to variables similar to generated variables", function() {
+  let results;
+  let base1, error, f, left, scope;
+  const len = 0;
+  let x = ([1, 2, 3].map((n) => ((results = null), n)));
+  arrayEq([1, 2, 3], x);
+  eq(0, len);
 
-  for x in [1, 2, 3]
-    f = ->
-      i = 0
-    f()
-    eq 'undefined', typeof i
+  for (x of [1, 2, 3]) {
+    f = function() {
+      let i;
+      return i = 0;
+    };
+    f();
+    eq('undefined', typeof i);
+  }
 
-  ref = 2
-  x = ref * 2 ? 1
-  eq x, 4
-  eq 'undefined', typeof ref1
+  const ref = 2;
+  x = (left = ref * 2) != null ? left : 1;
+  eq(x, 4);
+  eq('undefined', typeof ref1);
 
-  x = {}
-  base = -> x
-  name = -1
-  base()[-name] ?= 2
-  eq x[1], 2
-  eq base(), x
-  eq name, -1
+  x = {};
+  const base = () => x;
+  const name = -1;
+  if ((base1 = base())[-name] == null) { base1[-name] = 2; }
+  eq(x[1], 2);
+  eq(base(), x);
+  eq(name, -1);
 
-  f = (@a, a) -> [@a, a]
-  arrayEq [1, 2], f.call scope = {}, 1, 2
-  eq 1, scope.a
+  f = function(a1, a) { this.a = a1; return [this.a, a]; };
+  arrayEq([1, 2], f.call((scope = {}), 1, 2));
+  eq(1, scope.a);
 
-  try throw 'foo'
-  catch error
-    eq error, 'foo'
+  try { throw 'foo'; }
+  catch (error1) {
+    error = error1;
+    eq(error, 'foo');
+  }
 
-  eq error, 'foo'
+  eq(error, 'foo');
 
-  doesNotThrow -> CoffeeScript.compile '(@slice...) ->'
+  return doesNotThrow(() => CoffeeScript.compile('(@slice...) ->'));
+});
 
-test "Assignment to variables similar to helper functions", ->
-  f = (slice...) -> slice
-  arrayEq [1, 2, 3], f 1, 2, 3
-  eq 'undefined', typeof slice1
+test("Assignment to variables similar to helper functions", function() {
+  const f = (...slice) => slice;
+  arrayEq([1, 2, 3], f(1, 2, 3));
+  eq('undefined', typeof slice1);
 
-  class A
-  class B extends A
-    extend = 3
-    hasProp = 4
-    value: 5
-    method: (bind, bind1) => [bind, bind1, extend, hasProp, @value]
-  {method} = new B
-  arrayEq [1, 2, 3, 4, 5], method 1, 2
+  class A {}
+  var B = (function() {
+    let extend = undefined;
+    let hasProp = undefined;
+    B = class B extends A {
+      constructor(...args) {
+        {
+          // Hack: trick Babel/TypeScript into allowing this before super.
+          if (false) { super(); }
+          let thisFn = (() => { return this; }).toString();
+          let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+          eval(`${thisName} = this;`);
+        }
+        this.method = this.method.bind(this);
+        super(...args);
+      }
 
-  modulo = -1 %% 3
-  eq 2, modulo
+      static initClass() {
+        extend = 3;
+        hasProp = 4;
+        this.prototype.value = 5;
+      }
+      method(bind, bind1) { return [bind, bind1, extend, hasProp, this.value]; }
+    };
+    B.initClass();
+    return B;
+  })();
+  const {method} = new B;
+  arrayEq([1, 2, 3, 4, 5], method(1, 2));
 
-  indexOf = [1, 2, 3]
-  ok 2 in indexOf
+  const modulo = __mod__(-1, 3);
+  eq(2, modulo);
 
-test "#4566: destructuring with nested default values", ->
-  {a: {b = 1}} = a: {}
-  eq 1, b
+  const indexOf = [1, 2, 3];
+  return ok(Array.from(indexOf).includes(2));
+});
 
-  {c: {d} = {}} = c: d: 3
-  eq 3, d
+test("#4566: destructuring with nested default values", function() {
+  const {a: {b = 1}} = {a: {}};
+  eq(1, b);
 
-  {e: {f = 5} = {}} = {}
-  eq 5, f
+  const {c: {d} = {}} = {c: {d: 3}};
+  eq(3, d);
 
-test "#4674: _extends utility for object spreads 1", ->
-  eqJS(
-    "{a, b..., c..., d}"
-    """
-      var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+  const {e: {f = 5} = {}} = {};
+  return eq(5, f);
+});
 
-      _extends({a}, b, c, {d});
-    """
-  )
+test("#4674: _extends utility for object spreads 1", () => eqJS(
+  "{a, b..., c..., d}",
+  `\
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-test "#4674: _extends utility for object spreads 2", ->
-  _extends = -> 3
-  a = b: 1
-  c = d: 2
-  e = {a..., c...}
-  eq e.b, 1
-  eq e.d, 2
+_extends({a}, b, c, {d});\
+`
+));
 
-test "#4673: complex destructured object spread variables", ->
-  b = c: 1
-  {{a...}...} = b
-  eq a.c, 1
+test("#4674: _extends utility for object spreads 2", function() {
+  const _extends = () => 3;
+  const a = {b: 1};
+  const c = {d: 2};
+  const e = {...a, ...c};
+  eq(e.b, 1);
+  return eq(e.d, 2);
+});
 
-  d = {}
-  {d.e...} = f: 1
-  eq d.e.f, 1
+test("#4673: complex destructured object spread variables", function() {
+  let obj;
+  const b = {c: 1};
+  const {...a} = __objectWithoutKeys__(b, []);
+  eq(a.c, 1);
 
-  {{g}...} = g: 1
-  eq g, 1
+  const d = {};
+  obj = {f: 1}, d.e = __objectWithoutKeys__(obj, []);
+  eq(d.e.f, 1);
 
-test "#4878: Compile error when using destructuring with a splat or expansion in an array", ->
-  arr = ['a', 'b', 'c', 'd']
+  const obj1 = {g: 1}, {g} = __objectWithoutKeys__(obj1, []);
+  return eq(g, 1);
+});
 
-  f1 = (list) ->
-    [first, ..., last] = list
+test("#4878: Compile error when using destructuring with a splat or expansion in an array", function() {
+  const arr = ['a', 'b', 'c', 'd'];
 
-  f2 = (list) ->
-    [first..., last] = list
+  const f1 = function(list) {
+    let first, last;
+    return first = list[0], last = list[list.length - 1], list;
+  };
 
-  f3 = (list) ->
-    ([first, ...] = list); first
+  const f2 = function(list) {
+    let adjustedLength, first, last;
+    return adjustedLength = Math.max(list.length, 1), first = list.slice(0, adjustedLength - 1), last = list[adjustedLength - 1], list;
+  };
 
-  f4 = (list) ->
-    ([first, ...rest] = list); rest
+  const f3 = function(list) {
+    const [first] = list; return first;
+  };
 
-  arrayEq f1(arr), arr
-  arrayEq f2(arr), arr
-  arrayEq f3(arr), 'a'
-  arrayEq f4(arr), ['b', 'c', 'd']
+  const f4 = function(list) {
+    const [first, ...rest] = list; return rest;
+  };
 
-  foo = (list) ->
-    ret =
-      if list?.length > 0
-        [first, ..., last] = list
-        [first, last]
-      else
-        []
+  arrayEq(f1(arr), arr);
+  arrayEq(f2(arr), arr);
+  arrayEq(f3(arr), 'a');
+  arrayEq(f4(arr), ['b', 'c', 'd']);
 
-  arrayEq foo(arr), ['a', 'd']
+  const foo = function(list) {
+    let ret;
+    return ret =
+      (() => {
+      if ((list != null ? list.length : undefined) > 0) {
+        const first = list[0], last = list[list.length - 1];
+        return [first, last];
+      } else {
+        return [];
+      }
+    })();
+  };
 
-  bar = (list) ->
-    ret =
-      if list?.length > 0
-        [first, ...rest] = list
-        [first, rest]
-      else
-        []
+  arrayEq(foo(arr), ['a', 'd']);
 
-  arrayEq bar(arr), ['a', ['b', 'c', 'd']]
+  const bar = function(list) {
+    let ret;
+    return ret =
+      (() => {
+      if ((list != null ? list.length : undefined) > 0) {
+        const [first, ...rest] = list;
+        return [first, rest];
+      } else {
+        return [];
+      }
+    })();
+  };
+
+  return arrayEq(bar(arr), ['a', ['b', 'c', 'd']]);
+});
+
+function __objectWithoutKeys__(object, keys) {
+  const result = {...object};
+  for (const k of keys) {
+    delete result[keys];
+  }
+  return result;
+}
+function __mod__(a, b) {
+  a = +a;
+  b = +b;
+  return (a % b + b) % b;
+}
