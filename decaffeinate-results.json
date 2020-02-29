@@ -1,0 +1,242 @@
+[
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/Cakefile",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/browser.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/cake.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/coffeescript.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/command.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/grammar.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/helpers.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/index.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/lexer.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/nodes.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/optparse.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/register.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/repl.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/rewriter.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/scope.litcoffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/src/sourcemap.litcoffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/argument_parsing.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/arrays.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/assignment.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/async.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/booleans.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/classes.coffee",
+    "error": "Command failed: decaffeinate  --use-cs2 < /home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/classes.coffee\nstdin: Cannot handle a super call in an inner function in a constructor. Please either rewrite your CoffeeScript code to not use this construct or file a bug to discuss ways that decaffeinate could handle this case.\n  1290 |     constructor: (param) ->\n  1291 |       @param = param;\n> 1292 |       do => super()\n       |             ^^^^^\n  1293 |       eq(@param, nonce)\n  1294 | \n\n"
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/cluster.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/comments.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/compilation.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/comprehensions.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/control_flow.coffee",
+    "error": "Command failed: decaffeinate  --use-cs2 < /home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/control_flow.coffee\nstdin: MainStage failed to parse: unexpected if\n  1082 | \n  1083 |   c = 0\n> 1084 |   if (arg) -> (arg ?= undefined); yes then c++\n       |   ^^\n  1085 |   eq(1, c)\n  1086 |   d = 0\n\n"
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/csx.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/error_messages.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/eval.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/exception_handling.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/formatting.coffee",
+    "error": "Command failed: decaffeinate  --use-cs2 < /home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/formatting.coffee\nstdin: AddVariableDeclarationsStage failed to parse: Unexpected token, expected \",\" (505:51)\n  503 | \n  504 |   eq(3,\n> 505 |     __guard__((function(b) { return {a: 3}; })((c) { return c; }), x => x.a)\n      |                                                    ^\n  506 |   );\n  507 | \n\n"
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/function_invocation.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/functions.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/generators.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/helpers.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/importing.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/interpolation.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/invocation_argument_parsing.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/javascript_literals.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/literate.litcoffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/literate_tabbed.litcoffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/location.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/modules.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/numbers.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/objects.coffee",
+    "error": "Command failed: decaffeinate  --use-cs2 < /home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/objects.coffee\nstdin: AddVariableDeclarationsStage failed to parse: Unexpected token (881:16)\n  879 |   o1 = { [ref = []]: ref };\n  880 |   deepEqual(o1, { [[]]: [] });\n> 881 |   arrayEq(o1[[],], []);\n      |                 ^\n  882 |   o2 = { [[]]: 1 };\n  883 |   deepEqual(o2, { [[]]: 1 });\n\n"
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/operators.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/option_parser.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/parser.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/ranges.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/regexps.coffee",
+    "error": "Command failed: decaffeinate  --use-cs2 < /home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/regexps.coffee\n/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/cli.js:304\n        throw err;\n        ^\n\nAssertionError [ERR_ASSERTION]: unknown: No tab width specified but encountered tabs in string\n/\\\tb/g\n    at Object.fromString (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/lines.js:591:22)\n    at genericPrintNoParens (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/printer.js:659:28)\n    at genericPrint (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/printer.js:129:30)\n    at print (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/printer.js:85:15)\n    at /home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/patcher.js:160:28\n    at Array.forEach (<anonymous>)\n    at /home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/patcher.js:148:18\n    at print (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/printer.js:84:15)\n    at /home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/printer.js:57:41\n    at Object.printComments (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/comments.js:283:22)\n    at print (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/printer.js:63:31)\n    at Printer.print (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/lib/printer.js:96:21)\n    at Object.print (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/recast/main.js:39:43)\n    at generate (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/@codemod/core/src/RecastPlugin.js:15:19)\n    at generateCode (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/@babel/core/lib/transformation/file/generate.js:48:24)\n    at run (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/@babel/core/lib/transformation/index.js:55:33)\n    at run.next (<anonymous>)\n    at Object.transform (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/@babel/core/lib/transform.js:27:41)\n    at transform.next (<anonymous>)\n    at evaluateSync (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/gensync/index.js:244:28)\n    at Object.sync (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/gensync/index.js:84:14)\n    at Object.transform (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/node_modules/@codemod/core/src/index.js:32:19)\n    at Function.ResugarStage.run (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/stages/resugar/index.js:20:27)\n    at runStage (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/index.js:96:22)\n    at /home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/index.js:88:18\n    at Array.forEach (<anonymous>)\n    at runStages (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/index.js:87:12)\n    at Object.convert (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/index.js:60:18)\n    at runWithCode (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/cli.js:296:28)\n    at ReadStream.<anonymous> (/home/travis/.nvm/versions/node/v8.17.0/lib/node_modules/decaffeinate/dist/cli.js:278:42)\n    at emitNone (events.js:111:20)\n    at ReadStream.emit (events.js:208:7)\n    at endReadableNT (_stream_readable.js:1064:12)\n    at _combinedTickCallback (internal/process/next_tick.js:139:11)\n    at process._tickCallback (internal/process/next_tick.js:181:9)\n"
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/repl.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/scope.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/slicing_and_splicing.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/soaks.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/sourcemap.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/strict.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/strings.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/support/helpers.coffee",
+    "error": null
+  },
+  {
+    "path": "/home/travis/build/decaffeinate/decaffeinate-example-builder/decaffeinate-examples/tmp-projects/coffeescript2-402705027053/test/tagged_template_literals.coffee",
+    "error": null
+  }
+]
