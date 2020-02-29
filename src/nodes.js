@@ -1,3 +1,39 @@
+/* eslint-disable
+    class-methods-use-this,
+    consistent-return,
+    constructor-super,
+    default-case,
+    func-names,
+    max-classes-per-file,
+    max-len,
+    no-cond-assign,
+    no-constant-condition,
+    no-continue,
+    no-eval,
+    no-loop-func,
+    no-multi-assign,
+    no-multi-str,
+    no-nested-ternary,
+    no-param-reassign,
+    no-plusplus,
+    no-restricted-syntax,
+    no-return-assign,
+    no-shadow,
+    no-this-before-super,
+    no-underscore-dangle,
+    no-unused-expressions,
+    no-unused-vars,
+    no-use-before-define,
+    no-useless-escape,
+    no-var,
+    operator-linebreak,
+    prefer-const,
+    prefer-destructuring,
+    quotes,
+    vars-on-top,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS001: Remove Babel/TypeScript constructor workaround
@@ -17,28 +53,31 @@
 // but some are created by other nodes as a method of code generation. To convert
 // the syntax tree into a string of JavaScript code, call `compile()` on the root.
 
-let Access, Arr, Assign, AwaitReturn, Base, Block, BooleanLiteral, Call, Class, Code, CodeFragment, ComputedPropertyName, CSXTag, Elision, ExecutableClassBody, Existence, Expansion, ExportAllDeclaration, ExportDeclaration, ExportDefaultDeclaration, ExportNamedDeclaration, ExportSpecifier, ExportSpecifierList, Extends, For, FuncGlyph, HereComment, HoistTarget, IdentifierLiteral, If, ImportClause, ImportDeclaration, ImportDefaultSpecifier, ImportNamespaceSpecifier, ImportSpecifier, ImportSpecifierList, In, Index, InfinityLiteral, LineComment, Literal, ModuleDeclaration, ModuleSpecifier, ModuleSpecifierList, NaNLiteral, NullLiteral, NumberLiteral, Obj, Op, Param, Parens, PassthroughLiteral, PropertyName, Range, RegexLiteral, RegexWithInterpolations, Return, Slice, Splat, StatementLiteral, StringLiteral, StringWithInterpolations, Super, SuperCall, Switch, TaggedTemplateCall, ThisLiteral, Throw, Try, UndefinedLiteral, Value, While, YieldReturn;
+let Access; let Arr; let Assign; let AwaitReturn; let Base; let Block; let BooleanLiteral; let Call; let Class; let Code; let CodeFragment; let ComputedPropertyName; let CSXTag; let Elision; let ExecutableClassBody; let Existence; let Expansion; let ExportAllDeclaration; let ExportDeclaration; let ExportDefaultDeclaration; let ExportNamedDeclaration; let ExportSpecifier; let ExportSpecifierList; let Extends; let For; let FuncGlyph; let HereComment; let HoistTarget; let IdentifierLiteral; let If; let ImportClause; let ImportDeclaration; let ImportDefaultSpecifier; let ImportNamespaceSpecifier; let ImportSpecifier; let ImportSpecifierList; let In; let Index; let InfinityLiteral; let LineComment; let Literal; let ModuleDeclaration; let ModuleSpecifier; let ModuleSpecifierList; let NaNLiteral; let NullLiteral; let NumberLiteral; let Obj; let Op; let Param; let Parens; let PassthroughLiteral; let PropertyName; let Range; let RegexLiteral; let RegexWithInterpolations; let Return; let Slice; let Splat; let StatementLiteral; let StringLiteral; let StringWithInterpolations; let Super; let SuperCall; let Switch; let TaggedTemplateCall; let ThisLiteral; let Throw; let Try; let UndefinedLiteral; let Value; let While; let
+  YieldReturn;
 Error.stackTraceLimit = Infinity;
 
-const {Scope} = require('./scope');
-const {isUnassignable, JS_FORBIDDEN} = require('./lexer');
+const { Scope } = require('./scope');
+const { isUnassignable, JS_FORBIDDEN } = require('./lexer');
 
 // Import the helpers we plan to use.
-const {compact, flatten, extend, merge, del, starts, ends, some,
-addDataToNode, attachCommentsToNode, locationDataToString,
-throwSyntaxError} = require('./helpers');
+const {
+  compact, flatten, extend, merge, del, starts, ends, some,
+  addDataToNode, attachCommentsToNode, locationDataToString,
+  throwSyntaxError,
+} = require('./helpers');
 
 // Functions required by parser.
 exports.extend = extend;
 exports.addDataToNode = addDataToNode;
 
 // Constant functions for nodes that don’t need customization.
-const YES     = () => true;
-const NO      = () => false;
-const THIS    = function() { return this; };
-const NEGATE  = function() { this.negated = !this.negated; return this; };
+const YES = () => true;
+const NO = () => false;
+const THIS = function () { return this; };
+const NEGATE = function () { this.negated = !this.negated; return this; };
 
-//### CodeFragment
+// ### CodeFragment
 
 // The various nodes defined below all compile to a collection of **CodeFragment** objects.
 // A CodeFragments is a block of generated code, and the location in the source file where the code
@@ -47,21 +86,21 @@ const NEGATE  = function() { this.negated = !this.negated; return this; };
 exports.CodeFragment = (CodeFragment = class CodeFragment {
   constructor(parent, code) {
     this.code = `${code}`;
-    this.type = __guard__(parent != null ? parent.constructor : undefined, x => x.name) || 'unknown';
+    this.type = __guard__(parent != null ? parent.constructor : undefined, (x) => x.name) || 'unknown';
     this.locationData = parent != null ? parent.locationData : undefined;
     this.comments = parent != null ? parent.comments : undefined;
   }
 
   toString() {
     // This is only intended for debugging.
-    return `${this.code}${this.locationData ? ": " + locationDataToString(this.locationData) : ''}`;
+    return `${this.code}${this.locationData ? `: ${locationDataToString(this.locationData)}` : ''}`;
   }
 });
 
 // Convert an array of CodeFragments into a string.
-const fragmentsToText = fragments => (Array.from(fragments).map((fragment) => fragment.code)).join('');
+const fragmentsToText = (fragments) => (Array.from(fragments).map((fragment) => fragment.code)).join('');
 
-//### Base
+// ### Base
 
 // The **Base** is the abstract base class for all nodes in the syntax tree.
 // Each subclass implements the `compileNode` method, which performs the
@@ -72,40 +111,39 @@ const fragmentsToText = fragments => (Array.from(fragments).map((fragment) => fr
 // the environment from higher in the tree (such as if a returned value is
 // being requested by the surrounding function), information about the current
 // scope, and indentation level.
-exports.Base = (Base = (function() {
+exports.Base = (Base = (function () {
   Base = class Base {
     static initClass() {
-  
       // Default implementations of the common node properties and methods. Nodes
       // will override these with custom logic, if needed.
-  
+
       // `children` are the properties to recurse into when tree walking. The
       // `children` list *is* the structure of the AST. The `parent` pointer, and
       // the pointer to the `children` are how you can traverse the tree.
       this.prototype.children = [];
-  
+
       // `isStatement` has to do with “everything is an expression”. A few things
       // can’t be expressions, such as `break`. Things that `isStatement` returns
       // `true` for are things that can’t be used as expressions. There are some
       // error messages that come from `nodes.coffee` due to statements ending up
       // in expression position.
       this.prototype.isStatement = NO;
-  
+
       // Track comments that have been compiled into fragments, to avoid outputting
       // them twice.
       this.prototype.compiledComments = [];
-  
+
       // `includeCommentFragments` lets `compileCommentFragments` know whether this node
       // has special awareness of how to handle comments within its output.
       this.prototype.includeCommentFragments = NO;
-  
+
       // `jumps` tells you if an expression, or an internal part of an expression
       // has a flow control construct (like `break`, or `continue`, or `return`,
       // or `throw`) that jumps out of the normal flow of control and can’t be
       // used as a value. This is important because things like this make no sense;
       // we have to disallow them.
       this.prototype.jumps = NO;
-  
+
       // If `node.shouldCache() is false`, it is safe to use `node` more than once.
       // Otherwise you need to store the value of `node` in a variable and output
       // that variable several times instead. Kind of like this: `5` need not be
@@ -116,14 +154,14 @@ exports.Base = (Base = (function() {
       // example a long expression that may well be idempotent but we want to cache
       // for brevity.
       this.prototype.shouldCache = YES;
-  
+
       this.prototype.isChainable = NO;
       this.prototype.isAssignable = NO;
       this.prototype.isNumber = NO;
-  
+
       this.prototype.unwrap = THIS;
       this.prototype.unfoldSoak = NO;
-  
+
       // Is this node used to assign a certain variable?
       this.prototype.assigns = NO;
     }
@@ -174,15 +212,14 @@ exports.Base = (Base = (function() {
     // already been asked to return the result (because statements know how to
     // return results).
     compileToFragments(o, lvl) {
-      o        = extend({}, o);
-      if (lvl) { o.level  = lvl; }
-      const node     = this.unfoldSoak(o) || this;
+      o = extend({}, o);
+      if (lvl) { o.level = lvl; }
+      const node = this.unfoldSoak(o) || this;
       node.tab = o.indent;
 
-      const fragments = (o.level === LEVEL_TOP) || !node.isStatement(o) ?
-        node.compileNode(o)
-      :
-        node.compileClosure(o);
+      const fragments = (o.level === LEVEL_TOP) || !node.isStatement(o)
+        ? node.compileNode(o)
+        : node.compileClosure(o);
       this.compileCommentFragments(o, node, fragments);
       return fragments;
     }
@@ -194,18 +231,19 @@ exports.Base = (Base = (function() {
     // Statements converted into expressions via closure-wrapping share a scope
     // object with their parent closure, to preserve the expected lexical scope.
     compileClosure(o) {
-      let argumentsNode, jumpNode;
+      let argumentsNode; let
+        jumpNode;
       if (jumpNode = this.jumps()) {
         jumpNode.error('cannot use a pure statement in an expression');
       }
       o.sharedScope = true;
       let func = new Code([], Block.wrap([this]));
       let args = [];
-      if (this.contains((node => node instanceof SuperCall))) {
+      if (this.contains(((node) => node instanceof SuperCall))) {
         func.bound = true;
       } else if ((argumentsNode = this.contains(isLiteralArguments)) || this.contains(isLiteralThis)) {
         let meth;
-        args = [new ThisLiteral];
+        args = [new ThisLiteral()];
         if (argumentsNode) {
           meth = 'apply';
           args.push(new IdentifierLiteral('arguments'));
@@ -218,12 +256,12 @@ exports.Base = (Base = (function() {
 
       switch (false) {
         case !func.isGenerator && !(func.base != null ? func.base.isGenerator : undefined):
-          parts.unshift(this.makeCode("(yield* "));
-          parts.push(this.makeCode(")"));
+          parts.unshift(this.makeCode('(yield* '));
+          parts.push(this.makeCode(')'));
           break;
         case !func.isAsync && !(func.base != null ? func.base.isAsync : undefined):
-          parts.unshift(this.makeCode("(await "));
-          parts.push(this.makeCode(")"));
+          parts.unshift(this.makeCode('(await '));
+          parts.push(this.makeCode(')'));
           break;
       }
       return parts;
@@ -238,26 +276,26 @@ exports.Base = (Base = (function() {
       // attached as properties to the nearest preceding or following fragment,
       // to remain stowaways until they get properly output in `compileComments`
       // later on.
-      const unshiftCommentFragment = function(commentFragment) {
+      const unshiftCommentFragment = function (commentFragment) {
         if (commentFragment.unshift) {
           // Find the first non-comment fragment and insert `commentFragment`
           // before it.
           return unshiftAfterComments(fragments, commentFragment);
-        } else {
-          if (fragments.length !== 0) {
-            const precedingFragment = fragments[fragments.length - 1];
-            if (commentFragment.newLine && (precedingFragment.code !== '') &&
-               !/\n\s*$/.test(precedingFragment.code)) {
-              commentFragment.code = `\n${commentFragment.code}`;
-            }
-          }
-          return fragments.push(commentFragment);
         }
+        if (fragments.length !== 0) {
+          const precedingFragment = fragments[fragments.length - 1];
+          if (commentFragment.newLine && (precedingFragment.code !== '')
+               && !/\n\s*$/.test(precedingFragment.code)) {
+            commentFragment.code = `\n${commentFragment.code}`;
+          }
+        }
+        return fragments.push(commentFragment);
       };
 
-      for (let comment of Array.from(node.comments)) {
-        if (!Array.from(this.compiledComments).includes(comment)) {var commentFragment;
-        
+      for (const comment of Array.from(node.comments)) {
+        if (!Array.from(this.compiledComments).includes(comment)) {
+          var commentFragment;
+
           this.compiledComments.push(comment); // Don’t output this comment twice.
           // For block/here comments, denoted by `###`, that are inline comments
           // like `1 + ### comment ### 2`, create fragments and insert them into
@@ -270,8 +308,8 @@ exports.Base = (Base = (function() {
           } else { // Line comment, delimited by `#`.
             commentFragment = new LineComment(comment).compileNode(o);
           }
-          if ((commentFragment.isHereComment && !commentFragment.newLine) ||
-             node.includeCommentFragments()) {
+          if ((commentFragment.isHereComment && !commentFragment.newLine)
+             || node.includeCommentFragments()) {
             // Inline block comments, like `1 + /* comment */ 2`, or a node whose
             // `compileToFragments` method has logic for outputting comments.
             unshiftCommentFragment(commentFragment);
@@ -304,11 +342,10 @@ exports.Base = (Base = (function() {
       if (complex) {
         ref = new IdentifierLiteral(o.scope.freeVariable('ref'));
         const sub = new Assign(ref, this);
-        if (level) { return [sub.compileToFragments(o, level), [this.makeCode(ref.value)]]; } else { return [sub, ref]; }
-      } else {
-        ref = level ? this.compileToFragments(o, level) : this;
-        return [ref, ref];
+        if (level) { return [sub.compileToFragments(o, level), [this.makeCode(ref.value)]]; } return [sub, ref];
       }
+      ref = level ? this.compileToFragments(o, level) : this;
+      return [ref, ref];
     }
 
     // Occasionally it may be useful to make an expression behave as if it was 'hoisted', whereby the
@@ -321,18 +358,18 @@ exports.Base = (Base = (function() {
     // call.
     hoist() {
       this.hoisted = true;
-      const target   = new HoistTarget(this);
+      const target = new HoistTarget(this);
 
       const {
-        compileNode
+        compileNode,
       } = this;
       const {
-        compileToFragments
+        compileToFragments,
       } = this;
 
-      this.compileNode = o => target.update(compileNode, o);
+      this.compileNode = (o) => target.update(compileNode, o);
 
-      this.compileToFragments = o => target.update(compileToFragments, o);
+      this.compileToFragments = (o) => target.update(compileToFragments, o);
 
       return target;
     }
@@ -348,9 +385,8 @@ exports.Base = (Base = (function() {
       const me = this.unwrapAll();
       if (res) {
         return new Call(new Literal(`${res}.push`), [me]);
-      } else {
-        return new Return(me);
       }
+      return new Return(me);
     }
 
     // Does this node, or any of its children, contain a node of a certain kind?
@@ -358,8 +394,8 @@ exports.Base = (Base = (function() {
     // that verifies `pred`. Otherwise return undefined. `contains` does not cross
     // scope boundaries.
     contains(pred) {
-      let node = undefined;
-      this.traverseChildren(false, function(n) {
+      let node;
+      this.traverseChildren(false, (n) => {
         if (pred(n)) {
           node = n;
           return false;
@@ -370,28 +406,30 @@ exports.Base = (Base = (function() {
 
     // Pull out the last node of a node list.
     lastNode(list) {
-      if (list.length === 0) { return null; } else { return list[list.length - 1]; }
+      if (list.length === 0) { return null; } return list[list.length - 1];
     }
 
     // `toString` representation of the node, for inspecting the parse tree.
     // This is what `coffee --nodes` prints out.
     toString(idt, name) {
       if (idt == null) { idt = ''; }
-      if (name == null) { ({
-        name
-      } = this.constructor); }
-      let tree = '\n' + idt + name;
+      if (name == null) {
+        ({
+          name,
+        } = this.constructor);
+      }
+      let tree = `\n${idt}${name}`;
       if (this.soak) { tree += '?'; }
-      this.eachChild(node => tree += node.toString(idt + TAB));
+      this.eachChild((node) => tree += node.toString(idt + TAB));
       return tree;
     }
 
     // Passes each child to a function, breaking when the function returns `false`.
     eachChild(func) {
       if (!this.children) { return this; }
-      for (let attr of Array.from(this.children)) {
+      for (const attr of Array.from(this.children)) {
         if (this[attr]) {
-          for (let child of Array.from(flatten([this[attr]]))) {
+          for (const child of Array.from(flatten([this[attr]]))) {
             if (func(child) === false) { return this; }
           }
         }
@@ -400,7 +438,7 @@ exports.Base = (Base = (function() {
     }
 
     traverseChildren(crossScope, func) {
-      return this.eachChild(function(child) {
+      return this.eachChild((child) => {
         const recur = func(child);
         if (recur !== false) { return child.traverseChildren(crossScope, func); }
       });
@@ -410,7 +448,7 @@ exports.Base = (Base = (function() {
     // true. Once found, the matching node will be replaced by the result of calling `replacement`.
     replaceInContext(match, replacement) {
       if (!this.children) { return false; }
-      for (let attr of Array.from(this.children)) {
+      for (const attr of Array.from(this.children)) {
         var children;
         if ((children = this[attr])) {
           if (Array.isArray(children)) {
@@ -419,16 +457,13 @@ exports.Base = (Base = (function() {
               if (match(child)) {
                 children.splice(i, i - i + 1, ...[].concat(replacement(child, this)));
                 return true;
-              } else {
-                if (child.replaceInContext(match, replacement)) { return true; }
               }
+              if (child.replaceInContext(match, replacement)) { return true; }
             }
           } else if (match(children)) {
             this[attr] = replacement(children, this);
             return true;
-          } else {
-            if (children.replaceInContext(match, replacement)) { return true; }
-          }
+          } else if (children.replaceInContext(match, replacement)) { return true; }
         }
       }
     }
@@ -450,7 +485,7 @@ exports.Base = (Base = (function() {
       delete this.forceUpdateLocation;
       this.locationData = locationData;
 
-      return this.eachChild(child => child.updateLocationDataIfMissing(locationData));
+      return this.eachChild((child) => child.updateLocationDataIfMissing(locationData));
     }
 
     // Throw a SyntaxError associated with this node’s location.
@@ -485,9 +520,9 @@ exports.Base = (Base = (function() {
   };
   Base.initClass();
   return Base;
-})());
+}()));
 
-//### HoistTarget
+// ### HoistTarget
 
 // A **HoistTargetNode** represents the output location in the node tree for a hoisted node.
 // See Base#hoist.
@@ -507,8 +542,8 @@ exports.HoistTarget = (HoistTarget = class HoistTarget extends Base {
     {
       // Hack: trick Babel/TypeScript into allowing this before super.
       if (false) { super(); }
-      let thisFn = (() => { return this; }).toString();
-      let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+      const thisFn = (() => this).toString();
+      const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
       eval(`${thisName} = this;`);
     }
     this.source = source;
@@ -535,8 +570,8 @@ exports.HoistTarget = (HoistTarget = class HoistTarget extends Base {
   // Copies the target indent and level, and returns the placeholder fragments
   compileToFragments(o, level) {
     this.options.indent = o.indent;
-    this.options.level  = level != null ? level : o.level;
-    return [ this.targetFragments ];
+    this.options.level = level != null ? level : o.level;
+    return [this.targetFragments];
   }
 
   compileNode(o) {
@@ -548,17 +583,17 @@ exports.HoistTarget = (HoistTarget = class HoistTarget extends Base {
   }
 });
 
-//### Block
+// ### Block
 
 // The block is the list of expressions that forms the body of an
 // indented block of code -- the implementation of a function, a clause in an
 // `if`, `switch`, or `try`, and so on...
-exports.Block = (Block = (function() {
+exports.Block = (Block = (function () {
   Block = class Block extends Base {
     static initClass() {
-  
       this.prototype.children = ['expressions'];
     }
+
     constructor(nodes) {
       super();
 
@@ -585,7 +620,7 @@ exports.Block = (Block = (function() {
     // If this Block consists of just a single node, unwrap it by pulling
     // it back out.
     unwrap() {
-      if (this.expressions.length === 1) { return this.expressions[0]; } else { return this; }
+      if (this.expressions.length === 1) { return this.expressions[0]; } return this;
     }
 
     // Is this an empty block of code?
@@ -594,7 +629,7 @@ exports.Block = (Block = (function() {
     }
 
     isStatement(o) {
-      for (let exp of Array.from(this.expressions)) {
+      for (const exp of Array.from(this.expressions)) {
         if (exp.isStatement(o)) {
           return true;
         }
@@ -603,7 +638,7 @@ exports.Block = (Block = (function() {
     }
 
     jumps(o) {
-      for (let exp of Array.from(this.expressions)) {
+      for (const exp of Array.from(this.expressions)) {
         var jumpNode;
         if (jumpNode = exp.jumps(o)) { return jumpNode; }
       }
@@ -625,7 +660,7 @@ exports.Block = (Block = (function() {
     // A **Block** is the only node that can serve as the root.
     compileToFragments(o, level) {
       if (o == null) { o = {}; }
-      if (o.scope) { return super.compileToFragments(o, level); } else { return this.compileRoot(o); }
+      if (o.scope) { return super.compileToFragments(o, level); } return this.compileRoot(o);
     }
 
     // Compile all expressions within the **Block** body. If we need to return
@@ -633,8 +668,8 @@ exports.Block = (Block = (function() {
     // ask the statement to do so.
     compileNode(o) {
       let answer;
-      this.tab  = o.indent;
-      const top   = o.level === LEVEL_TOP;
+      this.tab = o.indent;
+      const top = o.level === LEVEL_TOP;
       const compiledNodes = [];
 
       for (let index = 0; index < this.expressions.length; index++) {
@@ -669,40 +704,40 @@ exports.Block = (Block = (function() {
       if (top) {
         if (this.spaced) {
           return [].concat(this.joinFragmentArrays(compiledNodes, '\n\n'), this.makeCode('\n'));
-        } else {
-          return this.joinFragmentArrays(compiledNodes, '\n');
         }
+        return this.joinFragmentArrays(compiledNodes, '\n');
       }
       if (compiledNodes.length) {
         answer = this.joinFragmentArrays(compiledNodes, ', ');
       } else {
         answer = [this.makeCode('void 0')];
       }
-      if ((compiledNodes.length > 1) && (o.level >= LEVEL_LIST)) { return this.wrapInParentheses(answer); } else { return answer; }
+      if ((compiledNodes.length > 1) && (o.level >= LEVEL_LIST)) { return this.wrapInParentheses(answer); } return answer;
     }
 
     // If we happen to be the top-level **Block**, wrap everything in a safety
     // closure, unless requested not to. It would be better not to generate them
     // in the first place, but for now, clean up obvious double-parentheses.
     compileRoot(o) {
-      o.indent  = o.bare ? '' : TAB;
-      o.level   = LEVEL_TOP;
-      this.spaced   = true;
-      o.scope   = new Scope(null, this, null, o.referencedVars != null ? o.referencedVars : []);
+      o.indent = o.bare ? '' : TAB;
+      o.level = LEVEL_TOP;
+      this.spaced = true;
+      o.scope = new Scope(null, this, null, o.referencedVars != null ? o.referencedVars : []);
       // Mark given local variables in the root scope as parameters so they don’t
       // end up being declared on this block.
-      for (let name of Array.from(o.locals || [])) { o.scope.parameter(name); }
+      for (const name of Array.from(o.locals || [])) { o.scope.parameter(name); }
       let fragments = this.compileWithDeclarations(o);
       HoistTarget.expand(fragments);
       fragments = this.compileComments(fragments);
       if (o.bare) { return fragments; }
-      return [].concat(this.makeCode("(function() {\n"), fragments, this.makeCode("\n}).call(this);\n"));
+      return [].concat(this.makeCode('(function() {\n'), fragments, this.makeCode('\n}).call(this);\n'));
     }
 
     // Compile the expressions body for the contents of a function, with
     // declarations of all inner variables pushed up to the top.
     compileWithDeclarations(o) {
-      let i, spaced;
+      let i; let
+        spaced;
       let fragments = [];
       let post = [];
       for (i = 0; i < this.expressions.length; i++) {
@@ -710,15 +745,15 @@ exports.Block = (Block = (function() {
         exp = exp.unwrap();
         if (!(exp instanceof Literal)) { break; }
       }
-      o = merge(o, {level: LEVEL_TOP});
+      o = merge(o, { level: LEVEL_TOP });
       if (i) {
         const rest = this.expressions.splice(i, 9e9);
-        [spaced,    this.spaced] = [this.spaced, false];
+        [spaced, this.spaced] = [this.spaced, false];
         [fragments, this.spaced] = [this.compileNode(o), spaced];
         this.expressions = rest;
       }
       post = this.compileNode(o);
-      const {scope} = o;
+      const { scope } = o;
       if (scope.expressions === this) {
         const declars = o.scope.hasDeclarations();
         const assigns = scope.hasAssignments;
@@ -744,7 +779,7 @@ exports.Block = (Block = (function() {
           }
           fragments.push(this.makeCode(`;\n${this.spaced ? '\n' : ''}`));
         } else if (fragments.length && post.length) {
-          fragments.push(this.makeCode("\n"));
+          fragments.push(this.makeCode('\n'));
         }
       }
       return fragments.concat(post);
@@ -755,7 +790,8 @@ exports.Block = (Block = (function() {
       for (let fragmentIndex = 0; fragmentIndex < fragments.length; fragmentIndex++) {
         // Insert comments into the output at the next or previous newline.
         // If there are no newlines at which to place comments, create them.
-        var code, fragmentIndent, indent, newLineIndex;
+        var code; var fragmentIndent; var indent; var
+          newLineIndex;
         var fragment = fragments[fragmentIndex];
         if (fragment.precedingComments) {
           // Determine the indentation level of the fragment that we are about
@@ -777,19 +813,19 @@ exports.Block = (Block = (function() {
               break;
             }
           }
-          code = `\n${fragmentIndent}` + ((() => {
+          code = `\n${fragmentIndent}${((() => {
             const result = [];
-            
-              for (commentFragment of Array.from(fragment.precedingComments)) {
+
+            for (commentFragment of Array.from(fragment.precedingComments)) {
               if (commentFragment.isHereComment && commentFragment.multiline) {
                 result.push(multident(commentFragment.code, fragmentIndent, false));
               } else {
                 result.push(commentFragment.code);
               }
             }
-            
+
             return result;
-          })()).join(`\n${fragmentIndent}`).replace(/^(\s*)$/gm, '');
+          })()).join(`\n${fragmentIndent}`).replace(/^(\s*)$/gm, '')}`;
           const iterable1 = fragments.slice(0, (fragmentIndex + 1));
           for (let pastFragmentIndex = iterable1.length - 1; pastFragmentIndex >= 0; pastFragmentIndex--) {
             pastFragment = iterable1[pastFragmentIndex];
@@ -800,18 +836,18 @@ exports.Block = (Block = (function() {
               // discovered that we’re in a code block that is interpolated
               // inside a string.
               if (pastFragmentIndex === 0) {
-                pastFragment.code = '\n' + pastFragment.code;
+                pastFragment.code = `\n${pastFragment.code}`;
                 newLineIndex = 0;
               } else if (pastFragment.isStringWithInterpolations && (pastFragment.code === '{')) {
-                code = code.slice(1) + '\n'; // Move newline to end.
+                code = `${code.slice(1)}\n`; // Move newline to end.
                 newLineIndex = 1;
               } else {
                 continue;
               }
             }
             delete fragment.precedingComments;
-            pastFragment.code = pastFragment.code.slice(0, newLineIndex) +
-              code + pastFragment.code.slice(newLineIndex);
+            pastFragment.code = pastFragment.code.slice(0, newLineIndex)
+              + code + pastFragment.code.slice(newLineIndex);
             break;
           }
         }
@@ -824,7 +860,7 @@ exports.Block = (Block = (function() {
           // like `; // Comment`, or does it start a new line after a line of code?
           var upcomingFragment;
           const {
-            trail
+            trail,
           } = fragment.followingComments[0];
           fragmentIndent = '';
           // Find the indent of the next line of code, if we have any non-trailing
@@ -853,24 +889,23 @@ exports.Block = (Block = (function() {
           }
           // Is this comment following the indent inserted by bare mode?
           // If so, there’s no need to indent this further.
-          code = (fragmentIndex === 1) && /^\s+$/.test(fragments[0].code) ?
-            ''
-          : trail ?
-            ' '
-          :
-            `\n${fragmentIndent}`;
+          code = (fragmentIndex === 1) && /^\s+$/.test(fragments[0].code)
+            ? ''
+            : trail
+              ? ' '
+              : `\n${fragmentIndent}`;
           // Assemble properly indented comments.
           code += ((() => {
             const result1 = [];
-            
-              for (commentFragment of Array.from(fragment.followingComments)) {
+
+            for (commentFragment of Array.from(fragment.followingComments)) {
               if (commentFragment.isHereComment && commentFragment.multiline) {
                 result1.push(multident(commentFragment.code, fragmentIndent, false));
               } else {
                 result1.push(commentFragment.code);
               }
             }
-            
+
             return result1;
           })()).join(`\n${fragmentIndent}`).replace(/^(\s*)$/gm, '');
           const iterable2 = fragments.slice(fragmentIndex);
@@ -883,7 +918,7 @@ exports.Block = (Block = (function() {
               // discovered that we’re in a code block that is interpolated
               // inside a string.
               if (upcomingFragmentIndex === (fragments.length - 1)) {
-                upcomingFragment.code = upcomingFragment.code + '\n';
+                upcomingFragment.code += '\n';
                 newLineIndex = upcomingFragment.code.length;
               } else if (upcomingFragment.isStringWithInterpolations && (upcomingFragment.code === '}')) {
                 code = `${code}\n`;
@@ -895,8 +930,8 @@ exports.Block = (Block = (function() {
             delete fragment.followingComments;
             // Avoid inserting extra blank lines.
             if (upcomingFragment.code === '\n') { code = code.replace(/^\n/, ''); }
-            upcomingFragment.code = upcomingFragment.code.slice(0, newLineIndex) +
-              code + upcomingFragment.code.slice(newLineIndex);
+            upcomingFragment.code = upcomingFragment.code.slice(0, newLineIndex)
+              + code + upcomingFragment.code.slice(newLineIndex);
             break;
           }
         }
@@ -914,25 +949,25 @@ exports.Block = (Block = (function() {
   };
   Block.initClass();
   return Block;
-})());
+}()));
 
-//### Literal
+// ### Literal
 
 // `Literal` is a base class for static values that can be passed through
 // directly into JavaScript without translation, such as: strings, numbers,
 // `true`, `false`, `null`...
-exports.Literal = (Literal = (function() {
+exports.Literal = (Literal = (function () {
   Literal = class Literal extends Base {
     static initClass() {
-  
       this.prototype.shouldCache = NO;
     }
+
     constructor(value) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.value = value;
@@ -954,7 +989,7 @@ exports.Literal = (Literal = (function() {
   };
   Literal.initClass();
   return Literal;
-})());
+}()));
 
 exports.NumberLiteral = (NumberLiteral = class NumberLiteral extends Literal {});
 
@@ -971,7 +1006,7 @@ exports.NaNLiteral = (NaNLiteral = class NaNLiteral extends NumberLiteral {
 
   compileNode(o) {
     const code = [this.makeCode('0/0')];
-    if (o.level >= LEVEL_OP) { return this.wrapInParentheses(code); } else { return code; }
+    if (o.level >= LEVEL_OP) { return this.wrapInParentheses(code); } return code;
   }
 });
 
@@ -995,7 +1030,7 @@ exports.RegexLiteral = (RegexLiteral = class RegexLiteral extends Literal {});
 
 exports.PassthroughLiteral = (PassthroughLiteral = class PassthroughLiteral extends Literal {});
 
-exports.IdentifierLiteral = (IdentifierLiteral = (function() {
+exports.IdentifierLiteral = (IdentifierLiteral = (function () {
   IdentifierLiteral = class IdentifierLiteral extends Literal {
     static initClass() {
       this.prototype.isAssignable = YES;
@@ -1007,11 +1042,11 @@ exports.IdentifierLiteral = (IdentifierLiteral = (function() {
   };
   IdentifierLiteral.initClass();
   return IdentifierLiteral;
-})());
+}()));
 
 exports.CSXTag = (CSXTag = class CSXTag extends IdentifierLiteral {});
 
-exports.PropertyName = (PropertyName = (function() {
+exports.PropertyName = (PropertyName = (function () {
   PropertyName = class PropertyName extends Literal {
     static initClass() {
       this.prototype.isAssignable = YES;
@@ -1019,7 +1054,7 @@ exports.PropertyName = (PropertyName = (function() {
   };
   PropertyName.initClass();
   return PropertyName;
-})());
+}()));
 
 exports.ComputedPropertyName = (ComputedPropertyName = class ComputedPropertyName extends PropertyName {
   compileNode(o) {
@@ -1027,11 +1062,11 @@ exports.ComputedPropertyName = (ComputedPropertyName = class ComputedPropertyNam
   }
 });
 
-exports.StatementLiteral = (StatementLiteral = (function() {
+exports.StatementLiteral = (StatementLiteral = (function () {
   StatementLiteral = class StatementLiteral extends Literal {
     static initClass() {
       this.prototype.isStatement = YES;
-  
+
       this.prototype.makeReturn = THIS;
     }
 
@@ -1046,7 +1081,7 @@ exports.StatementLiteral = (StatementLiteral = (function() {
   };
   StatementLiteral.initClass();
   return StatementLiteral;
-})());
+}()));
 
 exports.ThisLiteral = (ThisLiteral = class ThisLiteral extends Literal {
   constructor() {
@@ -1077,25 +1112,25 @@ exports.NullLiteral = (NullLiteral = class NullLiteral extends Literal {
 
 exports.BooleanLiteral = (BooleanLiteral = class BooleanLiteral extends Literal {});
 
-//### Return
+// ### Return
 
 // A `return` is a *pureStatement*—wrapping it in a closure wouldn’t make sense.
-exports.Return = (Return = (function() {
+exports.Return = (Return = (function () {
   Return = class Return extends Base {
     static initClass() {
-  
       this.prototype.children = ['expression'];
-  
-      this.prototype.isStatement =     YES;
-      this.prototype.makeReturn =      THIS;
-      this.prototype.jumps =           THIS;
+
+      this.prototype.isStatement = YES;
+      this.prototype.makeReturn = THIS;
+      this.prototype.jumps = THIS;
     }
+
     constructor(expression) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.expression = expression;
@@ -1104,7 +1139,7 @@ exports.Return = (Return = (function() {
 
     compileToFragments(o, level) {
       const expr = this.expression != null ? this.expression.makeReturn() : undefined;
-      if (expr && !(expr instanceof Return)) { return expr.compileToFragments(o, level); } else { return super.compileToFragments(o, level); }
+      if (expr && !(expr instanceof Return)) { return expr.compileToFragments(o, level); } return super.compileToFragments(o, level);
     }
 
     compileNode(o) {
@@ -1116,7 +1151,7 @@ exports.Return = (Return = (function() {
         unshiftAfterComments(answer, this.makeCode(`${this.tab}return `));
         // Since the `return` got indented by `@tab`, preceding comments that are
         // multiline need to be indented.
-        for (let fragment of Array.from(answer)) {
+        for (const fragment of Array.from(answer)) {
           if (fragment.isHereComment && Array.from(fragment.code).includes('\n')) {
             fragment.code = multident(fragment.code, this.tab);
           } else if (fragment.isLineComment) {
@@ -1134,7 +1169,7 @@ exports.Return = (Return = (function() {
   };
   Return.initClass();
   return Return;
-})());
+}()));
 
 // `yield return` works exactly like `return`, except that it turns the function
 // into a generator.
@@ -1157,16 +1192,16 @@ exports.AwaitReturn = (AwaitReturn = class AwaitReturn extends Return {
 });
 
 
-//### Value
+// ### Value
 
 // A value, variable or literal or parenthesized, indexed or dotted into,
 // or vanilla.
-exports.Value = (Value = (function() {
+exports.Value = (Value = (function () {
   Value = class Value extends Base {
     static initClass() {
-  
       this.prototype.children = ['base', 'properties'];
     }
+
     constructor(base, props, tag, isDefaultValue) {
       if (isDefaultValue == null) { isDefaultValue = false; }
       super();
@@ -1175,10 +1210,10 @@ exports.Value = (Value = (function() {
       // it won't compile since `Parens` (`(b; break)`) is compiled as `Value` and
       // pure statement (`break`) can't be used in an expression.
       // For this reasons, we return `Block` instead of `Parens`.
-      if (base instanceof Parens && base.contains(n => n instanceof StatementLiteral)) { return base.unwrap(); }
-      this.base           = base;
-      this.properties     = props || [];
-      if (tag) { this[tag]          = true; }
+      if (base instanceof Parens && base.contains((n) => n instanceof StatementLiteral)) { return base.unwrap(); }
+      this.base = base;
+      this.properties = props || [];
+      if (tag) { this[tag] = true; }
       this.isDefaultValue = isDefaultValue;
       // If this is a `@foo =` assignment, if there are comments on `@` move them
       // to be on `foo`.
@@ -1204,29 +1239,43 @@ exports.Value = (Value = (function() {
 
     // Some boolean checks for the benefit of other nodes.
     isArray() { return this.bareLiteral(Arr); }
+
     isRange() { return this.bareLiteral(Range); }
+
     shouldCache() { return this.hasProperties() || this.base.shouldCache(); }
+
     isAssignable() { return this.hasProperties() || this.base.isAssignable(); }
+
     isNumber() { return this.bareLiteral(NumberLiteral); }
+
     isString() { return this.bareLiteral(StringLiteral); }
+
     isRegex() { return this.bareLiteral(RegexLiteral); }
+
     isUndefined() { return this.bareLiteral(UndefinedLiteral); }
+
     isNull() { return this.bareLiteral(NullLiteral); }
+
     isBoolean() { return this.bareLiteral(BooleanLiteral); }
+
     isAtomic() {
-      for (let node of Array.from(this.properties.concat(this.base))) {
+      for (const node of Array.from(this.properties.concat(this.base))) {
         if (node.soak || node instanceof Call) { return false; }
       }
       return true;
     }
 
-    isNotCallable() { return this.isNumber() || this.isString() || this.isRegex() ||
-                        this.isArray() || this.isRange() || this.isSplice() || this.isObject() ||
-                        this.isUndefined() || this.isNull() || this.isBoolean(); }
+    isNotCallable() {
+      return this.isNumber() || this.isString() || this.isRegex()
+                        || this.isArray() || this.isRange() || this.isSplice() || this.isObject()
+                        || this.isUndefined() || this.isNull() || this.isBoolean();
+    }
 
-    isStatement(o)    { return !this.properties.length && this.base.isStatement(o); }
+    isStatement(o) { return !this.properties.length && this.base.isStatement(o); }
+
     assigns(name) { return !this.properties.length && this.base.assigns(name); }
-    jumps(o)    { return !this.properties.length && this.base.jumps(o); }
+
+    jumps(o) { return !this.properties.length && this.base.jumps(o); }
 
     isObject(onlyGenerated) {
       if (this.properties.length) { return false; }
@@ -1244,32 +1293,33 @@ exports.Value = (Value = (function() {
     }
 
     looksStatic(className) {
-      return (this.this || this.base instanceof ThisLiteral || (this.base.value === className)) &&
-        (this.properties.length === 1) && ((this.properties[0].name != null ? this.properties[0].name.value : undefined) !== 'prototype');
+      return (this.this || this.base instanceof ThisLiteral || (this.base.value === className))
+        && (this.properties.length === 1) && ((this.properties[0].name != null ? this.properties[0].name.value : undefined) !== 'prototype');
     }
 
     // The value can be unwrapped as its inner node, if there are no attached
     // properties.
     unwrap() {
-      if (this.properties.length) { return this; } else { return this.base; }
+      if (this.properties.length) { return this; } return this.base;
     }
 
     // A reference has base part (`this` value) and name part.
     // We cache them separately for compiling complex expressions.
     // `a()[b()] ?= c` -> `(_base = a())[_name = b()] ? _base[_name] = c`
     cacheReference(o) {
-      let bref, nref;
+      let bref; let
+        nref;
       let name = this.properties[this.properties.length - 1];
       if ((this.properties.length < 2) && !this.base.shouldCache() && !(name != null ? name.shouldCache() : undefined)) {
-        return [this, this];  // `a` `a.b`
+        return [this, this]; // `a` `a.b`
       }
       let base = new Value(this.base, this.properties.slice(0, -1));
-      if (base.shouldCache()) {  // `a().b`
+      if (base.shouldCache()) { // `a().b`
         bref = new IdentifierLiteral(o.scope.freeVariable('base'));
         base = new Value(new Parens(new Assign(bref, base)));
       }
-      if (!name) { return [base, bref]; }  // `a()`
-      if (name.shouldCache()) {  // `a[b()]`
+      if (!name) { return [base, bref]; } // `a()`
+      if (name.shouldCache()) { // `a[b()]`
         nref = new IdentifierLiteral(o.scope.freeVariable('name'));
         name = new Index(new Assign(nref, name.index));
         nref = new Index(nref);
@@ -1299,7 +1349,7 @@ exports.Value = (Value = (function() {
       if (props.length && SIMPLENUM.test(fragmentsToText(fragments))) {
         fragments.push(this.makeCode('.'));
       }
-      for (let prop of Array.from(props)) {
+      for (const prop of Array.from(props)) {
         fragments.push(...(prop.compileToFragments(o)));
       }
 
@@ -1325,7 +1375,7 @@ exports.Value = (Value = (function() {
               fst = new Parens(new Assign(ref, fst));
               snd.base = ref;
             }
-            return new If(new Existence(fst), snd, {soak: true});
+            return new If(new Existence(fst), snd, { soak: true });
           }
         }
         return false;
@@ -1335,18 +1385,17 @@ exports.Value = (Value = (function() {
     eachName(iterator) {
       if (this.hasProperties()) {
         return iterator(this);
-      } else if (this.base.isAssignable()) {
+      } if (this.base.isAssignable()) {
         return this.base.eachName(iterator);
-      } else {
-        return this.error('tried to assign to unassignable value');
       }
+      return this.error('tried to assign to unassignable value');
     }
   };
   Value.initClass();
   return Value;
-})());
+}()));
 
-//### HereComment
+// ### HereComment
 
 // Comment delimited by `###` (becoming `/* */`).
 exports.HereComment = (HereComment = class HereComment extends Base {
@@ -1354,8 +1403,8 @@ exports.HereComment = (HereComment = class HereComment extends Base {
     {
       // Hack: trick Babel/TypeScript into allowing this before super.
       if (false) { super(); }
-      let thisFn = (() => { return this; }).toString();
-      let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+      const thisFn = (() => this).toString();
+      const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
       eval(`${thisName} = this;`);
     }
     this.content = content;
@@ -1373,7 +1422,7 @@ exports.HereComment = (HereComment = class HereComment extends Base {
     if (multiline) {
       let leadingWhitespace;
       let largestIndent = '';
-      for (let line of Array.from(this.content.split('\n'))) {
+      for (const line of Array.from(this.content.split('\n'))) {
         leadingWhitespace = /^\s*/.exec(line)[0];
         if (leadingWhitespace.length > largestIndent.length) {
           largestIndent = leadingWhitespace;
@@ -1393,7 +1442,7 @@ exports.HereComment = (HereComment = class HereComment extends Base {
   }
 });
 
-//### LineComment
+// ### LineComment
 
 // Comment running from `#` to the end of a line (becoming `//`).
 exports.LineComment = (LineComment = class LineComment extends Base {
@@ -1401,8 +1450,8 @@ exports.LineComment = (LineComment = class LineComment extends Base {
     {
       // Hack: trick Babel/TypeScript into allowing this before super.
       if (false) { super(); }
-      let thisFn = (() => { return this; }).toString();
-      let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+      const thisFn = (() => this).toString();
+      const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
       eval(`${thisName} = this;`);
     }
     this.content = content;
@@ -1422,21 +1471,21 @@ exports.LineComment = (LineComment = class LineComment extends Base {
   }
 });
 
-//### Call
+// ### Call
 
 // Node for a function invocation.
-exports.Call = (Call = (function() {
+exports.Call = (Call = (function () {
   Call = class Call extends Base {
     static initClass() {
-  
       this.prototype.children = ['variable', 'args'];
     }
+
     constructor(variable, args, soak, token) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.variable = variable;
@@ -1448,7 +1497,7 @@ exports.Call = (Call = (function() {
 
       this.isNew = false;
       if (this.variable instanceof Value && this.variable.isNotCallable()) {
-        this.variable.error("literal is not a function");
+        this.variable.error('literal is not a function');
       }
 
       this.csx = this.variable.base instanceof CSXTag;
@@ -1496,7 +1545,8 @@ exports.Call = (Call = (function() {
     unfoldSoak(o) {
       let ifn;
       if (this.soak) {
-        let left, rite;
+        let left; let
+          rite;
         if (this.variable instanceof Super) {
           left = new Literal(this.variable.compile(o));
           rite = new Value(left);
@@ -1507,8 +1557,8 @@ exports.Call = (Call = (function() {
         }
         rite = new Call(rite, this.args);
         rite.isNew = this.isNew;
-        left = new Literal(`typeof ${ left.compile(o) } === \"function\"`);
-        return new If(left, new Value(rite), {soak: true});
+        left = new Literal(`typeof ${left.compile(o)} === \"function\"`);
+        return new If(left, new Value(rite), { soak: true });
       }
       let call = this;
       const list = [];
@@ -1550,10 +1600,11 @@ exports.Call = (Call = (function() {
       // `a(x = 5).b(-> x = 6)` should compile in the same order as
       // `a(x = 5); b(-> x = 6)`
       // (see issue #4437, https://github.com/jashkenas/coffeescript/issues/4437)
-      const varAccess = __guard__(this.variable != null ? this.variable.properties : undefined, x => x[0]) instanceof Access;
+      const varAccess = __guard__(this.variable != null ? this.variable.properties : undefined, (x) => x[0]) instanceof Access;
       const argCode = ((() => {
         const result = [];
-        for (arg of Array.from((this.args || []))) {           if (arg instanceof Code) {
+        for (arg of Array.from((this.args || []))) {
+          if (arg instanceof Code) {
             result.push(arg);
           }
         }
@@ -1566,7 +1617,7 @@ exports.Call = (Call = (function() {
 
       for (let argIndex = 0; argIndex < this.args.length; argIndex++) {
         arg = this.args[argIndex];
-        if (argIndex) { compiledArgs.push(this.makeCode(", ")); }
+        if (argIndex) { compiledArgs.push(this.makeCode(', ')); }
         compiledArgs.push(...(arg.compileToFragments(o, LEVEL_LIST)));
       }
 
@@ -1590,15 +1641,14 @@ exports.Call = (Call = (function() {
       const fragments = [this.makeCode('<')];
       fragments.push(...(tag = this.variable.compileToFragments(o, LEVEL_ACCESS)));
       if (attributes.base instanceof Arr) {
-        for (let obj of Array.from(attributes.base.objects)) {
+        for (const obj of Array.from(attributes.base.objects)) {
           const attr = obj.base;
           const attrProps = (attr != null ? attr.properties : undefined) || [];
           // Catch invalid CSX attributes: <div {a:"b", props} {props} "value" />
           if (!(attr instanceof Obj || attr instanceof IdentifierLiteral) || (attr instanceof Obj && !attr.generated && ((attrProps.length > 1) || !(attrProps[0] instanceof Splat)))) {
-            obj.error(`\
+            obj.error('\
 Unexpected token. Allowed CSX attributes are: id="val", src={source}, {props...} or attribute.\
-`
-            );
+');
           }
           if (obj.base instanceof Obj) { obj.base.csx = true; }
           fragments.push(this.makeCode(' '));
@@ -1617,16 +1667,16 @@ Unexpected token. Allowed CSX attributes are: id="val", src={source}, {props...}
   };
   Call.initClass();
   return Call;
-})());
+}()));
 
-//### Super
+// ### Super
 
 // Takes care of converting `super()` calls into calls against the prototype's
 // function of the same name.
 // When `expressions` are set the call will be compiled in such a way that the
 // expressions are evaluated without altering the return value of the `SuperCall`
 // expression.
-exports.SuperCall = (SuperCall = (function() {
+exports.SuperCall = (SuperCall = (function () {
   SuperCall = class SuperCall extends Call {
     static initClass() {
       this.prototype.children = Call.prototype.children.concat(['expressions']);
@@ -1639,7 +1689,7 @@ exports.SuperCall = (SuperCall = (function() {
     compileNode(o) {
       if (!(this.expressions != null ? this.expressions.length : undefined)) { return super.compileNode(o); }
 
-      let superCall   = new Literal(fragmentsToText(super.compileNode(o)));
+      let superCall = new Literal(fragmentsToText(super.compileNode(o)));
       const replacement = new Block(this.expressions.slice());
 
       if (o.level > LEVEL_TOP) {
@@ -1655,20 +1705,20 @@ exports.SuperCall = (SuperCall = (function() {
   };
   SuperCall.initClass();
   return SuperCall;
-})());
+}()));
 
-exports.Super = (Super = (function() {
+exports.Super = (Super = (function () {
   Super = class Super extends Base {
     static initClass() {
-  
       this.prototype.children = ['accessor'];
     }
+
     constructor(accessor) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.accessor = accessor;
@@ -1676,13 +1726,15 @@ exports.Super = (Super = (function() {
     }
 
     compileNode(o) {
-      let name, salvagedComments;
+      let name; let
+        salvagedComments;
       const method = o.scope.namedMethod();
       if (!(method != null ? method.isMethod : undefined)) { this.error('cannot use super outside of an instance method'); }
 
       if ((method.ctor == null) && (this.accessor == null)) {
-        let nref, variable;
-        ({name, variable} = method);
+        let nref; let
+          variable;
+        ({ name, variable } = method);
         if (name.shouldCache() || (name instanceof Index && name.index.isAssignable())) {
           nref = new IdentifierLiteral(o.scope.parent.freeVariable('name'));
           name.index = new Assign(nref, name.index);
@@ -1690,7 +1742,7 @@ exports.Super = (Super = (function() {
         this.accessor = (nref != null) ? new Index(nref) : name;
       }
 
-      if (__guard__(this.accessor != null ? this.accessor.name : undefined, x => x.comments)) {
+      if (__guard__(this.accessor != null ? this.accessor.name : undefined, (x) => x.comments)) {
         // A `super()` call gets compiled to e.g. `super.method()`, which means
         // the `method` property name gets compiled for the first time here, and
         // again when the `method:` property of the class gets compiled. Since
@@ -1702,17 +1754,17 @@ exports.Super = (Super = (function() {
         salvagedComments = this.accessor.name.comments;
         delete this.accessor.name.comments;
       }
-      const fragments = (new Value((new Literal('super')), this.accessor ? [ this.accessor ] : []))
-      .compileToFragments(o);
+      const fragments = (new Value((new Literal('super')), this.accessor ? [this.accessor] : []))
+        .compileToFragments(o);
       if (salvagedComments) { attachCommentsToNode(salvagedComments, this.accessor.name); }
       return fragments;
     }
   };
   Super.initClass();
   return Super;
-})());
+}()));
 
-//### RegexWithInterpolations
+// ### RegexWithInterpolations
 
 // Regexes with interpolations are in fact just a variation of a `Call` (a
 // `RegExp()` call to be precise) with a `StringWithInterpolations` inside.
@@ -1723,12 +1775,12 @@ exports.RegexWithInterpolations = (RegexWithInterpolations = class RegexWithInte
   }
 });
 
-//### TaggedTemplateCall
+// ### TaggedTemplateCall
 
 exports.TaggedTemplateCall = (TaggedTemplateCall = class TaggedTemplateCall extends Call {
   constructor(variable, arg, soak) {
-    if (arg instanceof StringLiteral) { arg = new StringWithInterpolations(Block.wrap([ new Value(arg) ])); }
-    super(variable, [ arg ], soak);
+    if (arg instanceof StringLiteral) { arg = new StringWithInterpolations(Block.wrap([new Value(arg)])); }
+    super(variable, [arg], soak);
   }
 
   compileNode(o) {
@@ -1736,23 +1788,23 @@ exports.TaggedTemplateCall = (TaggedTemplateCall = class TaggedTemplateCall exte
   }
 });
 
-//### Extends
+// ### Extends
 
 // Node to extend an object's prototype with an ancestor object.
 // After `goog.inherits` from the
 // [Closure Library](https://github.com/google/closure-library/blob/master/closure/goog/base.js).
-exports.Extends = (Extends = (function() {
+exports.Extends = (Extends = (function () {
   Extends = class Extends extends Base {
     static initClass() {
-  
       this.prototype.children = ['child', 'parent'];
     }
+
     constructor(child, parent) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.child = child;
@@ -1767,31 +1819,31 @@ exports.Extends = (Extends = (function() {
   };
   Extends.initClass();
   return Extends;
-})());
+}()));
 
-//### Access
+// ### Access
 
 // A `.` access into a property of a value, or the `::` shorthand for
 // an access into the object's prototype.
-exports.Access = (Access = (function() {
+exports.Access = (Access = (function () {
   Access = class Access extends Base {
     static initClass() {
-  
       this.prototype.children = ['name'];
-  
+
       this.prototype.shouldCache = NO;
     }
+
     constructor(name, tag) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.name = name;
       super();
-      this.soak  = tag === 'soak';
+      this.soak = tag === 'soak';
     }
 
     compileToFragments(o) {
@@ -1799,30 +1851,29 @@ exports.Access = (Access = (function() {
       const node = this.name.unwrap();
       if (node instanceof PropertyName) {
         return [this.makeCode('.'), ...name];
-      } else {
-        return [this.makeCode('['), ...name, this.makeCode(']')];
       }
+      return [this.makeCode('['), ...name, this.makeCode(']')];
     }
   };
   Access.initClass();
   return Access;
-})());
+}()));
 
-//### Index
+// ### Index
 
 // A `[ ... ]` indexed access into an array or object.
-exports.Index = (Index = (function() {
+exports.Index = (Index = (function () {
   Index = class Index extends Base {
     static initClass() {
-  
       this.prototype.children = ['index'];
     }
+
     constructor(index) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.index = index;
@@ -1830,7 +1881,7 @@ exports.Index = (Index = (function() {
     }
 
     compileToFragments(o) {
-      return [].concat(this.makeCode("["), this.index.compileToFragments(o, LEVEL_PAREN), this.makeCode("]"));
+      return [].concat(this.makeCode('['), this.index.compileToFragments(o, LEVEL_PAREN), this.makeCode(']'));
     }
 
     shouldCache() {
@@ -1839,17 +1890,16 @@ exports.Index = (Index = (function() {
   };
   Index.initClass();
   return Index;
-})());
+}()));
 
-//### Range
+// ### Range
 
 // A range literal. Ranges can be used to extract portions (slices) of arrays,
 // to specify a range for comprehensions, or as a value, to be expanded into the
 // corresponding array of integers at runtime.
-exports.Range = (Range = (function() {
+exports.Range = (Range = (function () {
   Range = class Range extends Base {
     static initClass() {
-  
       this.prototype.children = ['from', 'to'];
     }
 
@@ -1857,8 +1907,8 @@ exports.Range = (Range = (function() {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.from = from;
@@ -1873,13 +1923,13 @@ exports.Range = (Range = (function() {
     // But only if they need to be cached to avoid double evaluation.
     compileVariables(o) {
       let step;
-      o = merge(o, {top: true});
+      o = merge(o, { top: true });
       const shouldCache = del(o, 'shouldCache');
       [this.fromC, this.fromVar] = this.cacheToCodeFragments(this.from.cache(o, LEVEL_LIST, shouldCache));
-      [this.toC, this.toVar]     = this.cacheToCodeFragments(this.to.cache(o, LEVEL_LIST, shouldCache));
-      if (step = del(o, 'step')) { [this.step, this.stepVar]  = this.cacheToCodeFragments(step.cache(o, LEVEL_LIST, shouldCache)); }
+      [this.toC, this.toVar] = this.cacheToCodeFragments(this.to.cache(o, LEVEL_LIST, shouldCache));
+      if (step = del(o, 'step')) { [this.step, this.stepVar] = this.cacheToCodeFragments(step.cache(o, LEVEL_LIST, shouldCache)); }
       this.fromNum = this.from.isNumber() ? Number(this.fromVar) : null;
-      this.toNum   = this.to.isNumber()   ? Number(this.toVar)   : null;
+      this.toNum = this.to.isNumber() ? Number(this.toVar) : null;
       return this.stepNum = (step != null ? step.isNumber() : undefined) ? Number(this.stepVar) : null;
     }
 
@@ -1890,15 +1940,13 @@ exports.Range = (Range = (function() {
       if (!o.index) { return this.compileArray(o); }
 
       // Set up endpoints.
-      const known    = (this.fromNum != null) && (this.toNum != null);
-      const idx      = del(o, 'index');
-      const idxName  = del(o, 'name');
+      const known = (this.fromNum != null) && (this.toNum != null);
+      const idx = del(o, 'index');
+      const idxName = del(o, 'name');
       const namedIndex = idxName && (idxName !== idx);
-      let varPart  =
-        known && !namedIndex ?
-          `var ${idx} = ${this.fromC}`
-        :
-          `${idx} = ${this.fromC}`;
+      let varPart = known && !namedIndex
+        ? `var ${idx} = ${this.fromC}`
+        : `${idx} = ${this.fromC}`;
       if (this.toC !== this.toVar) { varPart += `, ${this.toC}`; }
       if (this.step !== this.stepVar) { varPart += `, ${this.step}`; }
       const [lt, gt] = [`${idx} <${this.equals}`, `${idx} >${this.equals}`];
@@ -1907,45 +1955,40 @@ exports.Range = (Range = (function() {
       const [from, to] = [this.fromNum, this.toNum];
       // Always check if the `step` isn't zero to avoid the infinite loop.
       const stepCond = this.stepNum ? `${this.stepNum} !== 0` : `${this.stepVar} !== 0`;
-      const condPart =
-        (() => {
-        let lowerBound, upperBound;
+      const condPart = (() => {
+        let lowerBound; let
+          upperBound;
         if (known) {
           if (this.step == null) {
-            if (from <= to) { return `${lt} ${to}`; } else { return `${gt} ${to}`; }
-          } else {
-            // from < to
-            lowerBound = `${from} <= ${idx} && ${lt} ${to}`;
-            // from > to
-            upperBound = `${from} >= ${idx} && ${gt} ${to}`;
-            if (from <= to) { return `${stepCond} && ${lowerBound}`; } else { return `${stepCond} && ${upperBound}`; }
+            if (from <= to) { return `${lt} ${to}`; } return `${gt} ${to}`;
           }
-        } else {
           // from < to
-          lowerBound = `${this.fromVar} <= ${idx} && ${lt} ${this.toVar}`;
+          lowerBound = `${from} <= ${idx} && ${lt} ${to}`;
           // from > to
-          upperBound = `${this.fromVar} >= ${idx} && ${gt} ${this.toVar}`;
-          return `${stepCond} && (${this.fromVar} <= ${this.toVar} ? ${lowerBound} : ${upperBound})`;
+          upperBound = `${from} >= ${idx} && ${gt} ${to}`;
+          if (from <= to) { return `${stepCond} && ${lowerBound}`; } return `${stepCond} && ${upperBound}`;
         }
+        // from < to
+        lowerBound = `${this.fromVar} <= ${idx} && ${lt} ${this.toVar}`;
+        // from > to
+        upperBound = `${this.fromVar} >= ${idx} && ${gt} ${this.toVar}`;
+        return `${stepCond} && (${this.fromVar} <= ${this.toVar} ? ${lowerBound} : ${upperBound})`;
       })();
 
       const cond = this.stepVar ? `${this.stepVar} > 0` : `${this.fromVar} <= ${this.toVar}`;
 
       // Generate the step.
-      let stepPart = this.stepVar ?
-        `${idx} += ${this.stepVar}`
-      : known ?
-        namedIndex ?
-          from <= to ? `++${idx}` : `--${idx}`
-        :
-          from <= to ? `${idx}++` : `${idx}--`
-      :
-        namedIndex ?
-          `${cond} ? ++${idx} : --${idx}`
-        :
-          `${cond} ? ${idx}++ : ${idx}--`;
+      let stepPart = this.stepVar
+        ? `${idx} += ${this.stepVar}`
+        : known
+          ? namedIndex
+            ? from <= to ? `++${idx}` : `--${idx}`
+            : from <= to ? `${idx}++` : `${idx}--`
+          : namedIndex
+            ? `${cond} ? ++${idx} : --${idx}`
+            : `${cond} ? ${idx}++ : ${idx}--`;
 
-      if (namedIndex) { varPart  = `${idxName} = ${varPart}`; }
+      if (namedIndex) { varPart = `${idxName} = ${varPart}`; }
       if (namedIndex) { stepPart = `${idxName} = ${stepPart}`; }
 
       // The final loop body.
@@ -1955,44 +1998,44 @@ exports.Range = (Range = (function() {
 
     // When used as a value, expand the range into the equivalent array.
     compileArray(o) {
-      let args, body;
+      let args; let
+        body;
       const known = (this.fromNum != null) && (this.toNum != null);
       if (known && (Math.abs(this.fromNum - this.toNum) <= 20)) {
         const range = __range__(this.fromNum, this.toNum, true);
         if (this.exclusive) { range.pop(); }
-        return [this.makeCode(`[${ range.join(', ') }]`)];
+        return [this.makeCode(`[${range.join(', ')}]`)];
       }
-      const idt    = this.tab + TAB;
-      const i      = o.scope.freeVariable('i', {single: true, reserve: false});
-      const result = o.scope.freeVariable('results', {reserve: false});
-      const pre    = `\n${idt}var ${result} = [];`;
+      const idt = this.tab + TAB;
+      const i = o.scope.freeVariable('i', { single: true, reserve: false });
+      const result = o.scope.freeVariable('results', { reserve: false });
+      const pre = `\n${idt}var ${result} = [];`;
       if (known) {
         o.index = i;
-        body    = fragmentsToText(this.compileNode(o));
+        body = fragmentsToText(this.compileNode(o));
       } else {
-        const vars    = `${i} = ${this.fromC}` + (this.toC !== this.toVar ? `, ${this.toC}` : '');
-        const cond    = `${this.fromVar} <= ${this.toVar}`;
-        body    = `var ${vars}; ${cond} ? ${i} <${this.equals} ${this.toVar} : ${i} >${this.equals} ${this.toVar}; ${cond} ? ${i}++ : ${i}--`;
+        const vars = `${i} = ${this.fromC}${this.toC !== this.toVar ? `, ${this.toC}` : ''}`;
+        const cond = `${this.fromVar} <= ${this.toVar}`;
+        body = `var ${vars}; ${cond} ? ${i} <${this.equals} ${this.toVar} : ${i} >${this.equals} ${this.toVar}; ${cond} ? ${i}++ : ${i}--`;
       }
-      const post   = `{ ${result}.push(${i}); }\n${idt}return ${result};\n${o.indent}`;
-      const hasArgs = node => node != null ? node.contains(isLiteralArguments) : undefined;
-      if (hasArgs(this.from) || hasArgs(this.to)) { args   = ', arguments'; }
+      const post = `{ ${result}.push(${i}); }\n${idt}return ${result};\n${o.indent}`;
+      const hasArgs = (node) => (node != null ? node.contains(isLiteralArguments) : undefined);
+      if (hasArgs(this.from) || hasArgs(this.to)) { args = ', arguments'; }
       return [this.makeCode(`(function() {${pre}\n${idt}for (${body})${post}}).apply(this${args != null ? args : ''})`)];
     }
   };
   Range.initClass();
   return Range;
-})());
+}()));
 
-//### Slice
+// ### Slice
 
 // An array slice literal. Unlike JavaScript's `Array#slice`, the second parameter
 // specifies the index of the end of the slice, just as the first parameter
 // is the index of the beginning.
-exports.Slice = (Slice = (function() {
+exports.Slice = (Slice = (function () {
   Slice = class Slice extends Base {
     static initClass() {
-  
       this.prototype.children = ['range'];
     }
 
@@ -2000,8 +2043,8 @@ exports.Slice = (Slice = (function() {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.range = range;
@@ -2014,7 +2057,7 @@ exports.Slice = (Slice = (function() {
     compileNode(o) {
       let toStr;
       let compiled;
-      let {to, from} = this.range;
+      let { to, from } = this.range;
       // Handle an expression in the property access, e.g. `a[!b in c..]`.
       if (from != null ? from.shouldCache() : undefined) {
         from = new Value(new Parens(from));
@@ -2024,43 +2067,42 @@ exports.Slice = (Slice = (function() {
       }
       const fromCompiled = (from != null ? from.compileToFragments(o, LEVEL_PAREN) : undefined) || [this.makeCode('0')];
       if (to) {
-        compiled     = to.compileToFragments(o, LEVEL_PAREN);
+        compiled = to.compileToFragments(o, LEVEL_PAREN);
         const compiledText = fragmentsToText(compiled);
         if (!(!this.range.exclusive && (+compiledText === -1))) {
-          toStr = ', ' + (() => {
+          toStr = `, ${(() => {
             if (this.range.exclusive) {
-            return compiledText;
-          } else if (to.isNumber()) {
-            return `${+compiledText + 1}`;
-          } else {
+              return compiledText;
+            } if (to.isNumber()) {
+              return `${+compiledText + 1}`;
+            }
             compiled = to.compileToFragments(o, LEVEL_ACCESS);
             return `+${fragmentsToText(compiled)} + 1 || 9e9`;
-          }
-          })();
+          })()}`;
         }
       }
-      return [this.makeCode(`.slice(${ fragmentsToText(fromCompiled) }${ toStr || '' })`)];
+      return [this.makeCode(`.slice(${fragmentsToText(fromCompiled)}${toStr || ''})`)];
     }
   };
   Slice.initClass();
   return Slice;
-})());
+}()));
 
-//### Obj
+// ### Obj
 
 // An object literal, nothing fancy.
-exports.Obj = (Obj = (function() {
+exports.Obj = (Obj = (function () {
   Obj = class Obj extends Base {
     static initClass() {
-  
       this.prototype.children = ['properties'];
     }
+
     constructor(props, generated, lhs) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       if (generated == null) { generated = false; }
@@ -2090,15 +2132,16 @@ exports.Obj = (Obj = (function() {
 
     // Check if object contains splat.
     hasSplat() {
-      for (let prop of Array.from(this.properties)) { if (prop instanceof Splat) { return true; } }
+      for (const prop of Array.from(this.properties)) { if (prop instanceof Splat) { return true; } }
       return false;
     }
 
     compileNode(o) {
-      let prop, value;
+      let prop; let
+        value;
       const props = this.properties;
       if (this.generated) {
-        for (let node of Array.from(props)) {
+        for (const node of Array.from(props)) {
           if (node instanceof Value) {
             node.error('cannot have an implicit value in an implicit object');
           }
@@ -2108,7 +2151,7 @@ exports.Obj = (Obj = (function() {
       // Object spread properties. https://github.com/tc39/proposal-object-rest-spread/blob/master/Spread.md
       if (this.hasSplat() && !this.csx) { return this.compileSpread(o); }
 
-      const idt      = (o.indent += TAB);
+      const idt = (o.indent += TAB);
       const lastNode = this.lastNode(this.properties);
 
       // CSX attributes <div id="val" attr={aaa} {props...} />
@@ -2119,7 +2162,7 @@ exports.Obj = (Obj = (function() {
       if (this.lhs) {
         for (prop of Array.from(props)) {
           if (prop instanceof Assign) {
-            ({value} = prop);
+            ({ value } = prop);
             const unwrappedVal = value.unwrapAll();
             if (unwrappedVal instanceof Arr || unwrappedVal instanceof Obj) {
               unwrappedVal.lhs = true;
@@ -2141,41 +2184,39 @@ exports.Obj = (Obj = (function() {
       answer.push(this.makeCode(isCompact ? '' : '\n'));
       for (let i = 0; i < props.length; i++) {
         prop = props[i];
-        const join = i === (props.length - 1) ?
-          ''
-        : isCompact ?
-          ', '
-        : prop === lastNode ?
-          '\n'
-        :
-          ',\n';
+        const join = i === (props.length - 1)
+          ? ''
+          : isCompact
+            ? ', '
+            : prop === lastNode
+              ? '\n'
+              : ',\n';
         const indent = isCompact ? '' : idt;
 
         let key = (() => {
           if (prop instanceof Assign && (prop.context === 'object')) {
-          return prop.variable;
-        } else if (prop instanceof Assign) {
-          if (!this.lhs) { prop.operatorToken.error(`unexpected ${prop.operatorToken.value}`); }
-          return prop.variable;
-        } else {
+            return prop.variable;
+          } if (prop instanceof Assign) {
+            if (!this.lhs) { prop.operatorToken.error(`unexpected ${prop.operatorToken.value}`); }
+            return prop.variable;
+          }
           return prop;
-        }
         })();
         if (key instanceof Value && key.hasProperties()) {
           if ((prop.context === 'object') || !key.this) { key.error('invalid object key'); }
-          key  = key.properties[0].name;
+          key = key.properties[0].name;
           prop = new Assign(key, prop, 'object');
         }
         if (key === prop) {
           if (prop.shouldCache()) {
             [key, value] = prop.base.cache(o);
-            if (key instanceof IdentifierLiteral) { key  = new PropertyName(key.value); }
+            if (key instanceof IdentifierLiteral) { key = new PropertyName(key.value); }
             prop = new Assign(key, value, 'object');
           } else if (key instanceof Value && key.base instanceof ComputedPropertyName) {
             // `{ [foo()] }` output as `{ [ref = foo()]: ref }`.
             if (prop.base.value.shouldCache()) {
               [key, value] = prop.base.value.cache(o);
-              if (key instanceof IdentifierLiteral) { key  = new ComputedPropertyName(key.value); }
+              if (key instanceof IdentifierLiteral) { key = new ComputedPropertyName(key.value); }
               prop = new Assign(key, value, 'object');
             } else {
               // `{ [expression] }` output as `{ [expression]: expression }`.
@@ -2191,11 +2232,11 @@ exports.Obj = (Obj = (function() {
       }
       answer.push(this.makeCode(isCompact ? '' : `\n${this.tab}`));
       answer = this.wrapInBraces(answer);
-      if (this.front) { return this.wrapInParentheses(answer); } else { return answer; }
+      if (this.front) { return this.wrapInParentheses(answer); } return answer;
     }
 
     assigns(name) {
-      for (let prop of Array.from(this.properties)) { if (prop.assigns(name)) { return true; } }
+      for (const prop of Array.from(this.properties)) { if (prop.assigns(name)) { return true; } }
       return false;
     }
 
@@ -2221,13 +2262,13 @@ exports.Obj = (Obj = (function() {
       let splatSlice = [];
       let propSlices = [];
       const slices = [];
-      const addSlice = function() {
+      const addSlice = function () {
         if (propSlices.length) { slices.push(new Obj(propSlices)); }
         if (splatSlice.length) { slices.push(...splatSlice); }
         splatSlice = [];
         return propSlices = [];
       };
-      for (let prop of Array.from(props)) {
+      for (const prop of Array.from(props)) {
         if (prop instanceof Splat) {
           splatSlice.push(new Value(prop.name));
           addSlice();
@@ -2236,7 +2277,7 @@ exports.Obj = (Obj = (function() {
         }
       }
       addSlice();
-      if (!(slices[0] instanceof Obj)) { slices.unshift(new Obj); }
+      if (!(slices[0] instanceof Obj)) { slices.unshift(new Obj()); }
       const _extends = new Value(new Literal(utility('_extends', o)));
       return (new Call(_extends, slices)).compileToFragments(o);
     }
@@ -2252,28 +2293,28 @@ exports.Obj = (Obj = (function() {
         answer.push(...prop.compileToFragments(o, LEVEL_TOP));
         answer.push(this.makeCode(join));
       }
-      if (this.front) { return this.wrapInParentheses(answer); } else { return answer; }
+      if (this.front) { return this.wrapInParentheses(answer); } return answer;
     }
   };
   Obj.initClass();
   return Obj;
-})());
+}()));
 
-//### Arr
+// ### Arr
 
 // An array literal.
-exports.Arr = (Arr = (function() {
+exports.Arr = (Arr = (function () {
   Arr = class Arr extends Base {
     static initClass() {
-  
       this.prototype.children = ['objects'];
     }
+
     constructor(objs, lhs) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       if (lhs == null) { lhs = false; }
@@ -2283,7 +2324,7 @@ exports.Arr = (Arr = (function() {
     }
 
     hasElision() {
-      for (let obj of Array.from(this.objects)) { if (obj instanceof Elision) { return true; } }
+      for (const obj of Array.from(this.objects)) { if (obj instanceof Elision) { return true; } }
       return false;
     }
 
@@ -2303,11 +2344,12 @@ exports.Arr = (Arr = (function() {
     }
 
     compileNode(o) {
-      let fragment, needle;
+      let fragment; let
+        needle;
       let obj;
       if (!this.objects.length) { return [this.makeCode('[]')]; }
       o.indent += TAB;
-      const fragmentIsElision = fragment => fragmentsToText(fragment).trim() === ',';
+      const fragmentIsElision = (fragment) => fragmentsToText(fragment).trim() === ',';
       // Detect if `Elisions` at the beginning of the array are processed (e.g. [, , , a]).
       let passedElision = false;
 
@@ -2317,8 +2359,8 @@ exports.Arr = (Arr = (function() {
         const unwrappedObj = obj.unwrapAll();
         // Let `compileCommentFragments` know to intersperse block comments
         // into the fragments created when compiling this array.
-        if (unwrappedObj.comments &&
-           (unwrappedObj.comments.filter(comment => !comment.here).length === 0)) {
+        if (unwrappedObj.comments
+           && (unwrappedObj.comments.filter((comment) => !comment.here).length === 0)) {
           unwrappedObj.includeCommentFragments = YES;
         }
         // If this array is the left-hand side of an assignment, all its children
@@ -2330,7 +2372,8 @@ exports.Arr = (Arr = (function() {
 
       const compiledObjs = ((() => {
         const result = [];
-        for (obj of Array.from(this.objects)) {           result.push(obj.compileToFragments(o, LEVEL_LIST));
+        for (obj of Array.from(this.objects)) {
+          result.push(obj.compileToFragments(o, LEVEL_LIST));
         }
         return result;
       })());
@@ -2384,7 +2427,7 @@ exports.Arr = (Arr = (function() {
     }
 
     assigns(name) {
-      for (let obj of Array.from(this.objects)) { if (obj.assigns(name)) { return true; } }
+      for (const obj of Array.from(this.objects)) { if (obj.assigns(name)) { return true; } }
       return false;
     }
 
@@ -2401,14 +2444,14 @@ exports.Arr = (Arr = (function() {
   };
   Arr.initClass();
   return Arr;
-})());
+}()));
 
-//### Class
+// ### Class
 
 // The CoffeeScript class definition.
 // Initialize a **Class** with its name, an optional superclass, and a body.
 
-exports.Class = (Class = (function() {
+exports.Class = (Class = (function () {
   Class = class Class extends Base {
     static initClass() {
       this.prototype.children = ['variable', 'parent', 'body'];
@@ -2418,24 +2461,24 @@ exports.Class = (Class = (function() {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.variable = variable;
       this.parent = parent;
-      if (body == null) { body = new Block; }
+      if (body == null) { body = new Block(); }
       this.body = body;
       super();
     }
 
     compileNode(o) {
       let parentName;
-      this.name          = this.determineName();
+      this.name = this.determineName();
       const executableBody = this.walkBody();
 
       // Special handling to allow `class expr.A extends A` declarations
-      if (this.parent instanceof Value && !this.parent.hasProperties()) { parentName    = this.parent.base.value; }
+      if (this.parent instanceof Value && !this.parent.hasProperties()) { parentName = this.parent.base.value; }
       this.hasNameClash = (this.name != null) && (this.name === parentName);
 
       let node = this;
@@ -2475,7 +2518,7 @@ exports.Class = (Class = (function() {
       o.indent += TAB;
 
       const result = [];
-      result.push(this.makeCode("class "));
+      result.push(this.makeCode('class '));
       if (this.name) { result.push(this.makeCode(this.name)); }
       if ((this.variable != null ? this.variable.comments : undefined) != null) { this.compileCommentFragments(o, this.variable, result); }
       if (this.name) { result.push(this.makeCode(' ')); }
@@ -2497,10 +2540,9 @@ exports.Class = (Class = (function() {
     determineName() {
       if (!this.variable) { return null; }
       const tail = this.variable.properties[this.variable.properties.length - 1];
-      const node = tail ?
-        tail instanceof Access && tail.name
-      :
-        this.variable.base;
+      const node = tail
+        ? tail instanceof Access && tail.name
+        : this.variable.base;
       if (!(node instanceof IdentifierLiteral) && !(node instanceof PropertyName)) {
         return null;
       }
@@ -2509,16 +2551,16 @@ exports.Class = (Class = (function() {
         const message = isUnassignable(name);
         if (message) { this.variable.error(message); }
       }
-      if (Array.from(JS_FORBIDDEN).includes(name)) { return `_${name}`; } else { return name; }
+      if (Array.from(JS_FORBIDDEN).includes(name)) { return `_${name}`; } return name;
     }
 
     walkBody() {
       let expression;
-      this.ctor          = null;
-      this.boundMethods  = [];
+      this.ctor = null;
+      this.boundMethods = [];
       const executableBody = null;
 
-      const initializer     = [];
+      const initializer = [];
       const { expressions } = this.body;
 
       let i = 0;
@@ -2527,10 +2569,10 @@ exports.Class = (Class = (function() {
         if (expression instanceof Value && expression.isObject(true)) {
           var assign;
           var { properties } = expression.base;
-          var exprs     = [];
-          var end       = 0;
-          var start     = 0;
-          const pushSlice = function() { if (end > start) { return exprs.push(new Value(new Obj(properties.slice(start, end), true))); } };
+          var exprs = [];
+          var end = 0;
+          var start = 0;
+          const pushSlice = function () { if (end > start) { return exprs.push(new Value(new Obj(properties.slice(start, end), true))); } };
 
           while ((assign = properties[end])) {
             if (initializerExpression = this.addInitializerExpression(assign)) {
@@ -2554,7 +2596,7 @@ exports.Class = (Class = (function() {
         }
       }
 
-      for (let method of Array.from(initializer)) {
+      for (const method of Array.from(initializer)) {
         if (method instanceof Code) {
           if (method.ctor) {
             if (this.ctor) { method.error('Cannot define more than one constructor in a class'); }
@@ -2570,7 +2612,8 @@ exports.Class = (Class = (function() {
       if (initializer.length !== expressions.length) {
         this.body.expressions = ((() => {
           const result = [];
-          for (expression of Array.from(initializer)) {             result.push(expression.hoist());
+          for (expression of Array.from(initializer)) {
+            result.push(expression.hoist());
           }
           return result;
         })());
@@ -2596,11 +2639,10 @@ exports.Class = (Class = (function() {
     addInitializerExpression(node) {
       if (node.unwrapAll() instanceof PassthroughLiteral) {
         return node;
-      } else if (this.validInitializerMethod(node)) {
+      } if (this.validInitializerMethod(node)) {
         return this.addInitializerMethod(node);
-      } else {
-        return null;
       }
+      return null;
     }
 
     // Checks if the given node is a valid ES class initializer method.
@@ -2619,7 +2661,7 @@ exports.Class = (Class = (function() {
       if (method.isStatic) {
         method.name = variable.properties[0];
       } else {
-        const methodName  = variable.base;
+        const methodName = variable.base;
         method.name = new (methodName.shouldCache() ? Index : Access)(methodName);
         method.name.updateLocationDataIfMissing(methodName.locationData);
         if (methodName.value === 'constructor') { method.ctor = (this.parent ? 'derived' : 'base'); }
@@ -2630,16 +2672,16 @@ exports.Class = (Class = (function() {
     }
 
     makeDefaultConstructor() {
-      const ctor = this.addInitializerMethod(new Assign((new Value(new PropertyName('constructor'))), new Code));
+      const ctor = this.addInitializerMethod(new Assign((new Value(new PropertyName('constructor'))), new Code()));
       this.body.unshift(ctor);
 
       if (this.parent) {
-        ctor.body.push(new SuperCall(new Super, [new Splat(new IdentifierLiteral('arguments'))]));
+        ctor.body.push(new SuperCall(new Super(), [new Splat(new IdentifierLiteral('arguments'))]));
       }
 
       if (this.externalCtor) {
-        const applyCtor = new Value(this.externalCtor, [ new Access(new PropertyName('apply')) ]);
-        const applyArgs = [ new ThisLiteral, new IdentifierLiteral('arguments') ];
+        const applyCtor = new Value(this.externalCtor, [new Access(new PropertyName('apply'))]);
+        const applyArgs = [new ThisLiteral(), new IdentifierLiteral('arguments')];
         ctor.body.push(new Call(applyCtor, applyArgs));
         ctor.body.makeReturn();
       }
@@ -2650,11 +2692,11 @@ exports.Class = (Class = (function() {
     proxyBoundMethods() {
       this.ctor.thisAssignments = (() => {
         const result = [];
-        for (let method of Array.from(this.boundMethods)) {
+        for (const method of Array.from(this.boundMethods)) {
           if (this.parent) { method.classVariable = this.variableRef; }
 
-          const name = new Value(new ThisLiteral, [ method.name ]);
-          result.push(new Assign(name, new Call(new Value(name, [new Access(new PropertyName('bind'))]), [new ThisLiteral])));
+          const name = new Value(new ThisLiteral(), [method.name]);
+          result.push(new Assign(name, new Call(new Value(name, [new Access(new PropertyName('bind'))]), [new ThisLiteral()])));
         }
         return result;
       })();
@@ -2664,13 +2706,13 @@ exports.Class = (Class = (function() {
   };
   Class.initClass();
   return Class;
-})());
+}()));
 
-exports.ExecutableClassBody = (ExecutableClassBody = (function() {
+exports.ExecutableClassBody = (ExecutableClassBody = (function () {
   ExecutableClassBody = class ExecutableClassBody extends Base {
     static initClass() {
-      this.prototype.children = [ 'class', 'body' ];
-  
+      this.prototype.children = ['class', 'body'];
+
       this.prototype.defaultClassVariableName = '_Class';
     }
 
@@ -2678,18 +2720,19 @@ exports.ExecutableClassBody = (ExecutableClassBody = (function() {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.class = class1;
-      if (body == null) { body = new Block; }
+      if (body == null) { body = new Block(); }
       this.body = body;
       super();
     }
 
     compileNode(o) {
-      let argumentsNode, jumpNode;
+      let argumentsNode; let
+        jumpNode;
       if (jumpNode = this.body.jumps()) {
         jumpNode.error('Class bodies cannot contain pure statements');
       }
@@ -2697,17 +2740,17 @@ exports.ExecutableClassBody = (ExecutableClassBody = (function() {
         argumentsNode.error("Class bodies shouldn't reference arguments");
       }
 
-      const params  = [];
-      const args    = [new ThisLiteral];
+      const params = [];
+      const args = [new ThisLiteral()];
       const wrapper = new Code(params, this.body);
-      const klass   = new Parens(new Call((new Value(wrapper, [new Access(new PropertyName('call'))])), args));
+      const klass = new Parens(new Call((new Value(wrapper, [new Access(new PropertyName('call'))])), args));
 
       this.body.spaced = true;
 
       o.classScope = wrapper.makeScope(o.scope);
 
-      this.name      = this.class.name != null ? this.class.name : o.classScope.freeVariable(this.defaultClassVariableName);
-      const ident      = new IdentifierLiteral(this.name);
+      this.name = this.class.name != null ? this.class.name : o.classScope.freeVariable(this.defaultClassVariableName);
+      const ident = new IdentifierLiteral(this.name);
       const directives = this.walkBody();
       this.setContext();
 
@@ -2719,7 +2762,7 @@ exports.ExecutableClassBody = (ExecutableClassBody = (function() {
       }
 
       if (this.externalCtor) {
-        const externalCtor = new IdentifierLiteral(o.classScope.freeVariable('ctor', {reserve: false}));
+        const externalCtor = new IdentifierLiteral(o.classScope.freeVariable('ctor', { reserve: false }));
         this.class.externalCtor = externalCtor;
         this.externalCtor.variable.base = externalCtor;
       }
@@ -2741,7 +2784,7 @@ exports.ExecutableClassBody = (ExecutableClassBody = (function() {
     // - Convert invalid ES properties into class or prototype assignments
     walkBody() {
       let expr;
-      const directives  = [];
+      const directives = [];
 
       let index = 0;
       while ((expr = this.body.expressions[index])) {
@@ -2753,7 +2796,7 @@ exports.ExecutableClassBody = (ExecutableClassBody = (function() {
         }
       }
 
-      this.traverseChildren(false, child => {
+      this.traverseChildren(false, (child) => {
         if (child instanceof Class || child instanceof HoistTarget) { return false; }
 
         let cont = true;
@@ -2776,10 +2819,10 @@ exports.ExecutableClassBody = (ExecutableClassBody = (function() {
     }
 
     setContext() {
-      return this.body.traverseChildren(false, node => {
+      return this.body.traverseChildren(false, (node) => {
         if (node instanceof ThisLiteral) {
-          return node.value   = this.name;
-        } else if (node instanceof Code && node.bound && node.isStatic) {
+          return node.value = this.name;
+        } if (node instanceof Code && node.bound && node.isStatic) {
           return node.context = this.name;
         }
       });
@@ -2791,11 +2834,11 @@ exports.ExecutableClassBody = (ExecutableClassBody = (function() {
         const result1 = [];
         for (let assign of Array.from(assigns)) {
           let {
-            variable
+            variable,
           } = assign;
-          const base     = variable != null ? variable.base : undefined;
+          const base = variable != null ? variable.base : undefined;
           const {
-            value
+            value,
           } = assign;
           delete assign.context;
 
@@ -2805,11 +2848,11 @@ exports.ExecutableClassBody = (ExecutableClassBody = (function() {
             }
 
             // The class scope is not available yet, so return the assignment to update later
-            assign = (this.externalCtor = new Assign(new Value, value));
+            assign = (this.externalCtor = new Assign(new Value(), value));
           } else if (!assign.variable.this) {
-            const name      = new (base.shouldCache() ? Index : Access)(base);
+            const name = new (base.shouldCache() ? Index : Access)(base);
             const prototype = new Access(new PropertyName('prototype'));
-            variable  = new Value(new ThisLiteral(), [ prototype, name ]);
+            variable = new Value(new ThisLiteral(), [prototype, name]);
 
             assign.variable = variable;
           } else if (assign.value instanceof Code) {
@@ -2825,26 +2868,26 @@ exports.ExecutableClassBody = (ExecutableClassBody = (function() {
   };
   ExecutableClassBody.initClass();
   return ExecutableClassBody;
-})());
+}()));
 
-//### Import and Export
+// ### Import and Export
 
-exports.ModuleDeclaration = (ModuleDeclaration = (function() {
+exports.ModuleDeclaration = (ModuleDeclaration = (function () {
   ModuleDeclaration = class ModuleDeclaration extends Base {
     static initClass() {
-  
       this.prototype.children = ['clause', 'source'];
-  
+
       this.prototype.isStatement = YES;
-      this.prototype.jumps =       THIS;
-      this.prototype.makeReturn =  THIS;
+      this.prototype.jumps = THIS;
+      this.prototype.makeReturn = THIS;
     }
+
     constructor(clause, source) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.clause = clause;
@@ -2867,7 +2910,7 @@ exports.ModuleDeclaration = (ModuleDeclaration = (function() {
   };
   ModuleDeclaration.initClass();
   return ModuleDeclaration;
-})());
+}()));
 
 exports.ImportDeclaration = (ImportDeclaration = class ImportDeclaration extends ModuleDeclaration {
   compileNode(o) {
@@ -2888,18 +2931,18 @@ exports.ImportDeclaration = (ImportDeclaration = class ImportDeclaration extends
   }
 });
 
-exports.ImportClause = (ImportClause = (function() {
+exports.ImportClause = (ImportClause = (function () {
   ImportClause = class ImportClause extends Base {
     static initClass() {
-  
       this.prototype.children = ['defaultBinding', 'namedImports'];
     }
+
     constructor(defaultBinding, namedImports) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.defaultBinding = defaultBinding;
@@ -2924,7 +2967,7 @@ exports.ImportClause = (ImportClause = (function() {
   };
   ImportClause.initClass();
   return ImportClause;
-})());
+}()));
 
 exports.ExportDeclaration = (ExportDeclaration = class ExportDeclaration extends ModuleDeclaration {
   compileNode(o) {
@@ -2934,8 +2977,8 @@ exports.ExportDeclaration = (ExportDeclaration = class ExportDeclaration extends
     code.push(this.makeCode(`${this.tab}export `));
     if (this instanceof ExportDefaultDeclaration) { code.push(this.makeCode('default ')); }
 
-    if (!(this instanceof ExportDefaultDeclaration) &&
-       (this.clause instanceof Assign || this.clause instanceof Class)) {
+    if (!(this instanceof ExportDefaultDeclaration)
+       && (this.clause instanceof Assign || this.clause instanceof Class)) {
       // Prevent exporting an anonymous class; all exported members must be named
       if (this.clause instanceof Class && !this.clause.variable) {
         this.clause.error('anonymous classes cannot be exported');
@@ -2963,18 +3006,18 @@ exports.ExportDefaultDeclaration = (ExportDefaultDeclaration = class ExportDefau
 
 exports.ExportAllDeclaration = (ExportAllDeclaration = class ExportAllDeclaration extends ExportDeclaration {});
 
-exports.ModuleSpecifierList = (ModuleSpecifierList = (function() {
+exports.ModuleSpecifierList = (ModuleSpecifierList = (function () {
   ModuleSpecifierList = class ModuleSpecifierList extends Base {
     static initClass() {
-  
       this.prototype.children = ['specifiers'];
     }
+
     constructor(specifiers) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.specifiers = specifiers;
@@ -2993,7 +3036,7 @@ exports.ModuleSpecifierList = (ModuleSpecifierList = (function() {
           if (index) { code.push(this.makeCode(`,\n${o.indent}`)); }
           code.push(...fragments);
         }
-        code.push(this.makeCode("\n}"));
+        code.push(this.makeCode('\n}'));
       } else {
         code.push(this.makeCode('{}'));
       }
@@ -3002,24 +3045,24 @@ exports.ModuleSpecifierList = (ModuleSpecifierList = (function() {
   };
   ModuleSpecifierList.initClass();
   return ModuleSpecifierList;
-})());
+}()));
 
 exports.ImportSpecifierList = (ImportSpecifierList = class ImportSpecifierList extends ModuleSpecifierList {});
 
 exports.ExportSpecifierList = (ExportSpecifierList = class ExportSpecifierList extends ModuleSpecifierList {});
 
-exports.ModuleSpecifier = (ModuleSpecifier = (function() {
+exports.ModuleSpecifier = (ModuleSpecifier = (function () {
   ModuleSpecifier = class ModuleSpecifier extends Base {
     static initClass() {
-  
       this.prototype.children = ['original', 'alias'];
     }
+
     constructor(original, alias, moduleDeclarationType) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.original = original;
@@ -3047,7 +3090,7 @@ exports.ModuleSpecifier = (ModuleSpecifier = (function() {
   };
   ModuleSpecifier.initClass();
   return ModuleSpecifier;
-})());
+}()));
 
 exports.ImportSpecifier = (ImportSpecifier = class ImportSpecifier extends ModuleSpecifier {
   constructor(imported, local) {
@@ -3076,24 +3119,24 @@ exports.ExportSpecifier = (ExportSpecifier = class ExportSpecifier extends Modul
   }
 });
 
-//### Assign
+// ### Assign
 
 // The **Assign** is used to assign a local variable to value, or to set the
 // property of an object -- including within object literals.
-exports.Assign = (Assign = (function() {
+exports.Assign = (Assign = (function () {
   Assign = class Assign extends Base {
     static initClass() {
-  
       this.prototype.children = ['variable', 'value'];
-  
+
       this.prototype.isAssignable = YES;
     }
+
     constructor(variable, value, context, options) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.variable = variable;
@@ -3101,16 +3144,18 @@ exports.Assign = (Assign = (function() {
       this.context = context;
       if (options == null) { options = {}; }
       super();
-      ({param: this.param, subpattern: this.subpattern, operatorToken: this.operatorToken, moduleDeclaration: this.moduleDeclaration} = options);
+      ({
+        param: this.param, subpattern: this.subpattern, operatorToken: this.operatorToken, moduleDeclaration: this.moduleDeclaration,
+      } = options);
     }
 
     isStatement(o) {
-      return ((o != null ? o.level : undefined) === LEVEL_TOP) && (this.context != null) && (this.moduleDeclaration || Array.from(this.context).includes("?"));
+      return ((o != null ? o.level : undefined) === LEVEL_TOP) && (this.context != null) && (this.moduleDeclaration || Array.from(this.context).includes('?'));
     }
 
     checkAssignability(o, varBase) {
-      if (Object.prototype.hasOwnProperty.call(o.scope.positions, varBase.value) &&
-         (o.scope.variables[o.scope.positions[varBase.value]].type === 'import')) {
+      if (Object.prototype.hasOwnProperty.call(o.scope.positions, varBase.value)
+         && (o.scope.variables[o.scope.positions[varBase.value]].type === 'import')) {
         return varBase.error(`'${varBase.value}' is read-only`);
       }
     }
@@ -3144,7 +3189,7 @@ exports.Assign = (Assign = (function() {
           let objDestructAnswer;
           this.variable.base.lhs = true;
           // Check if @variable contains Obj with splats.
-          const hasSplat = this.variable.contains(node => node instanceof Obj && node.hasSplat());
+          const hasSplat = this.variable.contains((node) => node instanceof Obj && node.hasSplat());
           if (!this.variable.isAssignable() || (this.variable.isArray() && hasSplat)) { return this.compileDestructuring(o); }
           // Object destructuring. Can be removed once ES proposal hits Stage 4.
           if (this.variable.isObject() && hasSplat) { objDestructAnswer = this.compileObjectDestruct(o); }
@@ -3162,7 +3207,7 @@ exports.Assign = (Assign = (function() {
           this.variable.error(`'${this.variable.compile(o)}' can't be assigned`);
         }
 
-        varBase.eachName(name => {
+        varBase.eachName((name) => {
           if (typeof name.hasProperties === 'function' ? name.hasProperties() : undefined) { return; }
 
           const message = isUnassignable(name.value);
@@ -3172,30 +3217,27 @@ exports.Assign = (Assign = (function() {
           this.checkAssignability(o, name);
           if (this.moduleDeclaration) {
             return o.scope.add(name.value, this.moduleDeclaration);
-          } else if (this.param) {
+          } if (this.param) {
             return o.scope.add(name.value,
-              this.param === 'alwaysDeclare' ?
-                'var'
-              :
-                'param'
-            );
-          } else {
-            o.scope.find(name.value);
-            // If this assignment identifier has one or more herecomments
-            // attached, output them as part of the declarations line (unless
-            // other herecomments are already staged there) for compatibility
-            // with Flow typing. Don’t do this if this assignment is for a
-            // class, e.g. `ClassName = class ClassName {`, as Flow requires
-            // the comment to be between the class name and the `{`.
-            if (name.comments && !o.scope.comments[name.value] &&
-               !(this.value instanceof Class) &&
-               name.comments.every(comment => comment.here && !comment.multiline)) {
-              const commentsNode = new IdentifierLiteral(name.value);
-              commentsNode.comments = name.comments;
-              const commentFragments = [];
-              this.compileCommentFragments(o, commentsNode, commentFragments);
-              return o.scope.comments[name.value] = commentFragments;
-            }
+              this.param === 'alwaysDeclare'
+                ? 'var'
+                : 'param');
+          }
+          o.scope.find(name.value);
+          // If this assignment identifier has one or more herecomments
+          // attached, output them as part of the declarations line (unless
+          // other herecomments are already staged there) for compatibility
+          // with Flow typing. Don’t do this if this assignment is for a
+          // class, e.g. `ClassName = class ClassName {`, as Flow requires
+          // the comment to be between the class name and the `{`.
+          if (name.comments && !o.scope.comments[name.value]
+               && !(this.value instanceof Class)
+               && name.comments.every((comment) => comment.here && !comment.multiline)) {
+            const commentsNode = new IdentifierLiteral(name.value);
+            commentsNode.comments = name.comments;
+            const commentFragments = [];
+            this.compileCommentFragments(o, commentsNode, commentFragments);
+            return o.scope.comments[name.value] = commentFragments;
           }
         });
       }
@@ -3204,7 +3246,8 @@ exports.Assign = (Assign = (function() {
         if (this.value.isStatic) {
           this.value.name = this.variable.properties[0];
         } else if ((this.variable.properties != null ? this.variable.properties.length : undefined) >= 2) {
-          const adjustedLength = Math.max(this.variable.properties.length, 2), properties = this.variable.properties.slice(0, adjustedLength - 2), prototype = this.variable.properties[adjustedLength - 2], name = this.variable.properties[adjustedLength - 1];
+          const adjustedLength = Math.max(this.variable.properties.length, 2); const properties = this.variable.properties.slice(0, adjustedLength - 2); const prototype = this.variable.properties[adjustedLength - 2]; const
+            name = this.variable.properties[adjustedLength - 1];
           if ((prototype.name != null ? prototype.name.value : undefined) === 'prototype') { this.value.name = name; }
         }
       }
@@ -3221,16 +3264,15 @@ exports.Assign = (Assign = (function() {
         return compiledName.concat(this.makeCode(this.csx ? '=' : ': '), val);
       }
 
-      const answer = compiledName.concat(this.makeCode(` ${ this.context || '=' } `), val);
+      const answer = compiledName.concat(this.makeCode(` ${this.context || '='} `), val);
       // Per https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#Assignment_without_declaration,
       // if we’re destructuring without declaring, the destructuring assignment must be wrapped in parentheses.
       // The assignment is wrapped in parentheses if 'o.level' has lower precedence than LEVEL_LIST (3)
       // (i.e. LEVEL_COND (4), LEVEL_OP (5) or LEVEL_ACCESS (6)), or if we're destructuring object, e.g. {a,b} = obj.
       if ((o.level > LEVEL_LIST) || (isValue && this.variable.base instanceof Obj && !this.nestedLhs && !(this.param === true))) {
         return this.wrapInParentheses(answer);
-      } else {
-        return answer;
       }
+      return answer;
     }
 
     // Check object destructuring variable for rest elements;
@@ -3238,38 +3280,37 @@ exports.Assign = (Assign = (function() {
     compileObjectDestruct(o) {
       // Returns a safe (cached) reference to the key for a given property
       let valueRef;
-      const getPropKey = function(prop) {
+      const getPropKey = function (prop) {
         if (prop instanceof Assign) {
           let key;
           [prop.variable, key] = prop.variable.cache(o);
           return key;
-        } else {
-          return prop;
         }
+        return prop;
       };
 
       // Returns the name of a given property for use with excludeProps
       // Property names are quoted (e.g. `a: b` -> 'a'), and everything else uses the key reference
       // (e.g. `'a': b -> 'a'`, `"#{a}": b` -> <cached>`)
-      const getPropName = function(prop) {
+      const getPropName = function (prop) {
         const key = getPropKey(prop);
         const cached = prop instanceof Assign && (prop.variable !== key);
         if (cached || !key.isAssignable()) {
           return key;
-        } else {
-          return new Literal(`'${key.compileWithoutComments(o)}'`);
         }
+        return new Literal(`'${key.compileWithoutComments(o)}'`);
       };
 
       // Recursive function for searching and storing rest elements in objects.
       // e.g. `{[properties...]} = source`.
       var traverseRest = (properties, source) => {
         const restElements = [];
-        let restIndex = undefined;
+        let restIndex;
         if (source.properties == null) { source = new Value(source); }
 
         for (let index = 0; index < properties.length; index++) {
-          var nestedProperties, nestedSource;
+          var nestedProperties; var
+            nestedSource;
           var prop = properties[index];
           let nestedSourceDefault = (nestedSource = (nestedProperties = null));
           if (prop instanceof Assign) {
@@ -3290,12 +3331,12 @@ exports.Assign = (Assign = (function() {
               restElements.push(...traverseRest(nestedProperties, nestedSource));
             }
           } else if (prop instanceof Splat) {
-            if (restIndex != null) { prop.error("multiple rest elements are disallowed in object destructuring"); }
+            if (restIndex != null) { prop.error('multiple rest elements are disallowed in object destructuring'); }
             restIndex = index;
             restElements.push({
               name: prop.name.unwrapAll(),
               source,
-              excludeProps: new Arr((Array.from(properties).filter((p) => p !== prop).map((p) => getPropName(p))))
+              excludeProps: new Arr((Array.from(properties).filter((p) => p !== prop).map((p) => getPropName(p)))),
             });
           }
         }
@@ -3309,11 +3350,9 @@ exports.Assign = (Assign = (function() {
       };
 
       // Cache the value for reuse with rest elements.
-      const valueRefTemp =
-        this.value.shouldCache() ?
-          new IdentifierLiteral(o.scope.freeVariable('ref', {reserve: false}))
-        :
-          this.value.base;
+      const valueRefTemp = this.value.shouldCache()
+        ? new IdentifierLiteral(o.scope.freeVariable('ref', { reserve: false }))
+        : this.value.base;
 
       // Find all rest elements.
       const restElements = traverseRest(this.variable.base.properties, valueRefTemp);
@@ -3322,9 +3361,9 @@ exports.Assign = (Assign = (function() {
       [this.value, valueRef] = this.value.cache(o);
       const result = new Block([this]);
 
-      for (let restElement of Array.from(restElements)) {
+      for (const restElement of Array.from(restElements)) {
         const value = new Call(new Value(new Literal(utility('objectWithoutKeys', o))), [restElement.source, restElement.excludeProps]);
-        result.push(new Assign(new Value(restElement.name), value, null, {param: this.param ? 'alwaysDeclare' : null}));
+        result.push(new Assign(new Value(restElement.name), value, null, { param: this.param ? 'alwaysDeclare' : null }));
       }
 
       const fragments = result.compileToFragments(o);
@@ -3340,17 +3379,18 @@ exports.Assign = (Assign = (function() {
     // Brief implementation of recursive pattern matching, when assigning array or
     // object literals to a value. Peeks at their properties to assign inner names.
     compileDestructuring(o) {
-      let i, obj;
-      const top       = o.level === LEVEL_TOP;
-      const {value}   = this;
-      const {objects} = this.variable.base;
-      const olen      = objects.length;
+      let i; let
+        obj;
+      const top = o.level === LEVEL_TOP;
+      const { value } = this;
+      const { objects } = this.variable.base;
+      const olen = objects.length;
 
       // Special-case for `{} = a` and `[] = a` (empty patterns).
       // Compile to simply `a`.
       if (olen === 0) {
         const code = value.compileToFragments(o);
-        if (o.level >= LEVEL_OP) { return this.wrapInParentheses(code); } else { return code; }
+        if (o.level >= LEVEL_OP) { return this.wrapInParentheses(code); } return code;
       }
       [obj] = objects;
 
@@ -3389,7 +3429,7 @@ exports.Assign = (Assign = (function() {
       // Examples: [a, b, c..., d, e, f...], [a, b, ..., c, d, ...], [a, b, ..., c, d, e...]
       if (splatsAndExpans.length > 1) {
         // Sort 'splatsAndExpans' so we can show error at first disallowed token.
-        objects[splatsAndExpans.sort()[1]].error("multiple splats/expansions are disallowed in an assignment");
+        objects[splatsAndExpans.sort()[1]].error('multiple splats/expansions are disallowed in an assignment');
       }
 
       const isSplat = (splats != null ? splats.length : undefined) > 0;
@@ -3397,21 +3437,21 @@ exports.Assign = (Assign = (function() {
       const isObject = this.variable.isObject();
       const isArray = this.variable.isArray();
 
-      let vvar     = value.compileToFragments(o, LEVEL_LIST);
+      let vvar = value.compileToFragments(o, LEVEL_LIST);
       let vvarText = fragmentsToText(vvar);
-      const assigns  = [];
+      const assigns = [];
 
       // At this point, there are several things to destructure. So the `fn()` in
       // `{a, b} = fn()` must be cached, for example. Make vvar into a simple
       // variable if it isn’t already.
       if (!(value.unwrap() instanceof IdentifierLiteral) || this.variable.assigns(vvarText)) {
         const ref = o.scope.freeVariable('ref');
-        assigns.push([this.makeCode(ref + ' = '), ...vvar]);
+        assigns.push([this.makeCode(`${ref} = `), ...vvar]);
         vvar = [this.makeCode(ref)];
         vvarText = ref;
       }
 
-      const slicer = type => (function(vvar, start, end) {
+      const slicer = (type) => (function (vvar, start, end) {
         if (end == null) { end = false; }
         const args = [new IdentifierLiteral(vvar), new NumberLiteral(start)];
         if (end) { args.push(new NumberLiteral(end)); }
@@ -3420,13 +3460,13 @@ exports.Assign = (Assign = (function() {
       });
 
       // Helper which outputs `[].slice` code.
-      const compSlice = slicer("slice");
+      const compSlice = slicer('slice');
 
       // Helper which outputs `[].splice` code.
-      const compSplice = slicer("splice");
+      const compSplice = slicer('splice');
 
       // Check if `objects` array contains object spread (`{a, r...}`), e.g. `[a, b, {c, r...}]`.
-      const hasObjSpreads = objs => (() => {
+      const hasObjSpreads = (objs) => (() => {
         const result2 = [];
         for (i = 0; i < objs.length; i++) {
           obj = objs[i];
@@ -3438,7 +3478,7 @@ exports.Assign = (Assign = (function() {
       })();
 
       // Check if `objects` array contains any instance of `Assign`, e.g. {a:1}.
-      const hasObjAssigns = objs => (() => {
+      const hasObjAssigns = (objs) => (() => {
         const result2 = [];
         for (i = 0; i < objs.length; i++) {
           obj = objs[i];
@@ -3450,14 +3490,14 @@ exports.Assign = (Assign = (function() {
       })();
 
       // Check if `objects` array contains any unassignable object.
-      const objIsUnassignable = function(objs) {
+      const objIsUnassignable = function (objs) {
         for (obj of Array.from(objs)) { if (!obj.isAssignable()) { return true; } }
         return false;
       };
 
       // `objects` are complex when there is object spread ({a...}), object assign ({a:1}),
       // unassignable object, or just a single node.
-      const complexObjects = objs => hasObjSpreads(objs).length || hasObjAssigns(objs).length || objIsUnassignable(objs) || (olen === 1);
+      const complexObjects = (objs) => hasObjSpreads(objs).length || hasObjAssigns(objs).length || objIsUnassignable(objs) || (olen === 1);
 
       // "Complex" `objects` are processed in a loop.
       // Examples: [a, b, {c, r...}, d], [a, ..., {b, r...}, c, d]
@@ -3473,30 +3513,32 @@ exports.Assign = (Assign = (function() {
             // If `obj` is {a: 1}
             if (obj instanceof Assign && (obj.context === 'object')) {
               let idx;
-              ({variable: {base: idx}, value: vvar} = obj);
-              if (vvar instanceof Assign) { ({variable: vvar} = vvar); }
-              idx =
-                vvar.this ?
-                  vvar.properties[0].name
-                :
-                  new PropertyName(vvar.unwrap().value);
+              ({ variable: { base: idx }, value: vvar } = obj);
+              if (vvar instanceof Assign) { ({ variable: vvar } = vvar); }
+              idx = vvar.this
+                ? vvar.properties[0].name
+                : new PropertyName(vvar.unwrap().value);
               const acc = idx.unwrap() instanceof PropertyName;
               vval = new Value(value, [new (acc ? Access : Index)(idx)]);
             } else {
               // `obj` is [a...], {a...} or a
-              vvar = (() => { switch (false) {
-                case !(obj instanceof Splat): return new Value(obj.name);
-                case !Array.from(objSpreads).includes(i): return new Value(obj.base);
-                default: return obj;
-              } })();
-              vval = (() => { switch (false) {
-                case !(obj instanceof Splat): return compSlice(vvarTxt, i);
-                default: return new Value(new Literal(vvarTxt), [new Index(new NumberLiteral(i))]);
-              } })();
+              vvar = (() => {
+                switch (false) {
+                  case !(obj instanceof Splat): return new Value(obj.name);
+                  case !Array.from(objSpreads).includes(i): return new Value(obj.base);
+                  default: return obj;
+                }
+              })();
+              vval = (() => {
+                switch (false) {
+                  case !(obj instanceof Splat): return compSlice(vvarTxt, i);
+                  default: return new Value(new Literal(vvarTxt), [new Index(new NumberLiteral(i))]);
+                }
+              })();
             }
             const message = isUnassignable(vvar.unwrap().value);
             if (message) { vvar.error(message); }
-            result2.push(assigns.push(new Assign(vvar, vval, null, {param: this.param, subpattern: true}).compileToFragments(o, LEVEL_LIST)));
+            result2.push(assigns.push(new Assign(vvar, vval, null, { param: this.param, subpattern: true }).compileToFragments(o, LEVEL_LIST)));
           }
           return result2;
         })();
@@ -3506,15 +3548,14 @@ exports.Assign = (Assign = (function() {
       const assignObjects = (objs, vvar, vvarTxt) => {
         vvar = new Value(new Arr(objs, true));
         const vval = vvarTxt instanceof Value ? vvarTxt : new Value(new Literal(vvarTxt));
-        return assigns.push(new Assign(vvar, vval, null, {param: this.param, subpattern: true}).compileToFragments(o, LEVEL_LIST));
+        return assigns.push(new Assign(vvar, vval, null, { param: this.param, subpattern: true }).compileToFragments(o, LEVEL_LIST));
       };
 
-      const processObjects = function(objs, vvar, vvarTxt) {
+      const processObjects = function (objs, vvar, vvarTxt) {
         if (complexObjects(objs)) {
           return loopObjects(objs, vvar, vvarTxt);
-        } else {
-          return assignObjects(objs, vvar, vvarTxt);
         }
+        return assignObjects(objs, vvar, vvarTxt);
       };
 
       // In case there is `Splat` or `Expansion` in `objects`,
@@ -3535,14 +3576,16 @@ exports.Assign = (Assign = (function() {
         if (leftObjs.length !== 0) { processObjects(leftObjs, vvar, vvarText); }
         if (rightObjs.length !== 0) {
           // Slice or splice `objects`.
-          let refExp = (() => { switch (false) {
-            case !isSplat: return compSplice(objects[expIdx].unwrapAll().value, rightObjs.length * -1);
-            case !isExpans: return compSlice(vvarText, rightObjs.length * -1);
-          } })();
+          let refExp = (() => {
+            switch (false) {
+              case !isSplat: return compSplice(objects[expIdx].unwrapAll().value, rightObjs.length * -1);
+              case !isExpans: return compSlice(vvarText, rightObjs.length * -1);
+            }
+          })();
           if (complexObjects(rightObjs)) {
             const restVar = refExp;
             refExp = o.scope.freeVariable('ref');
-            assigns.push([this.makeCode(refExp + ' = '), ...restVar.compileToFragments(o, LEVEL_LIST)]);
+            assigns.push([this.makeCode(`${refExp} = `), ...restVar.compileToFragments(o, LEVEL_LIST)]);
           }
           processObjects(rightObjs, vvar, refExp);
         }
@@ -3552,7 +3595,7 @@ exports.Assign = (Assign = (function() {
       }
       if (!top && !this.subpattern) { assigns.push(vvar); }
       const fragments = this.joinFragmentArrays(assigns, ', ');
-      if (o.level < LEVEL_LIST) { return fragments; } else { return this.wrapInParentheses(fragments); }
+      if (o.level < LEVEL_LIST) { return fragments; } return this.wrapInParentheses(fragments);
     }
 
     // When compiling a conditional assignment, take care to ensure that the
@@ -3561,17 +3604,16 @@ exports.Assign = (Assign = (function() {
     compileConditional(o) {
       const [left, right] = this.variable.cacheReference(o);
       // Disallow conditional assignment of undefined variables.
-      if (!left.properties.length && left.base instanceof Literal &&
-             !(left.base instanceof ThisLiteral) && !o.scope.check(left.base.value)) {
+      if (!left.properties.length && left.base instanceof Literal
+             && !(left.base instanceof ThisLiteral) && !o.scope.check(left.base.value)) {
         this.variable.error(`the variable \"${left.base.value}\" can't be assigned with ${this.context} because it has not been declared before`);
       }
-      if (Array.from(this.context).includes("?")) {
+      if (Array.from(this.context).includes('?')) {
         o.isExistentialEquals = true;
-        return new If(new Existence(left), right, {type: 'if'}).addElse(new Assign(right, this.value, '=')).compileToFragments(o);
-      } else {
-        const fragments = new Op(this.context.slice(0, -1), left, new Assign(right, this.value, '=')).compileToFragments(o);
-        if (o.level <= LEVEL_LIST) { return fragments; } else { return this.wrapInParentheses(fragments); }
+        return new If(new Existence(left), right, { type: 'if' }).addElse(new Assign(right, this.value, '=')).compileToFragments(o);
       }
+      const fragments = new Op(this.context.slice(0, -1), left, new Assign(right, this.value, '=')).compileToFragments(o);
+      if (o.level <= LEVEL_LIST) { return fragments; } return this.wrapInParentheses(fragments);
     }
 
     // Convert special math assignment operators like `a **= b` to the equivalent
@@ -3584,8 +3626,9 @@ exports.Assign = (Assign = (function() {
     // Compile the assignment from an array splice literal, using JavaScript's
     // `Array#splice` method.
     compileSplice(o) {
-      let fromDecl, fromRef;
-      let {range: {from, to, exclusive}} = this.variable.properties.pop();
+      let fromDecl; let
+        fromRef;
+      let { range: { from, to, exclusive } } = this.variable.properties.pop();
       const unwrappedVar = this.variable.unwrapAll();
       if (unwrappedVar.comments) {
         moveComments(unwrappedVar, this);
@@ -3602,15 +3645,15 @@ exports.Assign = (Assign = (function() {
           to = to.compile(o) - fromRef;
           if (!exclusive) { to += 1; }
         } else {
-          to = to.compile(o, LEVEL_ACCESS) + ' - ' + fromRef;
+          to = `${to.compile(o, LEVEL_ACCESS)} - ${fromRef}`;
           if (!exclusive) { to += ' + 1'; }
         }
       } else {
-        to = "9e9";
+        to = '9e9';
       }
       const [valDef, valRef] = this.value.cache(o, LEVEL_LIST);
-      const answer = [].concat(this.makeCode(`${utility('splice', o)}.apply(${name}, [${fromDecl}, ${to}].concat(`), valDef, this.makeCode(")), "), valRef);
-      if (o.level > LEVEL_TOP) { return this.wrapInParentheses(answer); } else { return answer; }
+      const answer = [].concat(this.makeCode(`${utility('splice', o)}.apply(${name}, [${fromDecl}, ${to}].concat(`), valDef, this.makeCode(')), '), valRef);
+      if (o.level > LEVEL_TOP) { return this.wrapInParentheses(answer); } return answer;
     }
 
     eachName(iterator) {
@@ -3619,17 +3662,17 @@ exports.Assign = (Assign = (function() {
   };
   Assign.initClass();
   return Assign;
-})());
+}()));
 
-//### FuncGlyph
+// ### FuncGlyph
 
 exports.FuncGlyph = (FuncGlyph = class FuncGlyph extends Base {
   constructor(glyph) {
     {
       // Hack: trick Babel/TypeScript into allowing this before super.
       if (false) { super(); }
-      let thisFn = (() => { return this; }).toString();
-      let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+      const thisFn = (() => this).toString();
+      const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
       eval(`${thisName} = this;`);
     }
     this.glyph = glyph;
@@ -3637,39 +3680,39 @@ exports.FuncGlyph = (FuncGlyph = class FuncGlyph extends Base {
   }
 });
 
-//### Code
+// ### Code
 
 // A function definition. This is the only node that creates a new Scope.
 // When for the purposes of walking the contents of a function body, the Code
 // has no *children* -- they're within the inner scope.
-exports.Code = (Code = (function() {
+exports.Code = (Code = (function () {
   Code = class Code extends Base {
     static initClass() {
-  
       this.prototype.children = ['params', 'body'];
-  
+
       this.prototype.jumps = NO;
     }
+
     constructor(params, body, funcGlyph, paramStart) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.funcGlyph = funcGlyph;
       this.paramStart = paramStart;
       super();
 
-      this.params      = params || [];
-      this.body        = body || new Block;
-      this.bound       = (this.funcGlyph != null ? this.funcGlyph.glyph : undefined) === '=>';
+      this.params = params || [];
+      this.body = body || new Block();
+      this.bound = (this.funcGlyph != null ? this.funcGlyph.glyph : undefined) === '=>';
       this.isGenerator = false;
-      this.isAsync     = false;
-      this.isMethod    = false;
+      this.isAsync = false;
+      this.isMethod = false;
 
-      this.body.traverseChildren(false, node => {
+      this.body.traverseChildren(false, (node) => {
         if ((node instanceof Op && node.isYield()) || node instanceof YieldReturn) {
           this.isGenerator = true;
         }
@@ -3693,7 +3736,8 @@ exports.Code = (Code = (function() {
     // parameters after the splat, they are declared via expressions in the
     // function body.
     compileNode(o) {
-      let body, i, left, name, splatParamName;
+      let body; let i; let left; let name; let
+        splatParamName;
       let param;
       if (this.ctor) {
         if (this.isAsync) { this.name.error('Class constructor may not be async'); }
@@ -3705,37 +3749,35 @@ exports.Code = (Code = (function() {
         if (!this.context) { this.context = 'this'; }
       }
 
-      o.scope         = del(o, 'classScope') || this.makeScope(o.scope);
-      o.scope.shared  = del(o, 'sharedScope');
-      o.indent        += TAB;
+      o.scope = del(o, 'classScope') || this.makeScope(o.scope);
+      o.scope.shared = del(o, 'sharedScope');
+      o.indent += TAB;
       delete o.bare;
       delete o.isExistentialEquals;
-      const params           = [];
-      const exprs            = [];
-      const thisAssignments  = (left = (this.thisAssignments != null ? this.thisAssignments.slice() : undefined)) != null ? left : [];
+      const params = [];
+      const exprs = [];
+      const thisAssignments = (left = (this.thisAssignments != null ? this.thisAssignments.slice() : undefined)) != null ? left : [];
       const paramsAfterSplat = [];
-      let haveSplatParam   = false;
-      let haveBodyParam    = false;
+      let haveSplatParam = false;
+      let haveBodyParam = false;
 
       // Check for duplicate parameters and separate `this` assignments.
       const paramNames = [];
-      this.eachParamName(function(name, node, param, obj) {
+      this.eachParamName((name, node, param, obj) => {
         if (Array.from(paramNames).includes(name)) { node.error(`multiple parameters named '${name}'`); }
         paramNames.push(name);
 
         if (node.this) {
-          name   = node.properties[0].name.value;
-          if (Array.from(JS_FORBIDDEN).includes(name)) { name   = `_${name}`; }
-          const target = new IdentifierLiteral(o.scope.freeVariable(name, {reserve: false}));
+          name = node.properties[0].name.value;
+          if (Array.from(JS_FORBIDDEN).includes(name)) { name = `_${name}`; }
+          const target = new IdentifierLiteral(o.scope.freeVariable(name, { reserve: false }));
           // `Param` is object destructuring with a default value: ({@prop = 1}) ->
           // In a case when the variable name is already reserved, we have to assign
           // a new variable name to the destructured variable: ({prop:prop1 = 1}) ->
-          const replacement =
-              param.name instanceof Obj && obj instanceof Assign &&
-                  (obj.operatorToken.value === '=') ?
-                new Assign((new IdentifierLiteral(name)), target, 'object') //, operatorToken: new Literal ':'
-              :
-                target;
+          const replacement = param.name instanceof Obj && obj instanceof Assign
+                  && (obj.operatorToken.value === '=')
+            ? new Assign((new IdentifierLiteral(name)), target, 'object') // , operatorToken: new Literal ':'
+            : target;
           param.renameParam(node, replacement);
           return thisAssignments.push(new Assign(node, target));
         }
@@ -3788,7 +3830,8 @@ exports.Code = (Code = (function() {
         // encountered, add these other parameters to the list to be output in
         // the function definition.
         } else {
-          var condition, ifTrue;
+          var condition; var
+            ifTrue;
           if (param.shouldCache() || haveBodyParam) {
             param.assignedInBody = true;
             haveBodyParam = true;
@@ -3797,11 +3840,11 @@ exports.Code = (Code = (function() {
             // to the function body assigning it, e.g.
             // `(arg) => { var a = arg.a; }`, with a default value if it has one.
             if (param.value != null) {
-              condition = new Op('===', param, new UndefinedLiteral);
+              condition = new Op('===', param, new UndefinedLiteral());
               ifTrue = new Assign(new Value(param.name), param.value);
               exprs.push(new If(condition, ifTrue));
             } else {
-              exprs.push(new Assign(new Value(param.name), param.asReference(o), null, {param: 'alwaysDeclare'}));
+              exprs.push(new Assign(new Value(param.name), param.asReference(o), null, { param: 'alwaysDeclare' }));
             }
           }
 
@@ -3814,12 +3857,10 @@ exports.Code = (Code = (function() {
             // so we can’t define its default value in the parameter list.
             if (param.shouldCache()) {
               ref = param.asReference(o);
+            } else if ((param.value != null) && !param.assignedInBody) {
+              ref = new Assign(new Value(param.name), param.value, null, { param: true });
             } else {
-              if ((param.value != null) && !param.assignedInBody) {
-                ref = new Assign(new Value(param.name), param.value, null, {param: true});
-              } else {
-                ref = param;
-              }
+              ref = param;
             }
             // Add this parameter’s reference(s) to the function scope.
             if (param.name instanceof Arr || param.name instanceof Obj) {
@@ -3831,13 +3872,13 @@ exports.Code = (Code = (function() {
                 splatParamName = o.scope.freeVariable('arg');
                 o.scope.parameter(splatParamName);
                 ref = new Value(new IdentifierLiteral(splatParamName));
-                exprs.push(new Assign(new Value(param.name), ref, null, {param: 'alwaysDeclare'}));
+                exprs.push(new Assign(new Value(param.name), ref, null, { param: 'alwaysDeclare' }));
                 // Compile `foo({a, b...} = {}) ->` to `foo(arg = {}) -> {a, b...} = arg`.
                 if ((param.value != null) && !param.assignedInBody) {
-                  ref = new Assign(ref, param.value, null, {param: true});
+                  ref = new Assign(ref, param.value, null, { param: true });
                 }
               } else if (!param.shouldCache()) {
-                param.name.eachName(prop => o.scope.parameter(prop.value));
+                param.name.eachName((prop) => o.scope.parameter(prop.value));
               }
             } else {
               // This compilation of the parameter is only to get its name to add
@@ -3855,7 +3896,7 @@ exports.Code = (Code = (function() {
             // function parameter list we need to assign its default value
             // (if necessary) as an expression in the body.
             if ((param.value != null) && !param.shouldCache()) {
-              condition = new Op('===', param, new UndefinedLiteral);
+              condition = new Op('===', param, new UndefinedLiteral());
               ifTrue = new Assign(new Value(param.name), param.value);
               exprs.push(new If(condition, ifTrue));
             }
@@ -3871,14 +3912,14 @@ exports.Code = (Code = (function() {
       if (paramsAfterSplat.length !== 0) {
         // Create a destructured assignment, e.g. `[a, b, c] = [args..., b, c]`
         exprs.unshift(new Assign(new Value(
-            new Arr([new Splat(new IdentifierLiteral(splatParamName)), ...(((() => {
-              const result = [];
-              for (param of Array.from(paramsAfterSplat)) {                 result.push(param.asReference(o));
-              }
-              return result;
-            })()))])
-          ), new Value(new IdentifierLiteral(splatParamName)))
-        );
+          new Arr([new Splat(new IdentifierLiteral(splatParamName)), ...(((() => {
+            const result = [];
+            for (param of Array.from(paramsAfterSplat)) {
+              result.push(param.asReference(o));
+            }
+            return result;
+          })()))]),
+        ), new Value(new IdentifierLiteral(splatParamName))));
       }
 
       // Add new expressions to the function body
@@ -3887,14 +3928,14 @@ exports.Code = (Code = (function() {
       this.body.expressions.unshift(...exprs);
       if (this.isMethod && this.bound && !this.isStatic && this.classVariable) {
         const boundMethodCheck = new Value(new Literal(utility('boundMethodCheck', o)));
-        this.body.expressions.unshift(new Call(boundMethodCheck, [new Value(new ThisLiteral), this.classVariable]));
+        this.body.expressions.unshift(new Call(boundMethodCheck, [new Value(new ThisLiteral()), this.classVariable]));
       }
       if (!wasEmpty && !this.noReturn) { this.body.makeReturn(); }
 
       // JavaScript doesn’t allow bound (`=>`) functions to also be generators.
       // This is usually caught via `Op::compileContinuation`, but double-check:
       if (this.bound && this.isGenerator) {
-        const yieldNode = this.body.contains(node => node instanceof Op && (node.operator === 'yield'));
+        const yieldNode = this.body.contains((node) => node instanceof Op && (node.operator === 'yield'));
         (yieldNode || this).error('yield cannot occur inside bound (fat arrow) functions');
       }
 
@@ -3931,7 +3972,7 @@ exports.Code = (Code = (function() {
       signature.push(this.makeCode(')'));
       // Block comments between `)` and `->`/`=>` get output between `)` and `{`.
       if ((this.funcGlyph != null ? this.funcGlyph.comments : undefined) != null) {
-        for (let comment of Array.from(this.funcGlyph.comments)) { comment.unshift = false; }
+        for (const comment of Array.from(this.funcGlyph.comments)) { comment.unshift = false; }
         this.compileCommentFragments(o, this.funcGlyph, signature);
       }
 
@@ -3957,7 +3998,7 @@ exports.Code = (Code = (function() {
       answer.push(this.makeCode('}'));
 
       if (this.isMethod) { return indentInitial(answer, this); }
-      if (this.front || (o.level >= LEVEL_ACCESS)) { return this.wrapInParentheses(answer); } else { return answer; }
+      if (this.front || (o.level >= LEVEL_ACCESS)) { return this.wrapInParentheses(answer); } return answer;
     }
 
     eachParamName(iterator) {
@@ -3975,17 +4016,16 @@ exports.Code = (Code = (function() {
     replaceInContext(child, replacement) {
       if (this.bound) {
         return super.replaceInContext(child, replacement);
-      } else {
-        return false;
       }
+      return false;
     }
 
     expandCtorSuper(thisAssignments) {
       if (!this.ctor) { return false; }
 
-      this.eachSuperCall(Block.wrap(this.params), superCall => superCall.error("'super' is not allowed in constructor parameter defaults"));
+      this.eachSuperCall(Block.wrap(this.params), (superCall) => superCall.error("'super' is not allowed in constructor parameter defaults"));
 
-      const seenSuper = this.eachSuperCall(this.body, superCall => {
+      const seenSuper = this.eachSuperCall(this.body, (superCall) => {
         if (this.ctor === 'base') { superCall.error("'super' is only allowed in derived class constructors"); }
         return superCall.expressions = thisAssignments;
       });
@@ -4004,14 +4044,14 @@ exports.Code = (Code = (function() {
     eachSuperCall(context, iterator) {
       let seenSuper = false;
 
-      context.traverseChildren(true, child => {
+      context.traverseChildren(true, (child) => {
         if (child instanceof SuperCall) {
           // `super` in a constructor (the only `super` without an accessor)
           // cannot be given an argument with a reference to `this`, as that would
           // be referencing `this` before calling `super`.
           if (!child.variable.accessor) {
-            const childArgs = child.args.filter(arg => !(arg instanceof Class) && (!(arg instanceof Code) || arg.bound));
-            Block.wrap(childArgs).traverseChildren(true, node => {
+            const childArgs = child.args.filter((arg) => !(arg instanceof Class) && (!(arg instanceof Code) || arg.bound));
+            Block.wrap(childArgs).traverseChildren(true, (node) => {
               if (node.this) { return node.error("Can't call super with @params in derived class constructors"); }
             });
           }
@@ -4030,25 +4070,25 @@ exports.Code = (Code = (function() {
   };
   Code.initClass();
   return Code;
-})());
+}()));
 
-//### Param
+// ### Param
 
 // A parameter in a function definition. Beyond a typical JavaScript parameter,
 // these parameters can also attach themselves to the context of the function,
 // as well as be a splat, gathering up a group of parameters into an array.
-exports.Param = (Param = (function() {
+exports.Param = (Param = (function () {
   Param = class Param extends Base {
     static initClass() {
-  
       this.prototype.children = ['name', 'value'];
     }
+
     constructor(name, value, splat) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.name = name;
@@ -4098,9 +4138,11 @@ exports.Param = (Param = (function() {
     // `name` is the name of the parameter and `node` is the AST node corresponding
     // to that name.
     eachName(iterator, name) {
-      if (name == null) { ({
-        name
-      } = this); }
+      if (name == null) {
+        ({
+          name,
+        } = this);
+      }
       const atParam = (obj, originalObj = null) => iterator(`@${obj.properties[0].name.value}`, obj, this, originalObj);
       // * simple literals `foo`
       if (name instanceof Literal) { return iterator(name.value, name, this); }
@@ -4146,7 +4188,7 @@ exports.Param = (Param = (function() {
     // Rename a param by replacing the given AST node for a name with a new node.
     // This needs to ensure that the the source for object destructuring does not change.
     renameParam(node, newNode) {
-      const isNode      = candidate => candidate === node;
+      const isNode = (candidate) => candidate === node;
       const replacement = (node, parent) => {
         if (parent instanceof Obj) {
           let key = node;
@@ -4157,12 +4199,10 @@ exports.Param = (Param = (function() {
           // `foo = 1; ({@foo}) ->` should compile to `foo = 1; ({foo:foo1}) { this.foo = foo1 }`
           if (node.this && (key.value === newNode.value)) {
             return new Value(newNode);
-          } else {
-            return new Assign(new Value(key), newNode, 'object');
           }
-        } else {
-          return newNode;
+          return new Assign(new Value(key), newNode, 'object');
         }
+        return newNode;
       };
 
       return this.replaceInContext(isNode, replacement);
@@ -4170,18 +4210,18 @@ exports.Param = (Param = (function() {
   };
   Param.initClass();
   return Param;
-})());
+}()));
 
-//### Splat
+// ### Splat
 
 // A splat, either as a parameter to a function, an argument to a call,
 // or as part of a destructuring assignment.
-exports.Splat = (Splat = (function() {
+exports.Splat = (Splat = (function () {
   Splat = class Splat extends Base {
     static initClass() {
-  
       this.prototype.children = ['name'];
     }
+
     constructor(name) {
       super();
       this.name = name.compile ? name : new Literal(name);
@@ -4203,16 +4243,15 @@ exports.Splat = (Splat = (function() {
   };
   Splat.initClass();
   return Splat;
-})());
+}()));
 
-//### Expansion
+// ### Expansion
 
 // Used to skip values inside an array destructuring (pattern matching) or
 // parameter list.
-exports.Expansion = (Expansion = (function() {
+exports.Expansion = (Expansion = (function () {
   Expansion = class Expansion extends Base {
     static initClass() {
-  
       this.prototype.shouldCache = NO;
     }
 
@@ -4228,17 +4267,16 @@ exports.Expansion = (Expansion = (function() {
   };
   Expansion.initClass();
   return Expansion;
-})());
+}()));
 
-//### Elision
+// ### Elision
 
 // Array elision element (for example, [,a, , , b, , c, ,]).
-exports.Elision = (Elision = (function() {
+exports.Elision = (Elision = (function () {
   Elision = class Elision extends Base {
     static initClass() {
-  
       this.prototype.isAssignable = YES;
-  
+
       this.prototype.shouldCache = NO;
     }
 
@@ -4260,35 +4298,34 @@ exports.Elision = (Elision = (function() {
   };
   Elision.initClass();
   return Elision;
-})());
+}()));
 
-//### While
+// ### While
 
 // A while loop, the only sort of low-level loop exposed by CoffeeScript. From
 // it, all other loops can be manufactured. Useful in cases where you need more
 // flexibility or more speed than a comprehension can provide.
-exports.While = (While = (function() {
+exports.While = (While = (function () {
   While = class While extends Base {
     static initClass() {
-  
       this.prototype.children = ['condition', 'guard', 'body'];
-  
+
       this.prototype.isStatement = YES;
     }
+
     constructor(condition, options) {
       super();
 
       this.condition = (options != null ? options.invert : undefined) ? condition.invert() : condition;
-      this.guard     = options != null ? options.guard : undefined;
+      this.guard = options != null ? options.guard : undefined;
     }
 
     makeReturn(res) {
       if (res) {
         return super.makeReturn(res);
-      } else {
-        this.returns = !this.jumps();
-        return this;
       }
+      this.returns = !this.jumps();
+      return this;
     }
 
     addBody(body) {
@@ -4297,11 +4334,11 @@ exports.While = (While = (function() {
     }
 
     jumps() {
-      const {expressions} = this.body;
+      const { expressions } = this.body;
       if (!expressions.length) { return false; }
-      for (let node of Array.from(expressions)) {
+      for (const node of Array.from(expressions)) {
         var jumpNode;
-        if (jumpNode = node.jumps({loop: true})) { return jumpNode; }
+        if (jumpNode = node.jumps({ loop: true })) { return jumpNode; }
       }
       return false;
     }
@@ -4312,26 +4349,24 @@ exports.While = (While = (function() {
     compileNode(o) {
       let rvar;
       o.indent += TAB;
-      let set      = '';
-      let {body}   = this;
+      let set = '';
+      let { body } = this;
       if (body.isEmpty()) {
         body = this.makeCode('');
       } else {
         if (this.returns) {
           body.makeReturn(rvar = o.scope.freeVariable('results'));
-          set  = `${this.tab}${rvar} = [];\n`;
+          set = `${this.tab}${rvar} = [];\n`;
         }
         if (this.guard) {
           if (body.expressions.length > 1) {
-            body.expressions.unshift(new If((new Parens(this.guard)).invert(), new StatementLiteral("continue")));
-          } else {
-            if (this.guard) { body = Block.wrap([new If(this.guard, body)]); }
-          }
+            body.expressions.unshift(new If((new Parens(this.guard)).invert(), new StatementLiteral('continue')));
+          } else if (this.guard) { body = Block.wrap([new If(this.guard, body)]); }
         }
-        body = [].concat(this.makeCode("\n"), (body.compileToFragments(o, LEVEL_TOP)), this.makeCode(`\n${this.tab}`));
+        body = [].concat(this.makeCode('\n'), (body.compileToFragments(o, LEVEL_TOP)), this.makeCode(`\n${this.tab}`));
       }
-      const answer = [].concat(this.makeCode(set + this.tab + "while ("), this.condition.compileToFragments(o, LEVEL_PAREN),
-        this.makeCode(") {"), body, this.makeCode("}"));
+      const answer = [].concat(this.makeCode(`${set + this.tab}while (`), this.condition.compileToFragments(o, LEVEL_PAREN),
+        this.makeCode(') {'), body, this.makeCode('}'));
       if (this.returns) {
         answer.push(this.makeCode(`\n${this.tab}return ${rvar};`));
       }
@@ -4340,34 +4375,34 @@ exports.While = (While = (function() {
   };
   While.initClass();
   return While;
-})());
+}()));
 
-//### Op
+// ### Op
 
 // Simple Arithmetic and logical operations. Performs some conversion from
 // CoffeeScript operations into their JavaScript equivalents.
-exports.Op = (Op = (function() {
-  let CONVERSIONS = undefined;
-  let INVERSIONS = undefined;
+exports.Op = (Op = (function () {
+  let CONVERSIONS;
+  let INVERSIONS;
   Op = class Op extends Base {
     static initClass() {
-  
       // The map of conversions from CoffeeScript to JavaScript symbols.
       CONVERSIONS = {
-        '==':        '===',
-        '!=':        '!==',
-        'of':        'in',
-        'yieldfrom': 'yield*'
+        '==': '===',
+        '!=': '!==',
+        of: 'in',
+        yieldfrom: 'yield*',
       };
-  
+
       // The map of invertible operators.
       INVERSIONS = {
         '!==': '===',
-        '===': '!=='
+        '===': '!==',
       };
-  
+
       this.prototype.children = ['first', 'second'];
     }
+
     constructor(op, first, second, flip) {
       super();
 
@@ -4384,15 +4419,15 @@ exports.Op = (Op = (function() {
       }
 
       this.operator = CONVERSIONS[op] || op;
-      this.first    = first;
-      this.second   = second;
-      this.flip     = !!flip;
+      this.first = first;
+      this.second = second;
+      this.flip = !!flip;
       return this;
     }
 
     isNumber() {
-      return this.isUnary() && ['+', '-'].includes(this.operator) &&
-        this.first instanceof Value && this.first.isNumber();
+      return this.isUnary() && ['+', '-'].includes(this.operator)
+        && this.first instanceof Value && this.first.isNumber();
     }
 
     isAwait() {
@@ -4418,7 +4453,8 @@ exports.Op = (Op = (function() {
     }
 
     invert() {
-      let fst, op;
+      let fst; let
+        op;
       if (this.isChainable() && this.first.isChainable()) {
         let allInvertable = true;
         let curr = this;
@@ -4434,20 +4470,19 @@ exports.Op = (Op = (function() {
           curr = curr.first;
         }
         return this;
-      } else if (op = INVERSIONS[this.operator]) {
+      } if (op = INVERSIONS[this.operator]) {
         this.operator = op;
         if (this.first.unwrap() instanceof Op) {
           this.first.invert();
         }
         return this;
-      } else if (this.second) {
+      } if (this.second) {
         return new Parens(this).invert();
-      } else if ((this.operator === '!') && (fst = this.first.unwrap()) instanceof Op &&
-                                    ['!', 'in', 'instanceof'].includes(fst.operator)) {
+      } if ((this.operator === '!') && (fst = this.first.unwrap()) instanceof Op
+                                    && ['!', 'in', 'instanceof'].includes(fst.operator)) {
         return fst;
-      } else {
-        return new Op('!', this);
       }
+      return new Op('!', this);
     }
 
     unfoldSoak(o) {
@@ -4457,11 +4492,10 @@ exports.Op = (Op = (function() {
     generateDo(exp) {
       let ref;
       const passedParams = [];
-      const func = exp instanceof Assign && (ref = exp.value.unwrap()) instanceof Code ?
-        ref
-      :
-        exp;
-      for (let param of Array.from(func.params || [])) {
+      const func = exp instanceof Assign && (ref = exp.value.unwrap()) instanceof Code
+        ? ref
+        : exp;
+      for (const param of Array.from(func.params || [])) {
         if (param.value) {
           passedParams.push(param.value);
           delete param.value;
@@ -4490,7 +4524,7 @@ exports.Op = (Op = (function() {
       if (this.isUnary()) { return this.compileUnary(o); }
       if (isChain) { return this.compileChain(o); }
       switch (this.operator) {
-        case '?':  return this.compileExistence(o, this.second.isDefaultValue);
+        case '?': return this.compileExistence(o, this.second.isDefaultValue);
         case '**': return this.compilePower(o);
         case '//': return this.compileFloorDivision(o);
         case '%%': return this.compileModulo(o);
@@ -4498,7 +4532,7 @@ exports.Op = (Op = (function() {
           var lhs = this.first.compileToFragments(o, LEVEL_OP);
           var rhs = this.second.compileToFragments(o, LEVEL_OP);
           var answer = [].concat(lhs, this.makeCode(` ${this.operator} `), rhs);
-          if (o.level <= LEVEL_OP) { return answer; } else { return this.wrapInParentheses(answer); }
+          if (o.level <= LEVEL_OP) { return answer; } return this.wrapInParentheses(answer);
       }
     }
 
@@ -4518,7 +4552,8 @@ exports.Op = (Op = (function() {
 
     // Keep reference to the left expression, unless this an existential assignment
     compileExistence(o, checkOnlyUndefined) {
-      let fst, ref;
+      let fst; let
+        ref;
       if (this.first.shouldCache()) {
         ref = new IdentifierLiteral(o.scope.freeVariable('ref'));
         fst = new Parens(new Assign(ref, this.first));
@@ -4526,7 +4561,7 @@ exports.Op = (Op = (function() {
         fst = this.first;
         ref = fst;
       }
-      return new If(new Existence(fst, checkOnlyUndefined), ref, {type: 'if'}).addElse(this.second).compileToFragments(o);
+      return new If(new Existence(fst, checkOnlyUndefined), ref, { type: 'if' }).addElse(this.second).compileToFragments(o);
     }
 
     // Compile a unary **Op**.
@@ -4542,8 +4577,8 @@ exports.Op = (Op = (function() {
         return (new Parens(this)).compileToFragments(o);
       }
       const plusMinus = ['+', '-'].includes(op);
-      if (['new', 'typeof', 'delete'].includes(op) ||
-                        (plusMinus && this.first instanceof Op && (this.first.operator === op))) { parts.push([this.makeCode(' ')]); }
+      if (['new', 'typeof', 'delete'].includes(op)
+                        || (plusMinus && this.first instanceof Op && (this.first.operator === op))) { parts.push([this.makeCode(' ')]); }
       if ((plusMinus && this.first instanceof Op) || ((op === 'new') && this.first.isStatement(o))) {
         this.first = new Parens(this.first);
       }
@@ -4565,11 +4600,11 @@ exports.Op = (Op = (function() {
       if ((needle = 'expression', Array.from(Object.keys(this.first)).includes(needle)) && !(this.first instanceof Throw)) {
         if (this.first.expression != null) { parts.push(this.first.expression.compileToFragments(o, LEVEL_OP)); }
       } else {
-        if (o.level >= LEVEL_PAREN) { parts.push([this.makeCode("(")]); }
+        if (o.level >= LEVEL_PAREN) { parts.push([this.makeCode('(')]); }
         parts.push([this.makeCode(op)]);
-        if ((this.first.base != null ? this.first.base.value : undefined) !== '') { parts.push([this.makeCode(" ")]); }
+        if ((this.first.base != null ? this.first.base.value : undefined) !== '') { parts.push([this.makeCode(' ')]); }
         parts.push(this.first.compileToFragments(o, LEVEL_OP));
-        if (o.level >= LEVEL_PAREN) { parts.push([this.makeCode(")")]); }
+        if (o.level >= LEVEL_PAREN) { parts.push([this.makeCode(')')]); }
       }
       return this.joinFragmentArrays(parts, '');
     }
@@ -4593,28 +4628,28 @@ exports.Op = (Op = (function() {
     }
 
     toString(idt) {
-      return super.toString(idt, this.constructor.name + ' ' + this.operator);
+      return super.toString(idt, `${this.constructor.name} ${this.operator}`);
     }
   };
   Op.initClass();
   return Op;
-})());
+}()));
 
-//### In
-exports.In = (In = (function() {
+// ### In
+exports.In = (In = (function () {
   In = class In extends Base {
     static initClass() {
-  
       this.prototype.children = ['object', 'array'];
-  
+
       this.prototype.invert = NEGATE;
     }
+
     constructor(object, array) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.object = object;
@@ -4625,7 +4660,7 @@ exports.In = (In = (function() {
     compileNode(o) {
       if (this.array instanceof Value && this.array.isArray() && this.array.base.objects.length) {
         let hasSplat;
-        for (let obj of Array.from(this.array.base.objects)) {
+        for (const obj of Array.from(this.array.base.objects)) {
           if (obj instanceof Splat) {
             hasSplat = true;
             break;
@@ -4646,16 +4681,16 @@ exports.In = (In = (function() {
         if (i) { tests.push(this.makeCode(cnj)); }
         tests = tests.concat((i ? ref : sub), this.makeCode(cmp), item.compileToFragments(o, LEVEL_ACCESS));
       }
-      if (o.level < LEVEL_OP) { return tests; } else { return this.wrapInParentheses(tests); }
+      if (o.level < LEVEL_OP) { return tests; } return this.wrapInParentheses(tests);
     }
 
     compileLoopTest(o) {
       const [sub, ref] = this.object.cache(o, LEVEL_LIST);
-      let fragments = [].concat(this.makeCode(utility('indexOf', o) + ".call("), this.array.compileToFragments(o, LEVEL_LIST),
-        this.makeCode(", "), ref, this.makeCode(") " + (this.negated ? '< 0' : '>= 0')));
+      let fragments = [].concat(this.makeCode(`${utility('indexOf', o)}.call(`), this.array.compileToFragments(o, LEVEL_LIST),
+        this.makeCode(', '), ref, this.makeCode(`) ${this.negated ? '< 0' : '>= 0'}`));
       if (fragmentsToText(sub) === fragmentsToText(ref)) { return fragments; }
       fragments = sub.concat(this.makeCode(', '), fragments);
-      if (o.level < LEVEL_LIST) { return fragments; } else { return this.wrapInParentheses(fragments); }
+      if (o.level < LEVEL_LIST) { return fragments; } return this.wrapInParentheses(fragments);
     }
 
     toString(idt) {
@@ -4664,25 +4699,25 @@ exports.In = (In = (function() {
   };
   In.initClass();
   return In;
-})());
+}()));
 
-//### Try
+// ### Try
 
 // A classic *try/catch/finally* block.
-exports.Try = (Try = (function() {
+exports.Try = (Try = (function () {
   Try = class Try extends Base {
     static initClass() {
-  
       this.prototype.children = ['attempt', 'recovery', 'ensure'];
-  
+
       this.prototype.isStatement = YES;
     }
+
     constructor(attempt, errorVariable, recovery, ensure) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.attempt = attempt;
@@ -4695,7 +4730,7 @@ exports.Try = (Try = (function() {
     jumps(o) { return this.attempt.jumps(o) || (this.recovery != null ? this.recovery.jumps(o) : undefined); }
 
     makeReturn(res) {
-      if (this.attempt) { this.attempt  = this.attempt .makeReturn(res); }
+      if (this.attempt) { this.attempt = this.attempt.makeReturn(res); }
       if (this.recovery) { this.recovery = this.recovery.makeReturn(res); }
       return this;
     }
@@ -4703,30 +4738,29 @@ exports.Try = (Try = (function() {
     // Compilation is more or less as you would expect -- the *finally* clause
     // is optional, the *catch* is not.
     compileNode(o) {
-      o.indent  += TAB;
-      const tryPart   = this.attempt.compileToFragments(o, LEVEL_TOP);
+      o.indent += TAB;
+      const tryPart = this.attempt.compileToFragments(o, LEVEL_TOP);
 
       const catchPart = (() => {
         let generatedErrorVariableName;
         if (this.recovery) {
-        generatedErrorVariableName = o.scope.freeVariable('error', {reserve: false});
-        const placeholder = new IdentifierLiteral(generatedErrorVariableName);
-        if (this.errorVariable) {
-          const message = isUnassignable(this.errorVariable.unwrapAll().value);
-          if (message) { this.errorVariable.error(message); }
-          this.recovery.unshift(new Assign(this.errorVariable, placeholder));
+          generatedErrorVariableName = o.scope.freeVariable('error', { reserve: false });
+          const placeholder = new IdentifierLiteral(generatedErrorVariableName);
+          if (this.errorVariable) {
+            const message = isUnassignable(this.errorVariable.unwrapAll().value);
+            if (message) { this.errorVariable.error(message); }
+            this.recovery.unshift(new Assign(this.errorVariable, placeholder));
+          }
+          return [].concat(this.makeCode(' catch ('), placeholder.compileToFragments(o), this.makeCode(') {\n'),
+            this.recovery.compileToFragments(o, LEVEL_TOP), this.makeCode(`\n${this.tab}}`));
+        } if (!this.ensure && !this.recovery) {
+          generatedErrorVariableName = o.scope.freeVariable('error', { reserve: false });
+          return [this.makeCode(` catch (${generatedErrorVariableName}) {}`)];
         }
-        return [].concat(this.makeCode(" catch ("), placeholder.compileToFragments(o), this.makeCode(") {\n"),
-          this.recovery.compileToFragments(o, LEVEL_TOP), this.makeCode(`\n${this.tab}}`));
-      } else if (!this.ensure && !this.recovery) {
-        generatedErrorVariableName = o.scope.freeVariable('error', {reserve: false});
-        return [this.makeCode(` catch (${generatedErrorVariableName}) {}`)];
-      } else {
         return [];
-      }
       })();
 
-      const ensurePart = this.ensure ? ([].concat(this.makeCode(" finally {\n"), this.ensure.compileToFragments(o, LEVEL_TOP),
+      const ensurePart = this.ensure ? ([].concat(this.makeCode(' finally {\n'), this.ensure.compileToFragments(o, LEVEL_TOP),
         this.makeCode(`\n${this.tab}}`))) : [];
 
       return [].concat(this.makeCode(`${this.tab}try {\n`),
@@ -4736,29 +4770,29 @@ exports.Try = (Try = (function() {
   };
   Try.initClass();
   return Try;
-})());
+}()));
 
-//### Throw
+// ### Throw
 
 // Simple node to throw an exception.
-exports.Throw = (Throw = (function() {
+exports.Throw = (Throw = (function () {
   Throw = class Throw extends Base {
     static initClass() {
-  
       this.prototype.children = ['expression'];
-  
+
       this.prototype.isStatement = YES;
-      this.prototype.jumps =       NO;
-  
+      this.prototype.jumps = NO;
+
       // A **Throw** is already a return, of sorts...
       this.prototype.makeReturn = THIS;
     }
+
     constructor(expression) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.expression = expression;
@@ -4775,27 +4809,27 @@ exports.Throw = (Throw = (function() {
   };
   Throw.initClass();
   return Throw;
-})());
+}()));
 
-//### Existence
+// ### Existence
 
 // Checks a variable for existence -- not `null` and not `undefined`. This is
 // similar to `.nil?` in Ruby, and avoids having to consult a JavaScript truth
 // table. Optionally only check if a variable is not `undefined`.
-exports.Existence = (Existence = (function() {
+exports.Existence = (Existence = (function () {
   Existence = class Existence extends Base {
     static initClass() {
-  
       this.prototype.children = ['expression'];
-  
+
       this.prototype.invert = NEGATE;
     }
+
     constructor(expression, onlyNotUndefined) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.expression = expression;
@@ -4803,9 +4837,9 @@ exports.Existence = (Existence = (function() {
       super();
       this.comparisonTarget = onlyNotUndefined ? 'undefined' : 'null';
       const salvagedComments = [];
-      this.expression.traverseChildren(true, function(child) {
+      this.expression.traverseChildren(true, (child) => {
         if (child.comments) {
-          for (let comment of Array.from(child.comments)) {
+          for (const comment of Array.from(child.comments)) {
             if (!Array.from(salvagedComments).includes(comment)) { salvagedComments.push(comment); }
           }
           return delete child.comments;
@@ -4822,7 +4856,7 @@ exports.Existence = (Existence = (function() {
       if (this.expression.unwrap() instanceof IdentifierLiteral && !o.scope.check(code)) {
         let cnj;
         [cmp, cnj] = this.negated ? ['===', '||'] : ['!==', '&&'];
-        code = `typeof ${code} ${cmp} \"undefined\"` + (this.comparisonTarget !== 'undefined' ? ` ${cnj} ${code} ${cmp} ${this.comparisonTarget}` : '');
+        code = `typeof ${code} ${cmp} \"undefined\"${this.comparisonTarget !== 'undefined' ? ` ${cnj} ${code} ${cmp} ${this.comparisonTarget}` : ''}`;
       } else {
         // We explicity want to use loose equality (`==`) when comparing against `null`,
         // so that an existence check roughly corresponds to a check for truthiness.
@@ -4830,9 +4864,9 @@ exports.Existence = (Existence = (function() {
         // existing code. When comparing only against `undefined`, however, we want to
         // use `===` because this use case is for parity with ES2015+ default values,
         // which only get assigned when the variable is `undefined` (but not `null`).
-        cmp = this.comparisonTarget === 'null' ?
-          this.negated ? '==' : '!='
-        : // `undefined`
+        cmp = this.comparisonTarget === 'null'
+          ? this.negated ? '==' : '!='
+          : // `undefined`
           this.negated ? '===' : '!==';
         code = `${code} ${cmp} ${this.comparisonTarget}`;
       }
@@ -4841,27 +4875,27 @@ exports.Existence = (Existence = (function() {
   };
   Existence.initClass();
   return Existence;
-})());
+}()));
 
-//### Parens
+// ### Parens
 
 // An extra set of parentheses, specified explicitly in the source. At one time
 // we tried to clean up the results by detecting and removing redundant
 // parentheses, but no longer -- you can put in as many as you please.
 //
 // Parentheses are a good way to force any statement to become an expression.
-exports.Parens = (Parens = (function() {
+exports.Parens = (Parens = (function () {
   Parens = class Parens extends Base {
     static initClass() {
-  
       this.prototype.children = ['body'];
     }
+
     constructor(body) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.body = body;
@@ -4880,38 +4914,39 @@ exports.Parens = (Parens = (function() {
       // parentheses in certain circumstances to distinguish identifiers followed
       // by comment-based type annotations from JavaScript labels.
       const shouldWrapComment = expr.comments != null ? expr.comments.some(
-        comment => comment.here && !comment.unshift && !comment.newLine) : undefined;
+        (comment) => comment.here && !comment.unshift && !comment.newLine,
+      ) : undefined;
       if (expr instanceof Value && expr.isAtomic() && !this.csxAttribute && !shouldWrapComment) {
         expr.front = this.front;
         return expr.compileToFragments(o);
       }
       const fragments = expr.compileToFragments(o, LEVEL_PAREN);
       const bare = (o.level < LEVEL_OP) && !shouldWrapComment && (
-          expr instanceof Op || expr.unwrap() instanceof Call ||
-          (expr instanceof For && expr.returns)
-        ) && ((o.level < LEVEL_COND) || (fragments.length <= 3));
+        expr instanceof Op || expr.unwrap() instanceof Call
+          || (expr instanceof For && expr.returns)
+      ) && ((o.level < LEVEL_COND) || (fragments.length <= 3));
       if (this.csxAttribute) { return this.wrapInBraces(fragments); }
-      if (bare) { return fragments; } else { return this.wrapInParentheses(fragments); }
+      if (bare) { return fragments; } return this.wrapInParentheses(fragments);
     }
   };
   Parens.initClass();
   return Parens;
-})());
+}()));
 
-//### StringWithInterpolations
+// ### StringWithInterpolations
 
-exports.StringWithInterpolations = (StringWithInterpolations = (function() {
+exports.StringWithInterpolations = (StringWithInterpolations = (function () {
   StringWithInterpolations = class StringWithInterpolations extends Base {
     static initClass() {
-  
       this.prototype.children = ['body'];
     }
+
     constructor(body) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.body = body;
@@ -4937,7 +4972,7 @@ exports.StringWithInterpolations = (StringWithInterpolations = (function() {
 
       const elements = [];
       const salvagedComments = [];
-      expr.traverseChildren(false, function(node) {
+      expr.traverseChildren(false, (node) => {
         let comment;
         if (node instanceof StringLiteral) {
           if (node.comments) {
@@ -4946,7 +4981,7 @@ exports.StringWithInterpolations = (StringWithInterpolations = (function() {
           }
           elements.push(node);
           return true;
-        } else if (node instanceof Parens) {
+        } if (node instanceof Parens) {
           if (salvagedComments.length !== 0) {
             for (comment of Array.from(salvagedComments)) {
               comment.unshift = true;
@@ -4956,7 +4991,7 @@ exports.StringWithInterpolations = (StringWithInterpolations = (function() {
           }
           elements.push(node);
           return false;
-        } else if (node.comments) {
+        } if (node.comments) {
           // This node is getting discarded, but salvage its comments.
           if ((elements.length !== 0) && !(elements[elements.length - 1] instanceof StringLiteral)) {
             for (comment of Array.from(node.comments)) {
@@ -4974,24 +5009,23 @@ exports.StringWithInterpolations = (StringWithInterpolations = (function() {
 
       const fragments = [];
       if (!this.csx) { fragments.push(this.makeCode('`')); }
-      for (let element of Array.from(elements)) {
+      for (const element of Array.from(elements)) {
         if (element instanceof StringLiteral) {
           element.value = element.unquote(true, this.csx);
           if (!this.csx) {
             // Backticks and `${` inside template literals must be escaped.
-            element.value = element.value.replace(/(\\*)(`|\$\{)/g, function(match, backslashes, toBeEscaped) {
+            element.value = element.value.replace(/(\\*)(`|\$\{)/g, (match, backslashes, toBeEscaped) => {
               if ((backslashes.length % 2) === 0) {
                 return `${backslashes}\\${toBeEscaped}`;
-              } else {
-                return match;
               }
+              return match;
             });
           }
           fragments.push(...element.compileToFragments(o));
         } else {
           if (!this.csx) { fragments.push(this.makeCode('$')); }
           let code = element.compileToFragments(o, LEVEL_PAREN);
-          if (!this.isNestedTag(element) || code.some(fragment => fragment.comments != null)) {
+          if (!this.isNestedTag(element) || code.some((fragment) => fragment.comments != null)) {
             code = this.wrapInBraces(code);
             // Flag the `{` and `}` fragments as having been generated by this
             // `StringWithInterpolations` node, so that `compileComments` knows
@@ -5015,9 +5049,9 @@ exports.StringWithInterpolations = (StringWithInterpolations = (function() {
   };
   StringWithInterpolations.initClass();
   return StringWithInterpolations;
-})());
+}()));
 
-//### For
+// ### For
 
 // CoffeeScript's replacement for the *for* loop is our array and object
 // comprehensions, that compile into *for* loops here. They also act as an
@@ -5026,24 +5060,26 @@ exports.StringWithInterpolations = (StringWithInterpolations = (function() {
 // Unlike Python array comprehensions, they can be multi-line, and you can pass
 // the current index of the loop as a second parameter. Unlike Ruby blocks,
 // you can map and filter in a single pass.
-exports.For = (For = (function() {
+exports.For = (For = (function () {
   For = class For extends While {
     static initClass() {
-  
       this.prototype.children = ['body', 'source', 'guard', 'step'];
     }
+
     constructor(body, source) {
       super();
-      ({source: this.source, guard: this.guard, step: this.step, name: this.name, index: this.index} = source);
-      this.body    = Block.wrap([body]);
-      this.own     = (source.own != null);
-      this.object  = (source.object != null);
-      this.from    = (source.from != null);
+      ({
+        source: this.source, guard: this.guard, step: this.step, name: this.name, index: this.index,
+      } = source);
+      this.body = Block.wrap([body]);
+      this.own = (source.own != null);
+      this.object = (source.object != null);
+      this.from = (source.from != null);
       if (this.from && this.index) { this.index.error('cannot use index with for-from'); }
       if (this.own && !this.object) { source.ownTag.error(`cannot use own with for-${this.from ? 'from' : 'in'}`); }
       if (this.object) { [this.name, this.index] = [this.index, this.name]; }
-      if (__guardMethod__(this.index, 'isArray', o => o.isArray()) || __guardMethod__(this.index, 'isObject', o1 => o1.isObject())) { this.index.error('index cannot be a pattern matching expression'); }
-      this.range   = this.source instanceof Value && this.source.base instanceof Range && !this.source.properties.length && !this.from;
+      if (__guardMethod__(this.index, 'isArray', (o) => o.isArray()) || __guardMethod__(this.index, 'isObject', (o1) => o1.isObject())) { this.index.error('index cannot be a pattern matching expression'); }
+      this.range = this.source instanceof Value && this.source.base instanceof Range && !this.source.properties.length && !this.from;
       this.pattern = this.name instanceof Value;
       if (this.range && this.index) { this.index.error('indexes do not apply to range loops'); }
       if (this.range && this.pattern) { this.name.error('cannot pattern match over range loops'); }
@@ -5053,16 +5089,16 @@ exports.For = (For = (function() {
       // comments get output, and get output above the `for` loop.
       for (var attribute of ['source', 'guard', 'step', 'name', 'index']) {
         if (this[attribute]) {
-          this[attribute].traverseChildren(true, node => {
+          this[attribute].traverseChildren(true, (node) => {
             if (node.comments) {
               // These comments are buried pretty deeply, so if they happen to be
               // trailing comments the line they trail will be unrecognizable when
               // we’re done compiling this `for` loop; so just shift them up to
               // output above the `for` line.
-              for (let comment of Array.from(node.comments)) { comment.newLine = (comment.unshift = true); }
+              for (const comment of Array.from(node.comments)) { comment.newLine = (comment.unshift = true); }
               return moveComments(node, this[attribute]);
             }
-        });
+          });
           moveComments(this[attribute], this);
         }
       }
@@ -5073,50 +5109,54 @@ exports.For = (For = (function() {
     // comprehensions. Some of the generated code can be shared in common, and
     // some cannot.
     compileNode(o) {
-      let forPartFragments, ivar, name, namePart, resultPart, returnResult, rvar, step, stepNum, stepVar, svar;
-      let body        = Block.wrap([this.body]);
+      let forPartFragments; let ivar; let name; let namePart; let resultPart; let returnResult; let rvar; let step; let stepNum; let stepVar; let
+        svar;
+      let body = Block.wrap([this.body]);
       const last = body.expressions[body.expressions.length - 1];
-      if ((last != null ? last.jumps() : undefined) instanceof Return) { this.returns    = false; }
-      const source      = this.range ? this.source.base : this.source;
+      if ((last != null ? last.jumps() : undefined) instanceof Return) { this.returns = false; }
+      const source = this.range ? this.source.base : this.source;
       const {
-        scope
+        scope,
       } = o;
-      if (!this.pattern) { name        = this.name  && (this.name.compile(o, LEVEL_LIST)); }
-      const index       = this.index && (this.index.compile(o, LEVEL_LIST));
+      if (!this.pattern) { name = this.name && (this.name.compile(o, LEVEL_LIST)); }
+      const index = this.index && (this.index.compile(o, LEVEL_LIST));
       if (name && !this.pattern) { scope.find(name); }
       if (index && !(this.index instanceof Value)) { scope.find(index); }
-      if (this.returns) { rvar        = scope.freeVariable('results'); }
+      if (this.returns) { rvar = scope.freeVariable('results'); }
       if (this.from) {
-        if (this.pattern) { ivar = scope.freeVariable('x', {single: true}); }
+        if (this.pattern) { ivar = scope.freeVariable('x', { single: true }); }
       } else {
-        ivar = (this.object && index) || scope.freeVariable('i', {single: true});
+        ivar = (this.object && index) || scope.freeVariable('i', { single: true });
       }
-      const kvar        = ((this.range || this.from) && name) || index || ivar;
-      const kvarAssign  = kvar !== ivar ? `${kvar} = ` : "";
+      const kvar = ((this.range || this.from) && name) || index || ivar;
+      const kvarAssign = kvar !== ivar ? `${kvar} = ` : '';
       if (this.step && !this.range) {
         [step, stepVar] = this.cacheToCodeFragments(this.step.cache(o, LEVEL_LIST, shouldCacheOrIsAssignable));
-        if (this.step.isNumber()) { stepNum   = Number(stepVar); }
+        if (this.step.isNumber()) { stepNum = Number(stepVar); }
       }
-      if (this.pattern) { name        = ivar; }
-      let varPart     = '';
-      let guardPart   = '';
-      let defPart     = '';
-      const idt1        = this.tab + TAB;
+      if (this.pattern) { name = ivar; }
+      let varPart = '';
+      let guardPart = '';
+      let defPart = '';
+      const idt1 = this.tab + TAB;
       if (this.range) {
         forPartFragments = source.compileToFragments(merge(o,
-          {index: ivar, name, step: this.step, shouldCache: shouldCacheOrIsAssignable}));
+          {
+            index: ivar, name, step: this.step, shouldCache: shouldCacheOrIsAssignable,
+          }));
       } else {
-        svar    = this.source.compile(o, LEVEL_LIST);
+        svar = this.source.compile(o, LEVEL_LIST);
         if ((name || this.own) && !(this.source.unwrap() instanceof IdentifierLiteral)) {
           let ref;
-          defPart    += `${this.tab}${(ref = scope.freeVariable('ref'))} = ${svar};\n`;
-          svar       = ref;
+          defPart += `${this.tab}${(ref = scope.freeVariable('ref'))} = ${svar};\n`;
+          svar = ref;
         }
         if (name && !this.pattern && !this.from) {
-          namePart   = `${name} = ${svar}[${kvar}]`;
+          namePart = `${name} = ${svar}[${kvar}]`;
         }
         if (!this.object && !this.from) {
-          let increment, lvar;
+          let increment; let
+            lvar;
           if (step !== stepVar) { defPart += `${this.tab}${step};\n`; }
           const down = stepNum < 0;
           if (!this.step || (stepNum == null) || !down) { lvar = scope.freeVariable('len'); }
@@ -5142,16 +5182,14 @@ exports.For = (For = (function() {
         }
       }
       if (this.returns) {
-        resultPart   = `${this.tab}${rvar} = [];\n`;
+        resultPart = `${this.tab}${rvar} = [];\n`;
         returnResult = `\n${this.tab}return ${rvar};`;
         body.makeReturn(rvar);
       }
       if (this.guard) {
         if (body.expressions.length > 1) {
-          body.expressions.unshift(new If((new Parens(this.guard)).invert(), new StatementLiteral("continue")));
-        } else {
-          if (this.guard) { body = Block.wrap([new If(this.guard, body)]); }
-        }
+          body.expressions.unshift(new If((new Parens(this.guard)).invert(), new StatementLiteral('continue')));
+        } else if (this.guard) { body = Block.wrap([new If(this.guard, body)]); }
       }
       if (this.pattern) {
         body.expressions.unshift(new Assign(this.name, this.from ? new IdentifierLiteral(kvar) : new Literal(`${svar}[${kvar}]`)));
@@ -5164,14 +5202,14 @@ exports.For = (For = (function() {
       } else if (this.from) {
         forPartFragments = [this.makeCode(`${kvar} of ${svar}`)];
       }
-      let bodyFragments = body.compileToFragments(merge(o, {indent: idt1}), LEVEL_TOP);
+      let bodyFragments = body.compileToFragments(merge(o, { indent: idt1 }), LEVEL_TOP);
       if (bodyFragments && (bodyFragments.length > 0)) {
         bodyFragments = [].concat(this.makeCode('\n'), bodyFragments, this.makeCode('\n'));
       }
 
       let fragments = [this.makeCode(defPart)];
       if (resultPart) { fragments.push(this.makeCode(resultPart)); }
-      fragments = fragments.concat(this.makeCode(this.tab), this.makeCode( 'for ('),
+      fragments = fragments.concat(this.makeCode(this.tab), this.makeCode('for ('),
         forPartFragments, this.makeCode(`) {${guardPart}${varPart}`), bodyFragments,
         this.makeCode(this.tab), this.makeCode('}'));
       if (returnResult) { fragments.push(this.makeCode(returnResult)); }
@@ -5180,25 +5218,25 @@ exports.For = (For = (function() {
   };
   For.initClass();
   return For;
-})());
+}()));
 
-//### Switch
+// ### Switch
 
 // A JavaScript *switch* statement. Converts into a returnable expression on-demand.
-exports.Switch = (Switch = (function() {
+exports.Switch = (Switch = (function () {
   Switch = class Switch extends Base {
     static initClass() {
-  
       this.prototype.children = ['subject', 'cases', 'otherwise'];
-  
+
       this.prototype.isStatement = YES;
     }
+
     constructor(subject, cases, otherwise) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.subject = subject;
@@ -5208,8 +5246,8 @@ exports.Switch = (Switch = (function() {
     }
 
     jumps(o) {
-      if (o == null) { o = {block: true}; }
-      for (let [conds, block] of Array.from(this.cases)) {
+      if (o == null) { o = { block: true }; }
+      for (const [conds, block] of Array.from(this.cases)) {
         var jumpNode;
         if (jumpNode = block.jumps(o)) { return jumpNode; }
       }
@@ -5217,7 +5255,7 @@ exports.Switch = (Switch = (function() {
     }
 
     makeReturn(res) {
-      for (let pair of Array.from(this.cases)) { pair[1].makeReturn(res); }
+      for (const pair of Array.from(this.cases)) { pair[1].makeReturn(res); }
       if (res) { if (!this.otherwise) { this.otherwise = new Block([new Literal('void 0')]); } }
       if (this.otherwise != null) {
         this.otherwise.makeReturn(res);
@@ -5228,65 +5266,67 @@ exports.Switch = (Switch = (function() {
     compileNode(o) {
       const idt1 = o.indent + TAB;
       const idt2 = (o.indent = idt1 + TAB);
-      let fragments = [].concat(this.makeCode(this.tab + "switch ("),
-        (this.subject ? this.subject.compileToFragments(o, LEVEL_PAREN) : this.makeCode("false")),
-        this.makeCode(") {\n"));
+      let fragments = [].concat(this.makeCode(`${this.tab}switch (`),
+        (this.subject ? this.subject.compileToFragments(o, LEVEL_PAREN) : this.makeCode('false')),
+        this.makeCode(') {\n'));
       for (let i = 0; i < this.cases.length; i++) {
-        var body, cond;
+        var body; var
+          cond;
         const [conditions, block] = this.cases[i];
         for (cond of Array.from(flatten([conditions]))) {
-          if (!this.subject) { cond  = cond.invert(); }
-          fragments = fragments.concat(this.makeCode(idt1 + "case "), cond.compileToFragments(o, LEVEL_PAREN), this.makeCode(":\n"));
+          if (!this.subject) { cond = cond.invert(); }
+          fragments = fragments.concat(this.makeCode(`${idt1}case `), cond.compileToFragments(o, LEVEL_PAREN), this.makeCode(':\n'));
         }
         if ((body = block.compileToFragments(o, LEVEL_TOP)).length > 0) { fragments = fragments.concat(body, this.makeCode('\n')); }
         if ((i === (this.cases.length - 1)) && !this.otherwise) { break; }
         const expr = this.lastNode(block.expressions);
         if (expr instanceof Return || expr instanceof Throw || (expr instanceof Literal && expr.jumps() && (expr.value !== 'debugger'))) { continue; }
-        fragments.push(cond.makeCode(idt2 + 'break;\n'));
+        fragments.push(cond.makeCode(`${idt2}break;\n`));
       }
       if (this.otherwise && this.otherwise.expressions.length) {
-        fragments.push(this.makeCode(idt1 + "default:\n"), ...(this.otherwise.compileToFragments(o, LEVEL_TOP)), this.makeCode("\n"));
+        fragments.push(this.makeCode(`${idt1}default:\n`), ...(this.otherwise.compileToFragments(o, LEVEL_TOP)), this.makeCode('\n'));
       }
-      fragments.push(this.makeCode(this.tab + '}'));
+      fragments.push(this.makeCode(`${this.tab}}`));
       return fragments;
     }
   };
   Switch.initClass();
   return Switch;
-})());
+}()));
 
-//### If
+// ### If
 
 // *If/else* statements. Acts as an expression by pushing down requested returns
 // to the last line of each clause.
 //
 // Single-expression **Ifs** are compiled into conditional operators if possible,
 // because ternaries are already proper expressions, and don’t need conversion.
-exports.If = (If = (function() {
+exports.If = (If = (function () {
   If = class If extends Base {
     static initClass() {
-  
       this.prototype.children = ['condition', 'body', 'elseBody'];
     }
+
     constructor(condition, body, options) {
       {
         // Hack: trick Babel/TypeScript into allowing this before super.
         if (false) { super(); }
-        let thisFn = (() => { return this; }).toString();
-        let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
+        const thisFn = (() => this).toString();
+        const thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
         eval(`${thisName} = this;`);
       }
       this.body = body;
       if (options == null) { options = {}; }
       super();
       this.condition = options.type === 'unless' ? condition.invert() : condition;
-      this.elseBody  = null;
-      this.isChain   = false;
-      ({soak: this.soak}    = options);
+      this.elseBody = null;
+      this.isChain = false;
+      ({ soak: this.soak } = options);
       if (this.condition.comments) { moveComments(this.condition, this); }
     }
 
     bodyNode() { return (this.body != null ? this.body.unwrap() : undefined); }
+
     elseBodyNode() { return (this.elseBody != null ? this.elseBody.unwrap() : undefined); }
 
     // Rewrite a chain of **Ifs** to add a default case as the final *else*.
@@ -5294,7 +5334,7 @@ exports.If = (If = (function() {
       if (this.isChain) {
         this.elseBodyNode().addElse(elseBody);
       } else {
-        this.isChain  = elseBody instanceof If;
+        this.isChain = elseBody instanceof If;
         this.elseBody = this.ensureBlock(elseBody);
         this.elseBody.updateLocationDataIfMissing(elseBody.locationData);
       }
@@ -5304,14 +5344,14 @@ exports.If = (If = (function() {
     // The **If** only compiles into a statement if either of its bodies needs
     // to be a statement. Otherwise a conditional operator is safe.
     isStatement(o) {
-      return ((o != null ? o.level : undefined) === LEVEL_TOP) ||
-        this.bodyNode().isStatement(o) || __guard__(this.elseBodyNode(), x => x.isStatement(o));
+      return ((o != null ? o.level : undefined) === LEVEL_TOP)
+        || this.bodyNode().isStatement(o) || __guard__(this.elseBodyNode(), (x) => x.isStatement(o));
     }
 
     jumps(o) { return this.body.jumps(o) || (this.elseBody != null ? this.elseBody.jumps(o) : undefined); }
 
     compileNode(o) {
-      if (this.isStatement(o)) { return this.compileStatement(o); } else { return this.compileExpression(o); }
+      if (this.isStatement(o)) { return this.compileStatement(o); } return this.compileExpression(o);
     }
 
     makeReturn(res) {
@@ -5322,23 +5362,23 @@ exports.If = (If = (function() {
     }
 
     ensureBlock(node) {
-      if (node instanceof Block) { return node; } else { return new Block([node]); }
+      if (node instanceof Block) { return node; } return new Block([node]);
     }
 
     // Compile the `If` as a regular *if-else* statement. Flattened chains
     // force inner *else* bodies into statement form.
     compileStatement(o) {
-      const child    = del(o, 'chainChild');
-      const exeq     = del(o, 'isExistentialEquals');
+      const child = del(o, 'chainChild');
+      const exeq = del(o, 'isExistentialEquals');
 
       if (exeq) {
-        return new If(this.condition.invert(), this.elseBodyNode(), {type: 'if'}).compileToFragments(o);
+        return new If(this.condition.invert(), this.elseBodyNode(), { type: 'if' }).compileToFragments(o);
       }
 
-      const indent   = o.indent + TAB;
-      const cond     = this.condition.compileToFragments(o, LEVEL_PAREN);
-      const body     = this.ensureBlock(this.body).compileToFragments(merge(o, {indent}));
-      const ifPart   = [].concat(this.makeCode("if ("), cond, this.makeCode(") {\n"), body, this.makeCode(`\n${this.tab}}`));
+      const indent = o.indent + TAB;
+      const cond = this.condition.compileToFragments(o, LEVEL_PAREN);
+      const body = this.ensureBlock(this.body).compileToFragments(merge(o, { indent }));
+      const ifPart = [].concat(this.makeCode('if ('), cond, this.makeCode(') {\n'), body, this.makeCode(`\n${this.tab}}`));
       if (!child) { ifPart.unshift(this.makeCode(this.tab)); }
       if (!this.elseBody) { return ifPart; }
       let answer = ifPart.concat(this.makeCode(' else '));
@@ -5346,7 +5386,7 @@ exports.If = (If = (function() {
         o.chainChild = true;
         answer = answer.concat(this.elseBody.unwrap().compileToFragments(o, LEVEL_TOP));
       } else {
-        answer = answer.concat(this.makeCode("{\n"), this.elseBody.compileToFragments(merge(o, {indent}), LEVEL_TOP), this.makeCode(`\n${this.tab}}`));
+        answer = answer.concat(this.makeCode('{\n'), this.elseBody.compileToFragments(merge(o, { indent }), LEVEL_TOP), this.makeCode(`\n${this.tab}}`));
       }
       return answer;
     }
@@ -5355,9 +5395,9 @@ exports.If = (If = (function() {
     compileExpression(o) {
       const cond = this.condition.compileToFragments(o, LEVEL_COND);
       const body = this.bodyNode().compileToFragments(o, LEVEL_LIST);
-      const alt  = this.elseBodyNode() ? this.elseBodyNode().compileToFragments(o, LEVEL_LIST) : [this.makeCode('void 0')];
-      const fragments = cond.concat(this.makeCode(" ? "), body, this.makeCode(" : "), alt);
-      if (o.level >= LEVEL_COND) { return this.wrapInParentheses(fragments); } else { return fragments; }
+      const alt = this.elseBodyNode() ? this.elseBodyNode().compileToFragments(o, LEVEL_LIST) : [this.makeCode('void 0')];
+      const fragments = cond.concat(this.makeCode(' ? '), body, this.makeCode(' : '), alt);
+      if (o.level >= LEVEL_COND) { return this.wrapInParentheses(fragments); } return fragments;
     }
 
     unfoldSoak() {
@@ -5366,28 +5406,33 @@ exports.If = (If = (function() {
   };
   If.initClass();
   return If;
-})());
+}()));
 
 // Constants
 // ---------
 
 const UTILITIES = {
   modulo() { return 'function(a, b) { return (+a % (b = +b) + b) % b; }'; },
-  objectWithoutKeys() { return `\
+  objectWithoutKeys() {
+    return `\
 function(o, ks) { \
 var res = {}; \
 for (var k in o) ([].indexOf.call(ks, k) < 0 && {}.hasOwnProperty.call(o, k)) && (res[k] = o[k]); \
 return res; \
 }\
-`; },
-  boundMethodCheck() { return `\
+`;
+  },
+  boundMethodCheck() {
+    return `\
 function(instance, Constructor) { \
 if (!(instance instanceof Constructor)) { \
 throw new Error('Bound instance method accessed before binding'); \
 } \
 }\
-`; },
-  _extends() { return `\
+`;
+  },
+  _extends() {
+    return `\
 Object.assign || function (target) { \
 for (var i = 1; i < arguments.length; i++) { \
 var source = arguments[i]; \
@@ -5399,23 +5444,24 @@ target[key] = source[key]; \
 } \
 return target; \
 }\
-`; },
+`;
+  },
 
   // Shortcuts to speed up the lookup time for native functions.
   hasProp() { return '{}.hasOwnProperty'; },
   indexOf() { return '[].indexOf'; },
   slice() { return '[].slice'; },
-  splice() { return '[].splice'; }
+  splice() { return '[].splice'; },
 };
 
 // Levels indicate a node's position in the AST. Useful for knowing if
 // parens are necessary or superfluous.
-var LEVEL_TOP    = 1;  // ...;
-var LEVEL_PAREN  = 2;  // (...)
-var LEVEL_LIST   = 3;  // [...]
-var LEVEL_COND   = 4;  // ... ? x : y
-var LEVEL_OP     = 5;  // !...
-var LEVEL_ACCESS = 6;  // ...[0]
+var LEVEL_TOP = 1; // ...;
+var LEVEL_PAREN = 2; // (...)
+var LEVEL_LIST = 3; // [...]
+var LEVEL_COND = 4; // ... ? x : y
+var LEVEL_OP = 5; // !...
+var LEVEL_ACCESS = 6; // ...[0]
 
 // Tabs are two spaces for pretty printing.
 var TAB = '  ';
@@ -5426,23 +5472,22 @@ var SIMPLENUM = /^[+-]?\d+$/;
 // ----------------
 
 // Helper for ensuring that utility functions are assigned at the top level.
-var utility = function(name, o) {
-  const {root} = o.scope;
+var utility = function (name, o) {
+  const { root } = o.scope;
   if (name in root.utilities) {
     return root.utilities[name];
-  } else {
-    const ref = root.freeVariable(name);
-    root.assign(ref, UTILITIES[name](o));
-    return root.utilities[name] = ref;
   }
+  const ref = root.freeVariable(name);
+  root.assign(ref, UTILITIES[name](o));
+  return root.utilities[name] = ref;
 };
 
-var multident = function(code, tab, includingFirstLine) {
+var multident = function (code, tab, includingFirstLine) {
   if (includingFirstLine == null) { includingFirstLine = true; }
   const endsWithNewLine = code[code.length - 1] === '\n';
   code = (includingFirstLine ? tab : '') + code.replace(/\n/g, `$&${tab}`);
   code = code.replace(/\s+$/, '');
-  if (endsWithNewLine) { code = code + '\n'; }
+  if (endsWithNewLine) { code += '\n'; }
   return code;
 };
 
@@ -5450,7 +5495,7 @@ var multident = function(code, tab, includingFirstLine) {
 // indent a line of code, now we must account for the possibility of comments
 // preceding that line of code. If there are such comments, indent each line of
 // such comments, and _then_ indent the first following line of code.
-var indentInitial = function(fragments, node) {
+var indentInitial = function (fragments, node) {
   for (let fragmentIndex = 0; fragmentIndex < fragments.length; fragmentIndex++) {
     const fragment = fragments[fragmentIndex];
     if (fragment.isHereComment) {
@@ -5463,9 +5508,9 @@ var indentInitial = function(fragments, node) {
   return fragments;
 };
 
-var hasLineComments = function(node) {
+var hasLineComments = function (node) {
   if (!node.comments) { return false; }
-  for (let comment of Array.from(node.comments)) {
+  for (const comment of Array.from(node.comments)) {
     if (comment.here === false) { return true; }
   }
   return false;
@@ -5473,7 +5518,7 @@ var hasLineComments = function(node) {
 
 // Move the `comments` property from one object to another, deleting it from
 // the first object.
-var moveComments = function(from, to) {
+var moveComments = function (from, to) {
   if (!(from != null ? from.comments : undefined)) { return; }
   attachCommentsToNode(from.comments, to);
   return delete from.comments;
@@ -5482,7 +5527,7 @@ var moveComments = function(from, to) {
 // Sometimes when compiling a node, we want to insert a fragment at the start
 // of an array of fragments; but if the start has one or more comment fragments,
 // we want to insert this fragment after those but before any non-comments.
-var unshiftAfterComments = function(fragments, fragmentToInsert) {
+var unshiftAfterComments = function (fragments, fragmentToInsert) {
   let inserted = false;
   for (let fragmentIndex = 0; fragmentIndex < fragments.length; fragmentIndex++) {
     const fragment = fragments[fragmentIndex];
@@ -5496,14 +5541,14 @@ var unshiftAfterComments = function(fragments, fragmentToInsert) {
   return fragments;
 };
 
-var isLiteralArguments = node => node instanceof IdentifierLiteral && (node.value === 'arguments');
+var isLiteralArguments = (node) => node instanceof IdentifierLiteral && (node.value === 'arguments');
 
-var isLiteralThis = node => node instanceof ThisLiteral || (node instanceof Code && node.bound);
+var isLiteralThis = (node) => node instanceof ThisLiteral || (node instanceof Code && node.bound);
 
-var shouldCacheOrIsAssignable = node => node.shouldCache() || (typeof node.isAssignable === 'function' ? node.isAssignable() : undefined);
+var shouldCacheOrIsAssignable = (node) => node.shouldCache() || (typeof node.isAssignable === 'function' ? node.isAssignable() : undefined);
 
 // Unfold a node's child if soak, then tuck the node under created `If`
-var unfoldSoak = function(o, parent, name) {
+var unfoldSoak = function (o, parent, name) {
   let ifn;
   if (!(ifn = parent[name].unfoldSoak(o))) { return; }
   parent[name] = ifn.body;
@@ -5515,9 +5560,9 @@ function __guard__(value, transform) {
   return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
 }
 function __range__(left, right, inclusive) {
-  let range = [];
-  let ascending = left < right;
-  let end = !inclusive ? right : ascending ? right + 1 : right - 1;
+  const range = [];
+  const ascending = left < right;
+  const end = !inclusive ? right : ascending ? right + 1 : right - 1;
   for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
     range.push(i);
   }
@@ -5526,7 +5571,6 @@ function __range__(left, right, inclusive) {
 function __guardMethod__(obj, methodName, transform) {
   if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
     return transform(obj, methodName);
-  } else {
-    return undefined;
   }
+  return undefined;
 }
