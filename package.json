@@ -55,7 +55,7 @@
     "highlight.js": "~9.12.0",
     "jison": ">=0.4.18",
     "js-cake": "1.0.0",
-    "markdown-it": "~8.4.0",
+    "markdown-it": "~12.3.2",
     "require-uncached": "2.0.0",
     "underscore": "~1.8.3",
     "webpack": "~3.10.0"
